@@ -1,4 +1,4 @@
-﻿namespace Shinobytes.Ravenfall.RavenNet.Models
+﻿namespace Shinobytes.Ravenfall.DataModels.Legacy
 {
     public enum Gender
     {

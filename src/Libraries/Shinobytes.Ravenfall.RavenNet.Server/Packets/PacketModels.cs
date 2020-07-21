@@ -1,5 +1,4 @@
 ﻿
-using Shinobytes.Ravenfall.RavenNet.Models;
 using System;
 
 namespace Shinobytes.Ravenfall.RavenNet.Server.Packets
@@ -28,32 +27,6 @@ namespace Shinobytes.Ravenfall.RavenNet.Server.Packets
         public double MemUsage { get; set; }
         public int PlayerCount { get; set; }
         public int NpcCount { get; set; }
-    }
-
-    public class PlayerZoneEnter
-    {
-        public const short OpCode = 1003;
-        public Player Player { get; set; }
-    }
-
-    public class PlayerZoneExit
-    {
-        public const short OpCode = 1004;
-        public int PlayerId { get; set; }
-    }
-
-    public class PlayerEnterUpdate
-    {
-        public const short OpCode = 1005;
-        public int[] PlayersToUpdate { get; set; }
-        public Player Data { get; set; }
-    }
-
-    public class PlayerExitUpdate
-    {
-        public const short OpCode = 1006;
-        public int[] PlayersToUpdate { get; set; }
-        public Player Data { get; set; }
     }
 
     public class AuthChallengeResponse

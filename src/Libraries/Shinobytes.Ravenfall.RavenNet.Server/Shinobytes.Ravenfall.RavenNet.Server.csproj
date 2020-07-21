@@ -8,8 +8,4 @@
     <ProjectReference Include="..\Shinobytes.Ravenfall.RavenNet\Shinobytes.Ravenfall.RavenNet.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Providers\" />
-  </ItemGroup>
-
 </Project>
