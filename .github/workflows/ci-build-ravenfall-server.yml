@@ -18,6 +18,6 @@ jobs:
       with:
         dotnet-version: v5.0.100-preview.7
     - name: Install dependencies
-      run: dotnet restore "Ravenfall\ Server.sln"
+      run: dotnet restore "Ravenfall Server.sln"
     - name: Build
-      run: dotnet build --configuration Release --no-restore "Ravenfall\ Server.sln"
+      run: dotnet build --configuration Release --no-restore "Ravenfall Server.sln"
