@@ -1,11 +1,12 @@
-﻿using System;
+﻿using Shinobytes.Ravenfall.RavenNet.Udp;
+using System;
 using System.Collections.Generic;
 
 namespace Shinobytes.Ravenfall.RavenNet.Server
 {
     public interface IRavenConnectionProvider
     {
-        RavenNetworkConnection Get(MessageReader handshakeData, Connection connection);
+        RavenNetworkConnection Get(MessageReader handshakeData, UdpConnection connection);
 
         IReadOnlyList<RavenNetworkConnection> GetAll();
         IReadOnlyList<RavenNetworkConnection> GetConnected();

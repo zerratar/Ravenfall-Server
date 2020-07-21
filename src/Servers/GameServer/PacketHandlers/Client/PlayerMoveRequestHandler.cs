@@ -28,6 +28,14 @@ namespace GameServer.PacketHandlers
 
         protected override void Handle(PlayerMoveRequest data, PlayerConnection connection)
         {
+            if (connection.Player == null)
+            {
+#if !DEBUG
+                logger.Error($"Move request from {connection.InstanceID}. But has not selected a player.");
+#endif
+                return;
+            }
+
             logger.Debug($"Move Request from {connection.Player.Id} from {data.Position} to {data.Destination}");
 
             var player = connection.Player;

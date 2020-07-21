@@ -3,6 +3,10 @@ using System;
 
 namespace Shinobytes.Ravenfall.RavenNet.Udp
 {
+    public class ConnectedEventArgs : EventArgs
+    {
+    }
+
     /// <summary>
     ///     Represents a connection that uses the UDP protocol.
     /// </summary>
@@ -42,6 +46,11 @@ namespace Shinobytes.Ravenfall.RavenNet.Udp
                     break;
             }
         }
+
+        /// <summary>
+        ///     Called when a connection was succesefully determined as connected.
+        /// </summary>
+        public event EventHandler<ConnectedEventArgs> Connected;
 
         /// <inheritdoc/>
         /// <remarks>
@@ -195,7 +204,11 @@ namespace Shinobytes.Ravenfall.RavenNet.Udp
                 Buffer.BlockCopy(bytes, 0, actualBytes, 1, bytes.Length);
             }
 
-            HandleSend(actualBytes, (byte)UdpSendOption.Hello, acknowledgeCallback);
+            HandleSend(actualBytes, (byte)UdpSendOption.Hello, () =>
+            {
+                this.Connected?.Invoke(this, new ConnectedEventArgs());
+                acknowledgeCallback();
+            });
         }
 
         /// <inheritdoc/>

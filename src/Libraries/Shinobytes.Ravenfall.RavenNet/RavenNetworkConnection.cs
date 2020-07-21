@@ -1,21 +1,31 @@
 ﻿using Shinobytes.Ravenfall.RavenNet.Core;
 using Shinobytes.Ravenfall.RavenNet.Packets;
+using Shinobytes.Ravenfall.RavenNet.Udp;
 using System;
+using System.Net;
 
 namespace Shinobytes.Ravenfall.RavenNet
 {
-    public abstract class RavenNetworkConnection : IRavenNetworkConnection, IDisposable
+    public class RavenNetworkConnection : IRavenNetworkConnection, IDisposable
     {
         private readonly INetworkPacketController controller;
-
-        protected readonly Connection Connection;
+        
         protected readonly ILogger Logger;
-
+        protected UdpConnection Connection;
+            
         private bool disposed;
 
         public RavenNetworkConnection(
             ILogger logger,
-            Connection connection,
+            INetworkPacketController controller)
+        {
+            this.Logger = logger;
+            this.controller = controller;
+        }
+
+        public RavenNetworkConnection(
+            ILogger logger,
+            UdpConnection connection,
             INetworkPacketController packetHandler)
         {
             Logger = logger;
@@ -26,12 +36,51 @@ namespace Shinobytes.Ravenfall.RavenNet
         }
 
         public event EventHandler Disconnected;
+        public event EventHandler Connected;
+
         public Guid InstanceID => Connection.InstanceID;
+        public bool IsConnected => Connection?.State == ConnectionState.Connected;
+        public bool IsConnecting => Connection?.State == ConnectionState.Connecting;
 
         public object UserTag { get; set; }
-        public object Tag { get; set; }
+        public object PlayerTag { get; set; }
+        public object BotTag { get; set; }
         public string SessionKey { get; set; }
         public ConnectionState State => Connection.State;
+
+        public void ConnectAsync(IPAddress address, int port)
+        {
+            CreateConnection(address, port);
+            Connection.ConnectAsync();
+        }
+
+        public bool Connect(IPAddress address, int port)
+        {
+            CreateConnection(address, port);
+            Connection.Connect();
+            return IsConnected;
+        }
+
+        private void CreateConnection(IPAddress address, int port)
+        {
+            if (Connection != null)
+            {
+                Connection.DataReceived -= Connection_DataReceived;
+                Connection.Disconnected -= Connection_Disconnected;
+            }
+
+            Connection = new UdpClientConnection(new System.Net.IPEndPoint(address, port));
+            Connection.Connected += Connection_Connected;
+            Connection.DataReceived += Connection_DataReceived;
+            Connection.Disconnected += Connection_Disconnected;
+        }
+
+        private void Connection_Connected(object sender, ConnectedEventArgs e)
+        {
+            Connected?.Invoke(this, EventArgs.Empty);
+        }
+
+
         private void Connection_DataReceived(DataReceivedEventArgs obj)
         {
             controller.HandlePacketData(this, obj.Message, obj.SendOption);
@@ -61,19 +110,22 @@ namespace Shinobytes.Ravenfall.RavenNet
 
         private void Connection_Disconnected(object sender, DisconnectedEventArgs e)
         {
-            OnDisconnected();
+            //OnDisconnected();
             Disconnected?.Invoke(this, e);
-            Connection.Disconnected -= Connection_Disconnected;
-            Connection.DataReceived -= Connection_DataReceived;
             this.Dispose();
         }
 
-        protected abstract void OnDisconnected();
+        //protected abstract void OnDisconnected();
 
         public void Dispose()
         {
             if (this.disposed) return;
-            this.Connection.Dispose();
+            if (this.Connection != null)
+            {
+                this.Connection.DataReceived -= Connection_DataReceived;
+                this.Connection.Disconnected -= Connection_Disconnected;
+                this.Connection.Dispose();
+            }
             this.disposed = true;
         }
     }

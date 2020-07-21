@@ -7,5 +7,6 @@ namespace Shinobytes.Ravenfall.RavenNet.Server
         int AvailabilityScore { get; }
         void Disconnect(User user);
         void Connect(User user);
+        string Name { get; }
     }
 }

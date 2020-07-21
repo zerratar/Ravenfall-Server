@@ -1,4 +1,5 @@
-﻿using Shinobytes.Ravenfall.RavenNet.Models;
+﻿using Shinobytes.Ravenfall.RavenNet.Core;
+using Shinobytes.Ravenfall.RavenNet.Models;
 using Shinobytes.Ravenfall.RavenNet.Server;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,13 +13,15 @@ namespace GameServer.Managers
 
     public class StreamBotManager : IStreamBotManager
     {
+        private readonly ILogger logger;
         private readonly IGameSessionManager sessionManager;
         private readonly object mutex = new object();
 
         private readonly List<IStreamBot> bots = new List<IStreamBot>();
 
-        public StreamBotManager(IGameSessionManager sessionManager)
+        public StreamBotManager(ILogger logger, IGameSessionManager sessionManager)
         {
+            this.logger = logger;
             this.sessionManager = sessionManager;
         }
 
@@ -36,6 +39,8 @@ namespace GameServer.Managers
                 {
                     session.AssignBot(bot);
                 }
+
+                logger.Debug("Bot#" + bot.Name + " added.");
             }
         }
 
@@ -65,6 +70,8 @@ namespace GameServer.Managers
                 {
                     session.UnassignBot(bot);
                 }
+
+                logger.Debug("Bot#" + bot.Name + " removed.");
             }
         }
     }

@@ -35,8 +35,10 @@ namespace GameServer.PacketHandlers
 
         protected override void Handle(AuthRequest data, PlayerConnection connection)
         {
+#if DEBUG
             logger.Debug("Auth Request received. User: " + data.Username + ", Pass: " + data.Password + ", ClientVersion: " + data.ClientVersion);
             logger.Debug("Sending Auth Response: " + 0);
+#endif
 
             var user = userProvider.Get(data.Username);
             var result = authService.Authenticate(user, data.Password);

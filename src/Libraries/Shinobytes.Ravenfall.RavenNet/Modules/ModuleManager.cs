@@ -26,7 +26,7 @@ namespace Shinobytes.Ravenfall.RavenNet.Modules
         }
         public void Dispose()
         {
-            foreach (IDisposable module in modules.Values)
+            foreach (IDisposable module in modules.Values.OfType<IDisposable>())
             {
                 module.Dispose();
             }

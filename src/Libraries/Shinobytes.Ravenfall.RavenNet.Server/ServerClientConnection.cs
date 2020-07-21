@@ -1,6 +1,7 @@
 ﻿using System;
 using Shinobytes.Ravenfall.RavenNet.Core;
 using Shinobytes.Ravenfall.RavenNet.Packets;
+using Shinobytes.Ravenfall.RavenNet.Udp;
 
 namespace Shinobytes.Ravenfall.RavenNet.Server
 {
@@ -10,22 +11,23 @@ namespace Shinobytes.Ravenfall.RavenNet.Server
 
         public ServerClientConnection(
             ILogger logger,
-            Connection connection,
+            UdpConnection connection,
             IServerRegistry registry,
             INetworkPacketController packetHandler)
             : base(logger, connection, packetHandler)
         {
             this.registry = registry;
+            connection.Disconnected += Connection_Disconnected;
+        }
+
+        private void Connection_Disconnected(object sender, DisconnectedEventArgs e)
+        {
+            Logger.Debug($"[@whi@{this.Name ?? "???"}@gray@] Connection Closed.");
         }
 
         public string Name { get; private set; }
         public string ServerIp { get; private set; }
         public int ServerPort { get; private set; }
-
-        protected override void OnDisconnected()
-        {
-            Logger.Debug($"[@whi@{this.Name ?? "???"}@gray@] Connection Closed.");
-        }
 
         public void OnServerDiscovery(string name, string serverIp, int serverPort)
         {

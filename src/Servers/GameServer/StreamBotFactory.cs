@@ -15,7 +15,7 @@ namespace RavenfallServer.Providers
             this.logger = logger;
         }
 
-        public IStreamBot Create(BotConnection connection)
+        public IStreamBot Create(PlayerConnection connection)
         {
             return new StreamBot(logger, connection);
         }
@@ -23,13 +23,16 @@ namespace RavenfallServer.Providers
         private class StreamBot : IStreamBot
         {
             private readonly ILogger logger;
-            private readonly BotConnection connection;
+            private readonly PlayerConnection connection;
             private int connectionCount = 0;
 
-            public StreamBot(ILogger logger, BotConnection connection)
+            public string Name { get; private set; }
+
+            public StreamBot(ILogger logger, PlayerConnection connection)
             {
                 this.logger = logger;
                 this.connection = connection;
+                Name = connection.User?.Username;
             }
 
             public int AvailabilityScore => Volatile.Read(ref connectionCount);

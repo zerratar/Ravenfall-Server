@@ -2,7 +2,7 @@
 {
     public interface IStreamBotFactory
     {
-        IStreamBot Create(BotConnection connection);
+        IStreamBot Create(PlayerConnection connection);
     }
 
 }

@@ -8,7 +8,7 @@ namespace Shinobytes.Ravenfall.RavenNet.Udp
     ///     Represents a servers's connection to a client that uses the UDP protocol.
     /// </summary>
     /// <inheritdoc/>
-    internal sealed class UdpServerConnection : UdpConnection
+    public sealed class UdpServerConnection : UdpConnection
     {
         /// <summary>
         ///     The connection listener that we use the socket of.
@@ -71,7 +71,7 @@ namespace Shinobytes.Ravenfall.RavenNet.Udp
                 if (this._state != ConnectionState.Connected) return false;
                 this._state = ConnectionState.NotConnected;
             }
-            
+
             var bytes = EmptyDisconnectBytes;
             if (data != null && data.Length > 0)
             {

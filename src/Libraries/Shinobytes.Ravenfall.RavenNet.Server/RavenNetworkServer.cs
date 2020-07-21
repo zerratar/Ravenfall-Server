@@ -30,7 +30,7 @@ namespace Shinobytes.Ravenfall.RavenNet.Server
 
         private void Server_NewConnection(NewConnectionEventArgs obj)
         {
-            var connection = connectionProvider.Get(obj.HandshakeData, obj.Connection);
+            var connection = connectionProvider.Get(obj.HandshakeData, obj.Connection as UdpConnection);
             if (connection == null) return;
             connection.Disconnected += Connection_Disconnected;
             lock (mutex)

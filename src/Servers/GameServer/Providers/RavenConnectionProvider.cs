@@ -3,23 +3,24 @@ using System.Collections.Generic;
 using System.Linq;
 using Shinobytes.Ravenfall.RavenNet.Core;
 using Shinobytes.Ravenfall.RavenNet.Packets;
+using Shinobytes.Ravenfall.RavenNet.Udp;
 
 namespace Shinobytes.Ravenfall.RavenNet.Server
 {
-    public abstract class GameConnectionProvider : IRavenConnectionProvider
+    public abstract class RavenConnectionProvider : IRavenConnectionProvider
     {
         private readonly ILogger logger;
         private readonly INetworkPacketController packetHandlers;
         private readonly List<RavenNetworkConnection> connections = new List<RavenNetworkConnection>();
         private readonly object mutex = new object();
 
-        public GameConnectionProvider(ILogger logger, INetworkPacketController packetHandlers)
+        public RavenConnectionProvider(ILogger logger, INetworkPacketController packetHandlers)
         {
             this.logger = logger;
             this.packetHandlers = packetHandlers;
         }
 
-        public RavenNetworkConnection Get(MessageReader handshakeData, Connection connection)
+        public RavenNetworkConnection Get(MessageReader handshakeData, UdpConnection connection)
         {
             var gameConnection = CreateConnection(logger, connection, packetHandlers);
             gameConnection.Disconnected += Connection_Disconnected;
@@ -55,11 +56,11 @@ namespace Shinobytes.Ravenfall.RavenNet.Server
             }
         }
 
-        protected abstract RavenNetworkConnection CreateConnection(ILogger logger, Connection connection, INetworkPacketController packetHandlers);
+        protected abstract RavenNetworkConnection CreateConnection(ILogger logger, UdpConnection connection, INetworkPacketController packetHandlers);
 
         private void Connection_Disconnected(object sender, System.EventArgs e)
         {
-            var connection = sender as GameClientConnection;
+            var connection = sender as UserConnection;
             connection.Disconnected -= Connection_Disconnected;
             lock (mutex) connections.Remove(connection);
         }

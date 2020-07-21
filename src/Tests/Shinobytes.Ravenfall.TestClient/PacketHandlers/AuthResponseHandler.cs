@@ -20,12 +20,27 @@ namespace Shinobytes.Ravenfall.HeaderlessClient.PacketHandlers
 
         public void Handle(AuthResponse data, IRavenNetworkConnection connection, SendOption sendOption)
         {
-            logger.Debug("Login response: " + data.Status);
+            //logger.Debug("Login response: " + data.Status);
             var auth = moduleManager.GetModule<Authentication>();
             if (auth != null)
             {
                 auth.SetResult(data.Status);
             }
+        }
+    }
+
+    public class UserPlayerListHandler : INetworkPacketHandler<UserPlayerList>
+    {
+        private readonly ILogger logger;
+
+        public UserPlayerListHandler(ILogger logger)
+        {
+            this.logger = logger;
+        }
+
+        public void Handle(UserPlayerList data, IRavenNetworkConnection connection, SendOption sendOption)
+        {
+            //logger.Debug("UserPlayerListHandler");
         }
     }
 
@@ -41,7 +56,7 @@ namespace Shinobytes.Ravenfall.HeaderlessClient.PacketHandlers
         }
 
         public void Handle(MyPlayerAdd data, IRavenNetworkConnection connection, SendOption sendOption)
-        {            
+        {
             //UnityEngine.Debug.Log("Player: " + data.Name + ", received from server. POS: " + data.Position);
 
             //var playerHandler = moduleManager.GetModule<PlayerHandler>();

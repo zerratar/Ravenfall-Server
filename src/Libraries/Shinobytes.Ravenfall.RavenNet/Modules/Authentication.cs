@@ -10,13 +10,13 @@ namespace Shinobytes.Ravenfall.RavenNet.Modules
         private const int LOGIN_INVALID = 1;
         private const int LOGIN_BANNED = 2;
 
-        private readonly IRavenNetworkConnection connection;
+        private readonly IRavenClient connection;
         private int activeAuthRequest;
 
         public event EventHandler LoginSuccess;
         public event EventHandler<LoginFailedEventArgs> LoginFailed;
 
-        public Authentication(IRavenNetworkConnection connection)
+        public Authentication(IRavenClient connection)
         {
             this.connection = connection;
         }
@@ -24,6 +24,12 @@ namespace Shinobytes.Ravenfall.RavenNet.Modules
         public string Name => "Auth";
         public bool Authenticated { get; set; }
         public bool Authenticating => Volatile.Read(ref activeAuthRequest) > 0;
+
+        public void Reset()
+        {
+            Volatile.Write(ref activeAuthRequest, 0);
+            Authenticated = false;
+        }
 
         public void Authenticate(string username, string password)
         {

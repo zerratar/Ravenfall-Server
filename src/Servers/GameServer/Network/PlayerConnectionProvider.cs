@@ -4,13 +4,14 @@ using Shinobytes.Ravenfall.RavenNet.Core;
 using Shinobytes.Ravenfall.RavenNet.Models;
 using Shinobytes.Ravenfall.RavenNet.Packets;
 using Shinobytes.Ravenfall.RavenNet.Server;
+using Shinobytes.Ravenfall.RavenNet.Udp;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 
 namespace GameServer.Network
 {
-    public class PlayerConnectionProvider : GameConnectionProvider, IPlayerConnectionProvider
+    public class PlayerConnectionProvider : RavenConnectionProvider, IPlayerConnectionProvider
     {
         private readonly IGameSessionManager sessionManager;
 
@@ -25,7 +26,7 @@ namespace GameServer.Network
 
         protected override RavenNetworkConnection CreateConnection(
             ILogger logger,
-            Connection connection,
+            UdpConnection connection,
             INetworkPacketController packetController)
         {
             return new PlayerConnection(logger, connection, packetController);

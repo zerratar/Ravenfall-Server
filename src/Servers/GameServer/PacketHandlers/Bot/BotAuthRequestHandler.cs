@@ -11,7 +11,7 @@ using System.Linq;
 
 namespace GameServer.PacketHandlers
 {
-    public class BotAuthRequestHandler : BotPacketHandler<BotAuthRequest>
+    public class BotAuthRequestHandler : PlayerPacketHandler<BotAuthRequest>
     {
         private readonly ILogger logger;
         private readonly IUserManager userProvider;
@@ -33,7 +33,7 @@ namespace GameServer.PacketHandlers
             this.botManager = botManager;
         }
 
-        protected override void Handle(BotAuthRequest data, BotConnection connection)
+        protected override void Handle(BotAuthRequest data, PlayerConnection connection)
         {
             logger.Debug("Bot Auth Request received. User: " + data.Username + ", Pass: " + data.Password);
             logger.Debug("Sending Auth Response: " + 0);
@@ -51,7 +51,7 @@ namespace GameServer.PacketHandlers
             botManager.Add(bot);
 
             connection.UserTag = user;
-            connection.Tag = bot;
+            connection.BotTag = bot;
             connection.Disconnected -= ClientDisconnected;
             connection.Disconnected += ClientDisconnected;
 
@@ -62,12 +62,12 @@ namespace GameServer.PacketHandlers
 
         private void ClientDisconnected(object sender, EventArgs e)
         {
-            var connection = sender as BotConnection;
+            var connection = sender as PlayerConnection;
             connection.Disconnected -= ClientDisconnected;
             botManager.Remove(connection.Bot);
         }
 
-        private void SendFailedLoginResult(BotConnection connection, AuthResult result)
+        private void SendFailedLoginResult(PlayerConnection connection, AuthResult result)
         {
             connection.Send(new BotAuthResponse()
             {
@@ -75,7 +75,7 @@ namespace GameServer.PacketHandlers
                 SessionKeys = new byte[0]
             }, SendOption.Reliable);
         }
-        private void SendSuccessLoginResult(BotConnection connection)
+        private void SendSuccessLoginResult(PlayerConnection connection)
         {
             connection.Send(new BotAuthResponse()
             {

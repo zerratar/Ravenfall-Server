@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Shinobytes.Ravenfall.RavenNet.Core;
 using Shinobytes.Ravenfall.RavenNet.Packets;
+using Shinobytes.Ravenfall.RavenNet.Udp;
 
 namespace Shinobytes.Ravenfall.RavenNet.Server
 {
@@ -21,7 +22,7 @@ namespace Shinobytes.Ravenfall.RavenNet.Server
             this.packetHandlers = packetHandlers;
         }
 
-        public RavenNetworkConnection Get(MessageReader handshakeData, Connection connection)
+        public RavenNetworkConnection Get(MessageReader handshakeData, UdpConnection connection)
         {
             return new ServerClientConnection(logger, connection, serverRegistry, packetHandlers);
         }
