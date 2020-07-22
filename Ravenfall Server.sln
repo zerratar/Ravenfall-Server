@@ -48,11 +48,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FrontServer", "src\Servers\
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Centralized Chat Bot", "Centralized Chat Bot", "{936E7938-A366-4B62-9AA4-75146F31ADF9}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ROBot", "src\bot\ROBot\ROBot.csproj", "{68AF4AE9-905F-46C7-8755-FDE7450870E2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ROBot", "src\Bot\ROBot\ROBot.csproj", "{68AF4AE9-905F-46C7-8755-FDE7450870E2}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ROBot.Core", "src\bot\ROBot.Core\ROBot.Core.csproj", "{C5D15C83-22A1-49F4-936C-422998917E0C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ROBot.Core", "src\Bot\ROBot.Core\ROBot.Core.csproj", "{C5D15C83-22A1-49F4-936C-422998917E0C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ROBot.Ravenfall", "src\bot\ROBot.Ravenfall\ROBot.Ravenfall.csproj", "{2EC2716D-865B-46C7-8A84-C02AF5971502}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ROBot.Ravenfall", "src\Bot\ROBot.Ravenfall\ROBot.Ravenfall.csproj", "{2EC2716D-865B-46C7-8A84-C02AF5971502}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

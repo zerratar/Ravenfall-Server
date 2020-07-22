@@ -37,8 +37,7 @@ namespace Shinobytes.Ravenfall.RavenNet.Core
         {
             var info = logLevelSeverityMapping[logLevel];
             var message = formatter != null ? formatter(state, exception) : state.ToString();
-
-            var msg = $"[@{info.Item2}@{info.Item1}@{ConsoleColor.Gray}@] @{info.Item3}@{message}";
+            var msg = $"[{DateTime.UtcNow}] [@{info.Item2}@{info.Item1}@{ConsoleColor.Gray}@] @{info.Item3}@{message}";
             WriteLine(msg);
         }
 
@@ -49,15 +48,6 @@ namespace Shinobytes.Ravenfall.RavenNet.Core
         public void Write(string message) => WriteOperations(ParseMessageOperations(message));
 
         public void WriteLine(string message) => WriteLineOperations(ParseMessageOperations(message));
-
-        public void Debug(string message)
-        {
-#if DEBUG
-            WriteLine($"[@{ConsoleColor.Cyan}@DBG@{ConsoleColor.Gray}@] {message}");
-#endif
-        }
-
-        public void Error(string errorMessage) => WriteLine($"@{ConsoleColor.Red}@[ERR] {errorMessage}");
 
         private void WriteLineOperations(IReadOnlyList<ConsoleWriteOperation> operations) => WriteOperations(operations, true);
 
