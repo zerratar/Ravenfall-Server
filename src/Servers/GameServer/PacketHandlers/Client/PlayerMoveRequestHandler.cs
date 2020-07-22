@@ -31,8 +31,8 @@ namespace GameServer.PacketHandlers
         {
             if (connection.Player == null)
             {
-#if !DEBUG
-                logger.Error($"Move request from {connection.InstanceID}. But has not selected a player.");
+#if RELEASE
+                logger.LogError($"Move request from {connection.InstanceID}. But has not selected a player.");
 #endif
                 return;
             }
