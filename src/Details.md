@@ -1,32 +1,34 @@
-# Servers
+# Servers (Currently)
+Current setup of the servers during early development phases. The planning further down is not set in stone but a possible direction to take.
 
+## Game Server
+### Game server takes care of all incoming connections, authorization and game updates. It does not rely on any other server to function
+Port 8133
+Accessibility Public
+
+---------
+
+# Servers (Future planning)
 All servers are single threaded except for the Front Server that will handle multiple connections
 
 ## Front Server / Connection Server
-### The server that will hold all game connections, redirect data where needed
-Port 8000
+### The server that will hold all game connections, redirect data where needed.
+### The server also keeps track on active servers, this is the center of providing information about all running servers
+### When a login is successefull, the front server will tell the client which game server to connect to.
+Port 8113
 Accessibility Public
 
-## Master Server
-### The server that keeps track on active servers, this is the center of providing information about all running servers (Excluding ZoneServers)
-Port 8001
-Accessibility Internal
-
-## Login Server
-### The server that handles login requests sent from the Front Server. This has read access to the db
-Port 8002
+## Auth Server
+### The server that handles login requests sent from the Front Server. This has read access to the db.
+Port 8123
 Accessibility Internal
 
 ## Game Server - Instanced
-### A game server instance keeps track on Zone Servers and does all player persistance to the database. This also includes non realtime updates.
-### Only one game server instance can be run per computer as the port is required for zone server connections
-Port 8003
-Accessibility Internal
-
-## Zone Server - Instanced
-### A zone server instance keeps track of players, AIs, and other realtime events. Nothing is saved here.
-Client, connects to Game Server
-Accessibility Internal
+### A game server instance keeps track of players, AIs, and other realtime events as well as all player persistance to the database. 
+### This also includes non realtime updates. Each Game Server may have their own dedicated persistance for storing active game state data.
+### Player data is stored separately as it is being globally used.
+Port 8133
+Accessibility Public
 
 
 ## Ideas
@@ -38,3 +40,24 @@ Example: Player A walks from 10,0,20 to 44,0,7. The distance is grabbed from the
 		 this can potentially be hacked by players. but only to make the character move as if they were walking through walls. basically. But it would appear as if their movement speed is crazy.
 
 Another solution? Do the a-star algorithm on the server side. but this requires more CPU usage and also a copy of the world map.
+
+
+## Data Persistance
+There are 3 main databases
+
+### User Account db
+It stores all account related data such as username, password, linked services as Twitch, YouTube, etc. 
+
+### Player Character db
+It stores all player/characters available for the different users.
+
+### Game server db
+It stores the active game session states and information regarding NPCs, Objects, Items, and any other world changes.
+
+
+## Server Communications
+### Login
+When a client connects to the front server, it will need to send an auth request before it can get assigned a game server.
+The FS (front server) will then ask the AS (auth server) to validate its request. If its valid a token is given back for the current session.
+
+The FS will then wait for another request from the client (this time bearing the token) to join a game

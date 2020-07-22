@@ -18,8 +18,7 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RavenNet.Tests", "src\Tests\RavenNet.Tests\RavenNet.Tests.csproj", "{D6342C8C-6C7C-491F-883F-B821B2826FEA}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docs", "Docs", "{7B04CC41-ECFB-4E0A-9E76-3130FAEA6367}"
-	ProjectSection(SolutionItems) = preProject
-		Details.md = Details.md
+	ProjectSection(SolutionItems) = preProject		
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GameServer", "src\Servers\GameServer\GameServer.csproj", "{F9BC7282-6FC8-4F05-AAE4-598742524DEB}"
