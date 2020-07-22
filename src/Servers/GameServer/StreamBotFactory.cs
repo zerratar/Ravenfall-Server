@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
 using RavenfallServer.Packets;
-using Shinobytes.Ravenfall.RavenNet.Core;
 using Shinobytes.Ravenfall.RavenNet.Models;
 using Shinobytes.Ravenfall.RavenNet.Server;
 using System.Threading;
@@ -16,9 +15,9 @@ namespace RavenfallServer.Providers
             this.logger = logger;
         }
 
-        public IStreamBot Create(PlayerConnection connection)
+        public IStreamBot Create(PlayerConnection connection, User botUser)
         {
-            return new StreamBot(logger, connection);
+            return new StreamBot(logger, connection, botUser);
         }
 
         private class StreamBot : IStreamBot
@@ -26,14 +25,18 @@ namespace RavenfallServer.Providers
             private readonly ILogger logger;
             private readonly PlayerConnection connection;
             private int connectionCount = 0;
+            private readonly User user;
 
-            public string Name { get; private set; }
+            public string Name => user?.Username;
 
-            public StreamBot(ILogger logger, PlayerConnection connection)
+            public StreamBot(ILogger logger, PlayerConnection connection, User botUser)
             {
                 this.logger = logger;
                 this.connection = connection;
-                Name = connection.User?.Username;
+                this.user = botUser;
+
+                connection.UserTag = user;
+                connection.BotTag = this;
             }
 
             public int AvailabilityScore => Volatile.Read(ref connectionCount);

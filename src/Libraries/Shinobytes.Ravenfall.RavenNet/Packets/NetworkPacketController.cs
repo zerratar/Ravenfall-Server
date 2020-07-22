@@ -44,7 +44,8 @@ namespace Shinobytes.Ravenfall.RavenNet.Packets
             // let it throw.
             try
             {
-                var packetId = (short)typeof(TPacket).GetField("OpCode").GetValue(null);
+                var packetType = typeof(TPacket);
+                var packetId = (short)packetType.GetField("OpCode").GetValue(null);
                 return Register<TPacket>(packetId);
             }
             catch

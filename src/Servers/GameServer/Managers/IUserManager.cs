@@ -41,7 +41,7 @@ namespace GameServer.Managers
                     session.AssignBot(bot);
                 }
 
-                logger.LogDebug("Bot#" + bot.Name + " added.");
+                logger.LogDebug("Bot: @cya@" + bot.Name + " @whi@connected.");
             }
         }
 
@@ -72,7 +72,7 @@ namespace GameServer.Managers
                     session.UnassignBot(bot);
                 }
 
-                logger.LogDebug("Bot#" + bot.Name + " removed.");
+                logger.LogWarning("Bot: @cya@" + bot.Name + " @red@disconnected.");
             }
         }
     }

@@ -1,11 +1,9 @@
 ﻿using Microsoft.Extensions.Logging;
-using Shinobytes.Ravenfall.RavenNet.Core;
 using Shinobytes.Ravenfall.RavenNet.Modules;
 using Shinobytes.Ravenfall.RavenNet.Packets;
 using System;
 using System.Linq;
 using System.Net;
-using System.Reflection;
 
 namespace Shinobytes.Ravenfall.RavenNet.Client
 {
@@ -23,9 +21,10 @@ namespace Shinobytes.Ravenfall.RavenNet.Client
 
         private readonly INetworkPacketController packetHandlers;
 
-        public Authentication Auth { get; }
         public bool IsConnected => client.IsConnected;
         public bool IsConnecting => client.IsConnecting;
+
+        public Modules.IAuthenticationModule Auth { get; private set; }
 
         public RavenClient(ILogger logger, IModuleManager moduleManager, INetworkPacketController controller)
         {
@@ -33,6 +32,13 @@ namespace Shinobytes.Ravenfall.RavenNet.Client
             this.Modules = moduleManager;
             this.Auth = this.Modules.AddModule(new Authentication(this));
             this.packetHandlers = RegisterPacketHandlers(controller);
+        }
+
+        public void SetAuthModule<T>(Func<IRavenClient, T> factory) 
+            where T : Modules.IAuthenticationModule
+        {
+            this.Modules.RemoveModule(this.Auth);
+            this.Auth = this.Modules.AddModule(factory(this));
         }
 
         private void OnClientConnected(object sender, EventArgs e)
@@ -127,8 +133,9 @@ namespace Shinobytes.Ravenfall.RavenNet.Client
 
         private static INetworkPacketController RegisterPacketHandlers(INetworkPacketController controller)
         {
-            var packetHandlers = Assembly.GetExecutingAssembly()
-                .GetTypes()
+            var packetHandlers = AppDomain.CurrentDomain
+                .GetAssemblies()
+                .SelectMany(x => x.GetTypes())
                 .Where(x => !x.IsAbstract && typeof(INetworkPacketHandler).IsAssignableFrom(x))
                 .ToArray();
 
@@ -142,5 +149,6 @@ namespace Shinobytes.Ravenfall.RavenNet.Client
 
             return controller;
         }
+
     }
 }

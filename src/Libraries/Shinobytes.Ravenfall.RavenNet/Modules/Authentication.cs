@@ -4,7 +4,7 @@ using System.Threading;
 
 namespace Shinobytes.Ravenfall.RavenNet.Modules
 {
-    public class Authentication : IModule
+    public class Authentication : IAuthenticationModule
     {
         private const int LOGIN_SUCCESS = 0;
         private const int LOGIN_INVALID = 1;
@@ -38,7 +38,12 @@ namespace Shinobytes.Ravenfall.RavenNet.Modules
                 return;
             }
 
-            this.connection.Send(new AuthRequest()
+            SendAuthRequest(connection, username, password);
+        }
+
+        protected virtual void SendAuthRequest(IRavenClient client, string username, string password)
+        {
+            client.Send(new AuthRequest()
             {
                 Username = username,
                 Password = password
@@ -68,15 +73,15 @@ namespace Shinobytes.Ravenfall.RavenNet.Modules
                 Interlocked.CompareExchange(ref activeAuthRequest, 0, 1);
             }
         }
+    }
 
-        public class LoginFailedEventArgs : EventArgs
+    public class LoginFailedEventArgs : EventArgs
+    {
+        public LoginFailedEventArgs(bool isBanned)
         {
-            public LoginFailedEventArgs(bool isBanned)
-            {
-                IsBanned = isBanned;
-            }
-
-            public bool IsBanned { get; }
+            IsBanned = isBanned;
         }
+
+        public bool IsBanned { get; }
     }
 }

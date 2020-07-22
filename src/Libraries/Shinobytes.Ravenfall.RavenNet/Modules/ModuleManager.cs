@@ -31,5 +31,10 @@ namespace Shinobytes.Ravenfall.RavenNet.Modules
                 module.Dispose();
             }
         }
+
+        public void RemoveModule<T>(T module) where T : IModule
+        {
+            this.modules.TryRemove(module.Name, out _);
+        }
     }
 }

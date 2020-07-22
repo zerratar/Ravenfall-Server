@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 
 namespace ROBot.Ravenfall.GameServer
 {
+
     public class RavenfallServerConnection : IRavenfallServerConnection
     {
         private readonly ILogger logger;
@@ -24,13 +25,16 @@ namespace ROBot.Ravenfall.GameServer
             this.logger = logger;
             this.settings = settings;
             this.gameClient = gameClient;
+
+            this.gameClient.SetAuthModule(connection => new BotAuthentication(connection));
+
             this.gameClient.Auth.LoginFailed += OnLoginFailed;
             this.gameClient.Auth.LoginSuccess += OnLoginSuccess;
             this.gameClient.Connected += OnConnect;
             this.gameClient.Disconnected += OnDisconnect;
         }
 
-        private void OnLoginFailed(object sender, Authentication.LoginFailedEventArgs e)
+        private void OnLoginFailed(object sender, LoginFailedEventArgs e)
         {
             logger.LogError("Bot Login Failed :( ");
         }

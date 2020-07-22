@@ -48,13 +48,9 @@ namespace GameServer.PacketHandlers
                 return;
             }
 
-            var bot = botProvider.Create(connection);
-            botManager.Add(bot);
-
-            connection.UserTag = user;
-            connection.BotTag = bot;
             connection.Disconnected -= ClientDisconnected;
             connection.Disconnected += ClientDisconnected;
+            botManager.Add(botProvider.Create(connection, user));
 
             // authenticated
             // send auth response
