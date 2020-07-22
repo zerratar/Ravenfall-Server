@@ -5,8 +5,6 @@ namespace Shinobytes.Ravenfall.RavenNet.Models
 {
     public class EntityStat
     {
-        private static volatile int index;
-
         public int Index { get; set; }
         public int Id { get; set; }
         public string Name { get; set; }

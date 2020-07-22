@@ -14,12 +14,6 @@ namespace Shinobytes.Ravenfall.DataModels.Legacy
         private string task; public string Task { get => task; set => Set(ref task, value); }
         private string taskArgument; public string TaskArgument { get => taskArgument; set => Set(ref taskArgument, value); }
         private string island; public string Island { get => island; set => Set(ref island, value); }
-        [Obsolete("Will be removed in the future")]
-        private decimal? x; public decimal? X { get => x; set => Set(ref x, value); }
-        [Obsolete("Will be removed in the future")]
-        private decimal? y; public decimal? Y { get => y; set => Set(ref y, value); }
-        [Obsolete("Will be removed in the future")]
-        private decimal? z; public decimal? Z { get => z; set => Set(ref z, value); }
         //public ICollection<Character> Character { get; set; }
     }
 }
