@@ -1,4 +1,5 @@
-﻿using Shinobytes.Ravenfall.RavenNet.Core;
+﻿using Microsoft.Extensions.Logging;
+using Shinobytes.Ravenfall.RavenNet.Core;
 using Shinobytes.Ravenfall.RavenNet.Packets;
 using Shinobytes.Ravenfall.RavenNet.Udp;
 using System;
@@ -44,7 +45,7 @@ namespace Shinobytes.Ravenfall.RavenNet
 
         private void Connection_Disconnected(object sender, DisconnectedEventArgs e)
         {
-            logger.Debug("Client disconnected.");
+            logger.LogDebug("Client disconnected.");
             this.Disconnected?.Invoke(this, EventArgs.Empty);
             this.Dispose();
         }

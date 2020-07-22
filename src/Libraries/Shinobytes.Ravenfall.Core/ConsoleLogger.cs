@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,21 +9,46 @@ namespace Shinobytes.Ravenfall.RavenNet.Core
     public class ConsoleLogger : ILogger
     {
         private readonly object writelock = new object();
+        //private readonly LoggerExternalScopeProvider scopeProvider = new LoggerExternalScopeProvider();
+        private readonly LoggerScope emptyScope = new LoggerScope();
+
+        private static ConsoleColor MSG = ConsoleColor.White;
+        private static ConsoleColor DBG = ConsoleColor.Cyan;
+        private static ConsoleColor WRN = ConsoleColor.Yellow;
+        private static ConsoleColor ERR = ConsoleColor.Red;
+
+        private static readonly Dictionary<LogLevel, (string, ConsoleColor, ConsoleColor)> logLevelSeverityMapping = new Dictionary<LogLevel, (string, ConsoleColor, ConsoleColor)>
+        {
+            { LogLevel.None,  ("MSG", MSG, MSG)},
+            { LogLevel.Trace, ("MSG", DBG, MSG)},
+            { LogLevel.Debug, ("DBG", DBG, MSG)},
+            { LogLevel.Information, ("MSG", MSG, MSG)},
+            { LogLevel.Warning,  ("WRN", WRN, WRN)},
+            { LogLevel.Error,    ("RED", ERR, ERR)},
+            { LogLevel.Critical, ("RED", ERR, ERR)},
+        };
 
         public ConsoleLogger()
         {
             Console.OutputEncoding = Encoding.Unicode;
         }
 
-        public void Write(string message)
+        public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
         {
-            WriteOperations(ParseMessageOperations(message));
+            var info = logLevelSeverityMapping[logLevel];
+            var message = formatter != null ? formatter(state, exception) : state.ToString();
+
+            var msg = $"[@{info.Item2}@{info.Item1}@{ConsoleColor.Gray}@] @{info.Item3}@{message}";
+            WriteLine(msg);
         }
 
-        public void WriteLine(string message)
-        {
-            WriteLineOperations(ParseMessageOperations(message));
-        }
+        public bool IsEnabled(LogLevel logLevel) => true;
+
+        public IDisposable BeginScope<TState>(TState state) => emptyScope;//scopeProvider.Push(state);
+
+        public void Write(string message) => WriteOperations(ParseMessageOperations(message));
+
+        public void WriteLine(string message) => WriteLineOperations(ParseMessageOperations(message));
 
         public void Debug(string message)
         {
@@ -31,15 +57,9 @@ namespace Shinobytes.Ravenfall.RavenNet.Core
 #endif
         }
 
-        public void Error(string errorMessage)
-        {
-            WriteLine($"@{ConsoleColor.Red}@{errorMessage}");
-        }
+        public void Error(string errorMessage) => WriteLine($"@{ConsoleColor.Red}@[ERR] {errorMessage}");
 
-        private void WriteLineOperations(IReadOnlyList<ConsoleWriteOperation> operations)
-        {
-            WriteOperations(operations, true);
-        }
+        private void WriteLineOperations(IReadOnlyList<ConsoleWriteOperation> operations) => WriteOperations(operations, true);
 
         private void WriteOperations(IReadOnlyList<ConsoleWriteOperation> operations, bool newLine = false)
         {
@@ -205,6 +225,11 @@ namespace Shinobytes.Ravenfall.RavenNet.Core
                 ForegroundColor = foregroundColor;
                 BackgroundColor = backgroundColor;
             }
+        }
+
+        private struct LoggerScope : IDisposable
+        {
+            public void Dispose() { }
         }
     }
 }

@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5</TargetFramework>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Libraries\Shinobytes.Ravenfall.Core\Shinobytes.Ravenfall.Core.csproj" />
+    <ProjectReference Include="..\..\Libraries\Shinobytes.Ravenfall.RavenNet.Client\Shinobytes.Ravenfall.RavenNet.Client.csproj" />
+    <ProjectReference Include="..\..\Libraries\Shinobytes.Ravenfall.RavenNet\Shinobytes.Ravenfall.RavenNet.csproj" />
+    <ProjectReference Include="..\ROBot.Core\ROBot.Core.csproj" />
+  </ItemGroup>
+
+</Project>

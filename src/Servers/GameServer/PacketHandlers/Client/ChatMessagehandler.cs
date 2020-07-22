@@ -1,4 +1,5 @@
 ﻿using GameServer.Processors;
+using Microsoft.Extensions.Logging;
 using RavenfallServer.Packets;
 using Shinobytes.Ravenfall.RavenNet.Core;
 using Shinobytes.Ravenfall.RavenNet.Server;

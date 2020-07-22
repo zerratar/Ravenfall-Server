@@ -4,6 +4,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using GameServer.Managers;
 using GameServer.Network;
+using Microsoft.Extensions.Logging;
 using RavenfallServer.Packets;
 using RavenfallServer.Providers;
 using Shinobytes.Ravenfall.RavenNet;
@@ -135,7 +136,7 @@ namespace GameServer.Processors
             }
             catch (Exception exc)
             {
-                logger.Error(exc.ToString());
+                logger.LogInformation(exc.ToString());
             }
         }
 

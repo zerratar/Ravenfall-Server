@@ -1,4 +1,5 @@
-﻿using Shinobytes.Ravenfall.RavenNet.Core;
+﻿using Microsoft.Extensions.Logging;
+using Shinobytes.Ravenfall.RavenNet.Core;
 using Shinobytes.Ravenfall.RavenNet.Models;
 using Shinobytes.Ravenfall.RavenNet.Server;
 using System.Collections.Generic;
@@ -40,7 +41,7 @@ namespace GameServer.Managers
                     session.AssignBot(bot);
                 }
 
-                logger.Debug("Bot#" + bot.Name + " added.");
+                logger.LogDebug("Bot#" + bot.Name + " added.");
             }
         }
 
@@ -71,7 +72,7 @@ namespace GameServer.Managers
                     session.UnassignBot(bot);
                 }
 
-                logger.Debug("Bot#" + bot.Name + " removed.");
+                logger.LogDebug("Bot#" + bot.Name + " removed.");
             }
         }
     }

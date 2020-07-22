@@ -1,4 +1,5 @@
-﻿using Shinobytes.Ravenfall.RavenNet.Core;
+﻿using Microsoft.Extensions.Logging;
+using Shinobytes.Ravenfall.RavenNet.Core;
 using Shinobytes.Ravenfall.RavenNet.Serializers;
 using System;
 using System.IO;
@@ -32,7 +33,7 @@ namespace Shinobytes.Ravenfall.RavenNet
 
             if (logger != null)
             {
-                logger.Error($"Unable to deserialize packet. No type lookups registered for packet ID ({packet.Id}).");
+                logger.LogInformation($"Unable to deserialize packet. No type lookups registered for packet ID ({packet.Id}).");
             }
 
             return null;

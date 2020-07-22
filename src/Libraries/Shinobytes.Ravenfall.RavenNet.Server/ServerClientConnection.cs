@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.Extensions.Logging;
 using Shinobytes.Ravenfall.RavenNet.Core;
 using Shinobytes.Ravenfall.RavenNet.Packets;
 using Shinobytes.Ravenfall.RavenNet.Udp;
@@ -22,7 +23,7 @@ namespace Shinobytes.Ravenfall.RavenNet.Server
 
         private void Connection_Disconnected(object sender, DisconnectedEventArgs e)
         {
-            Logger.Debug($"[@whi@{this.Name ?? "???"}@gray@] Connection Closed.");
+            Logger.LogInformation($"[@whi@{this.Name ?? "???"}@gray@] Connection Closed.");
         }
 
         public string Name { get; private set; }
@@ -36,7 +37,7 @@ namespace Shinobytes.Ravenfall.RavenNet.Server
             this.Name = name;
             this.ServerIp = serverIp;
             this.ServerPort = serverPort;
-            Logger.Debug($"[@whi@{this.Name ?? "???"}@gray@] Server Discovery. {serverIp}:{serverPort}");
+            Logger.LogDebug($"[@whi@{this.Name ?? "???"}@gray@] Server Discovery. {serverIp}:{serverPort}");
         }
     }
 }

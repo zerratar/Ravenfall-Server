@@ -1,5 +1,6 @@
 ﻿using GameServer.Managers;
 using GameServer.Processors;
+using Microsoft.Extensions.Logging;
 using RavenfallServer.Packets;
 using RavenfallServer.Providers;
 using Shinobytes.Ravenfall.RavenNet.Core;
@@ -26,7 +27,7 @@ namespace GameServer.PacketHandlers
 
         protected override void Handle(NpcTradeBuyItem data, PlayerConnection connection)
         {
-            logger.Debug("Player " + connection.Player.Id + " trying to buy item from NPC " + data.NpcServerId + " itemId: " + data.ItemId + " amount " + data.Amount);
+            logger.LogDebug("Player " + connection.Player.Id + " trying to buy item from NPC " + data.NpcServerId + " itemId: " + data.ItemId + " amount " + data.Amount);
             var session = sessionManager.Get(connection.Player);
             var npc = session.Npcs.Get(data.NpcServerId);
             if (npc == null) return;

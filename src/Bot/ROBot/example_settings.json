@@ -1,0 +1,4 @@
+{
+  "twitchBotUsername": "Username of the bot",
+  "twitchBotAuthToken": "An auth token generated for the bot above",  
+}

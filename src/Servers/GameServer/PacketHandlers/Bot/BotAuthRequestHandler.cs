@@ -1,6 +1,7 @@
 ﻿using GameServer.Managers;
 using GameServer.Network;
 using GameServer.Services;
+using Microsoft.Extensions.Logging;
 using RavenfallServer.Packets;
 using Shinobytes.Ravenfall.RavenNet;
 using Shinobytes.Ravenfall.RavenNet.Core;
@@ -35,8 +36,8 @@ namespace GameServer.PacketHandlers
 
         protected override void Handle(BotAuthRequest data, PlayerConnection connection)
         {
-            logger.Debug("Bot Auth Request received. User: " + data.Username + ", Pass: " + data.Password);
-            logger.Debug("Sending Auth Response: " + 0);
+            logger.LogDebug("Bot Auth Request received. User: " + data.Username + ", Pass: " + data.Password);
+            logger.LogDebug("Sending Auth Response: " + 0);
 
             var user = userProvider.Get(data.Username);
             var result = authService.Authenticate(user, data.Password);

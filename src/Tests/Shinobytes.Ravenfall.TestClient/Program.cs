@@ -1,4 +1,5 @@
-﻿using Shinobytes.Ravenfall.RavenNet;
+﻿using Microsoft.Extensions.Logging;
+using Shinobytes.Ravenfall.RavenNet;
 using Shinobytes.Ravenfall.RavenNet.Core;
 using Shinobytes.Ravenfall.RavenNet.Modules;
 using Shinobytes.Ravenfall.RavenNet.Packets;
@@ -75,7 +76,7 @@ namespace Shinobytes.Ravenfall.TestClient
 
                 var packetsPerSecond = client.SentPacketCount / sw.Elapsed.TotalSeconds;
                 var packetSpeedMs = TimeSpan.FromSeconds(1d / packetsPerSecond).TotalMilliseconds;
-                logger.WriteLine($"@yel@{client.SentPacketCount} packets sent in @whi@{sw.Elapsed.TotalSeconds} @yel@seconds. Avg: @whi@{packetsPerSecond} @yel@per second. @whi@{packetSpeedMs}ms @yel@per packet.");
+                logger.LogInformation($"@yel@{client.SentPacketCount} packets sent in @whi@{sw.Elapsed.TotalSeconds} @yel@seconds. Avg: @whi@{packetsPerSecond} @yel@per second. @whi@{packetSpeedMs}ms @yel@per packet.");
 
                 while (true)
                 {

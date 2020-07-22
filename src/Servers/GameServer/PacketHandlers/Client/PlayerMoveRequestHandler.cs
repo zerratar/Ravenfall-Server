@@ -1,5 +1,6 @@
 ﻿using GameServer.Managers;
 using GameServer.Network;
+using Microsoft.Extensions.Logging;
 using RavenfallServer.Packets;
 using RavenfallServer.Providers;
 using Shinobytes.Ravenfall.RavenNet.Core;
@@ -36,7 +37,7 @@ namespace GameServer.PacketHandlers
                 return;
             }
 
-            logger.Debug($"Move Request from {connection.Player.Id} from {data.Position} to {data.Destination}");
+            logger.LogDebug($"Move Request from {connection.Player.Id} from {data.Position} to {data.Destination}");
 
             var player = connection.Player;
             player.Position = data.Position;

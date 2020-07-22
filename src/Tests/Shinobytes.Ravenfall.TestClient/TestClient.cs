@@ -1,4 +1,5 @@
-﻿using Shinobytes.Ravenfall.RavenNet;
+﻿using Microsoft.Extensions.Logging;
+using Shinobytes.Ravenfall.RavenNet;
 using Shinobytes.Ravenfall.RavenNet.Client;
 using Shinobytes.Ravenfall.RavenNet.Core;
 using Shinobytes.Ravenfall.RavenNet.Modules;

@@ -1,5 +1,6 @@
 ﻿using GameServer.Managers;
 using GameServer.Processors;
+using Microsoft.Extensions.Logging;
 using RavenfallServer.Packets;
 using Shinobytes.Ravenfall.RavenNet.Core;
 using Shinobytes.Ravenfall.RavenNet.Models;
@@ -28,13 +29,13 @@ namespace GameServer.PacketHandlers
             // actionId 0 is examine and is client side
             if (data.ActionId == 0)
             {
-                logger.Debug("Player sent examine action, ignoring");
+                logger.LogDebug("Player sent examine action, ignoring");
                 return;
             }
 
             var session = sessionManager.Get(connection.Player);
 
-            logger.Debug("Player " + connection.Player.Id + " interacting with npc: " + data.NpcServerId + " action " + data.ActionId + " parameter " + data.ParameterId);
+            logger.LogDebug("Player " + connection.Player.Id + " interacting with npc: " + data.NpcServerId + " action " + data.ActionId + " parameter " + data.ParameterId);
 
             var npc = session.Npcs.Get(data.NpcServerId);
             if (npc == null) return;

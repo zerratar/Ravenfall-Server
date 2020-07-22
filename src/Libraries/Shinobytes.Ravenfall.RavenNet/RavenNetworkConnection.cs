@@ -1,4 +1,5 @@
-﻿using Shinobytes.Ravenfall.RavenNet.Core;
+﻿using Microsoft.Extensions.Logging;
+using Shinobytes.Ravenfall.RavenNet.Core;
 using Shinobytes.Ravenfall.RavenNet.Packets;
 using Shinobytes.Ravenfall.RavenNet.Udp;
 using System;
@@ -9,10 +10,10 @@ namespace Shinobytes.Ravenfall.RavenNet
     public class RavenNetworkConnection : IRavenNetworkConnection, IDisposable
     {
         private readonly INetworkPacketController controller;
-        
+
         protected readonly ILogger Logger;
         protected UdpConnection Connection;
-            
+
         private bool disposed;
 
         public RavenNetworkConnection(

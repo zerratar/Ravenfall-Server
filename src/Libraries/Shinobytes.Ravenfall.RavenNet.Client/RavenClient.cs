@@ -1,4 +1,5 @@
-﻿using Shinobytes.Ravenfall.RavenNet.Core;
+﻿using Microsoft.Extensions.Logging;
+using Shinobytes.Ravenfall.RavenNet.Core;
 using Shinobytes.Ravenfall.RavenNet.Modules;
 using Shinobytes.Ravenfall.RavenNet.Packets;
 using System;
@@ -93,11 +94,11 @@ namespace Shinobytes.Ravenfall.RavenNet.Client
 
                 if (client.Connect(address, port))
                 {
-                    logger.Error("Connected to server");
+                    logger.LogInformation("Connected to server");
                     return true;
                 }
 
-                logger.Error("Unable to connect to server.");
+                logger.LogInformation("Unable to connect to server.");
                 return false;
             }
         }

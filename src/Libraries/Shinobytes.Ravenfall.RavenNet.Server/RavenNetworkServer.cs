@@ -1,4 +1,5 @@
-﻿using Shinobytes.Ravenfall.RavenNet.Core;
+﻿using Microsoft.Extensions.Logging;
+using Shinobytes.Ravenfall.RavenNet.Core;
 using Shinobytes.Ravenfall.RavenNet.Udp;
 using System;
 using System.Collections.Generic;
@@ -23,7 +24,7 @@ namespace Shinobytes.Ravenfall.RavenNet.Server
 
         public void Start(IPAddress address, int port)
         {
-            this.server = new UdpConnectionListener(new IPEndPoint(address, port), IPMode.IPv4, msg => logger.WriteLine(msg));
+            this.server = new UdpConnectionListener(new IPEndPoint(address, port), IPMode.IPv4, msg => logger.LogInformation(msg));
             this.server.NewConnection += Server_NewConnection;
             this.server.Start();
         }

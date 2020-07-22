@@ -3,6 +3,7 @@ using GameServer.Network;
 using GameServer.Processors;
 using GameServer.Repositories;
 using GameServer.Services;
+using Microsoft.Extensions.Logging;
 using RavenfallServer.Providers;
 using Shinobytes.Ravenfall.RavenNet;
 using Shinobytes.Ravenfall.RavenNet.Core;

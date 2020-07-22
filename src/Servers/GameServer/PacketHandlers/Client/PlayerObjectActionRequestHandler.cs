@@ -1,5 +1,6 @@
 ﻿using GameServer.Managers;
 using GameServer.Processors;
+using Microsoft.Extensions.Logging;
 using RavenfallServer.Packets;
 using Shinobytes.Ravenfall.RavenNet.Core;
 using Shinobytes.Ravenfall.RavenNet.Server;
@@ -26,11 +27,11 @@ namespace GameServer.PacketHandlers
             // actionId 0 is examine and is client side
             if (data.ActionId == 0)
             {
-                logger.Debug("Player sent examine action, ignoring");
+                logger.LogDebug("Player sent examine action, ignoring");
                 return;
             }
 
-            logger.Debug("Player " + connection.Player.Id + " interacting with object: " + data.ObjectServerId + " action " + data.ActionId + " parameter " + data.ParameterId);
+            logger.LogDebug("Player " + connection.Player.Id + " interacting with object: " + data.ObjectServerId + " action " + data.ActionId + " parameter " + data.ParameterId);
 
             var session = sessionManager.Get(connection.Player);
             var serverObject = session.Objects.Get(data.ObjectServerId);
@@ -42,7 +43,7 @@ namespace GameServer.PacketHandlers
             // ignore it.
             if (session.Objects.HasAcquiredLock(serverObject, connection.Player))
             {
-                logger.Debug("Player is already interacting with object. Ignore");
+                logger.LogDebug("Player is already interacting with object. Ignore");
                 return;
             }
 

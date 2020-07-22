@@ -1,4 +1,5 @@
-﻿using RavenfallServer.Packets;
+﻿using Microsoft.Extensions.Logging;
+using RavenfallServer.Packets;
 using Shinobytes.Ravenfall.RavenNet.Core;
 using Shinobytes.Ravenfall.RavenNet.Models;
 using Shinobytes.Ravenfall.RavenNet.Server;
@@ -40,7 +41,7 @@ namespace RavenfallServer.Providers
             public void Connect(User user)
             {
                 Interlocked.Increment(ref connectionCount);
-                logger.Debug("StreamBot connecting to stream: " + user.Username);
+                logger.LogDebug("StreamBot connecting to stream: " + user.Username);
                 connection.Send(new BotStreamConnect
                 {
                     StreamID = user.Username
@@ -51,7 +52,7 @@ namespace RavenfallServer.Providers
             public void Disconnect(User user)
             {
                 Interlocked.Decrement(ref connectionCount);
-                logger.Debug("StreamBot disconnecting from stream: " + user.Username);
+                logger.LogDebug("StreamBot disconnecting from stream: " + user.Username);
                 connection.Send(new BotStreamDisconnect
                 {
                     StreamID = user.Username

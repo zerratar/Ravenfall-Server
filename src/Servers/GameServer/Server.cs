@@ -1,4 +1,5 @@
 ﻿using GameServer.Network;
+using Microsoft.Extensions.Logging;
 using Shinobytes.Ravenfall.RavenNet.Core;
 using Shinobytes.Ravenfall.RavenNet.Server;
 using System.Net;
@@ -17,14 +18,13 @@ namespace GameServer
             IPlayerConnectionProvider connectionProvider)
         {
             this.logger = logger;
-            logger.Write("@whi@GameServer ");
             server = new RavenNetworkServer(logger, connectionProvider);
         }
 
         public IRavenServer Start()
         {
             server.Start(IPAddress.Any, gameServerPort);
-            logger.WriteLine("@mag@started @gray@on port @gre@" + gameServerPort);
+            logger.LogInformation("@whi@GameServer @mag@started @gray@on port @gre@" + gameServerPort);
             return this;
         }
 

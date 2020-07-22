@@ -1,4 +1,5 @@
-﻿using RavenNest.BusinessLogic.Data;
+﻿using Microsoft.Extensions.Logging;
+using RavenNest.BusinessLogic.Data;
 using Shinobytes.Ravenfall.Core;
 using Shinobytes.Ravenfall.Data;
 using Shinobytes.Ravenfall.Data.Entities;
@@ -129,7 +130,7 @@ namespace Shinobytes.Ravenfall.Data.EntityFramework.Legacy
                 };
             }
             stopWatch.Stop();
-            logger.Debug($"All database entries loaded in {stopWatch.Elapsed.TotalSeconds} seconds.");
+            logger.LogDebug($"All database entries loaded in {stopWatch.Elapsed.TotalSeconds} seconds.");
         }
 
         public GameClient Client { get; private set; }
@@ -589,7 +590,7 @@ namespace Shinobytes.Ravenfall.Data.EntityFramework.Legacy
             {
                 lock (SyncLock)
                 {
-                    logger.Debug("Saving all pending changes to the database.");
+                    logger.LogDebug("Saving all pending changes to the database.");
 
                     var queue = BuildSaveQueue();
                     using (var con = db.GetConnection())
@@ -606,7 +607,7 @@ namespace Shinobytes.Ravenfall.Data.EntityFramework.Legacy
                             var result = command.ExecuteNonQuery();
                             if (result == 0)
                             {
-                                logger.Error("Unable to save data! Abort Query failed");
+                                logger.LogError("Unable to save data! Abort Query failed");
                                 return;
                             }
 
@@ -633,7 +634,7 @@ namespace Shinobytes.Ravenfall.Data.EntityFramework.Legacy
             //}
             catch (Exception exc)
             {
-                logger.Error("ERROR SAVING DATA!! " + exc);
+                logger.LogInformation("ERROR SAVING DATA!! " + exc);
                 // log this
             }
             finally
