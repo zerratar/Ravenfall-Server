@@ -1,15 +1,11 @@
-﻿using GameServer;
-using RavenfallServer.Packets;
-using Shinobytes.Ravenfall.RavenNet;
+﻿using Shinobytes.Ravenfall.RavenNet;
 using Shinobytes.Ravenfall.RavenNet.Core;
 using Shinobytes.Ravenfall.RavenNet.Modules;
 using Shinobytes.Ravenfall.RavenNet.Packets;
 using Shinobytes.Ravenfall.RavenNet.Packets.Client;
 using Shinobytes.Ravenfall.RavenNet.Serializers;
 using System;
-using System.Collections.Concurrent;
 using System.Diagnostics;
-using System.Linq;
 using System.Net;
 
 namespace Shinobytes.Ravenfall.TestClient
@@ -34,14 +30,13 @@ namespace Shinobytes.Ravenfall.TestClient
 
         static void Main(string[] args)
         {
-            const int frontServerPort = 8133;
-
             Console.Title = "Ravenfall - Headerless Client";
 
+            const int frontServerPort = 8133;
             var waitForLoginResponse = args.Length > 0;
-
             var ioc = RegisterServices();
             var logger = ioc.Resolve<ILogger>();
+
             using (var client = ioc.Resolve<IRavenClient>() as TestClient)
             {
                 var ticks = DateTime.UtcNow.Ticks;

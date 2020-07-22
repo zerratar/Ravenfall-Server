@@ -24,21 +24,27 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docs", "Docs", "{7B04CC41-E
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GameServer", "src\Servers\GameServer\GameServer.csproj", "{F9BC7282-6FC8-4F05-AAE4-598742524DEB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shinobytes.Ravenfall.Data", "src\Libraries\Shinobytes.Ravenfall.Data\Shinobytes.Ravenfall.Data.csproj", "{F1FB6F5C-A0FB-4837-B9E4-DFFB524ED505}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shinobytes.Ravenfall.Data", "src\Libraries\Shinobytes.Ravenfall.Data\Shinobytes.Ravenfall.Data.csproj", "{F1FB6F5C-A0FB-4837-B9E4-DFFB524ED505}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shinobytes.Ravenfall.DataModels", "src\Libraries\Shinobytes.Ravenfall.DataModels\Shinobytes.Ravenfall.DataModels.csproj", "{F4B907A1-E39C-4C2E-97CC-A8FABDEAB06A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shinobytes.Ravenfall.Core", "src\Libraries\Shinobytes.Ravenfall.Core\Shinobytes.Ravenfall.Core.csproj", "{B88E1A0B-7F81-4F4F-8307-C287F9A377EA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shinobytes.Ravenfall.Core", "src\Libraries\Shinobytes.Ravenfall.Core\Shinobytes.Ravenfall.Core.csproj", "{B88E1A0B-7F81-4F4F-8307-C287F9A377EA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shinobytes.Ravenfall.Data.Entities", "src\Libraries\Shinobytes.Ravenfall.Data.Entities\Shinobytes.Ravenfall.Data.Entities.csproj", "{72111327-A942-4F75-94E2-ABF2A687F08C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shinobytes.Ravenfall.Data.Entities", "src\Libraries\Shinobytes.Ravenfall.Data.Entities\Shinobytes.Ravenfall.Data.Entities.csproj", "{72111327-A942-4F75-94E2-ABF2A687F08C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shinobytes.Ravenfall.Data.EntityFramework", "src\Libraries\Shinobytes.Ravenfall.Data.EntityFramework\Shinobytes.Ravenfall.Data.EntityFramework.csproj", "{9DE7551D-4265-4887-BB3E-94A2F4C764A8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shinobytes.Ravenfall.Data.EntityFramework", "src\Libraries\Shinobytes.Ravenfall.Data.EntityFramework\Shinobytes.Ravenfall.Data.EntityFramework.csproj", "{9DE7551D-4265-4887-BB3E-94A2F4C764A8}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Core", "Core", "{937DD41E-7CDC-45DB-AC60-FAF180CF4EB0}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libraries", "Libraries", "{86EF8A53-CEA1-4FD0-869D-57FD561AD7CC}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Data", "Data", "{A3277737-5766-4EA0-945B-7BD5524CF094}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shinobytes.Ravenfall.RavenNet.Client", "src\Libraries\Shinobytes.Ravenfall.RavenNet.Client\Shinobytes.Ravenfall.RavenNet.Client.csproj", "{1AC9E97F-596A-4D17-B2C2-F120F2A99F86}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AuthServer", "src\Servers\AuthServer\AuthServer.csproj", "{95787395-66A9-45E8-B517-D70A89D6B454}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FrontServer", "src\Servers\FrontServer\FrontServer.csproj", "{35DB0CB8-20E9-4312-B8E5-89A604193E0D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -86,6 +92,18 @@ Global
 		{9DE7551D-4265-4887-BB3E-94A2F4C764A8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9DE7551D-4265-4887-BB3E-94A2F4C764A8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9DE7551D-4265-4887-BB3E-94A2F4C764A8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1AC9E97F-596A-4D17-B2C2-F120F2A99F86}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1AC9E97F-596A-4D17-B2C2-F120F2A99F86}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1AC9E97F-596A-4D17-B2C2-F120F2A99F86}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1AC9E97F-596A-4D17-B2C2-F120F2A99F86}.Release|Any CPU.Build.0 = Release|Any CPU
+		{95787395-66A9-45E8-B517-D70A89D6B454}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{95787395-66A9-45E8-B517-D70A89D6B454}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{95787395-66A9-45E8-B517-D70A89D6B454}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{95787395-66A9-45E8-B517-D70A89D6B454}.Release|Any CPU.Build.0 = Release|Any CPU
+		{35DB0CB8-20E9-4312-B8E5-89A604193E0D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{35DB0CB8-20E9-4312-B8E5-89A604193E0D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{35DB0CB8-20E9-4312-B8E5-89A604193E0D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{35DB0CB8-20E9-4312-B8E5-89A604193E0D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -104,6 +122,9 @@ Global
 		{9DE7551D-4265-4887-BB3E-94A2F4C764A8} = {A3277737-5766-4EA0-945B-7BD5524CF094}
 		{937DD41E-7CDC-45DB-AC60-FAF180CF4EB0} = {86EF8A53-CEA1-4FD0-869D-57FD561AD7CC}
 		{A3277737-5766-4EA0-945B-7BD5524CF094} = {86EF8A53-CEA1-4FD0-869D-57FD561AD7CC}
+		{1AC9E97F-596A-4D17-B2C2-F120F2A99F86} = {F57D1AC3-8F31-42FC-94ED-EBCBF4989930}
+		{95787395-66A9-45E8-B517-D70A89D6B454} = {3CE206F8-D2FF-4CFF-9E80-CAEF18C9D90F}
+		{35DB0CB8-20E9-4312-B8E5-89A604193E0D} = {3CE206F8-D2FF-4CFF-9E80-CAEF18C9D90F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {485DB8AE-8869-4744-B61D-FC491D76D547}
