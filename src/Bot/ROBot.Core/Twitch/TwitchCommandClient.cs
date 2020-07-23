@@ -19,8 +19,6 @@ namespace ROBot
         private readonly IKernel kernel;
         private readonly ITwitchCommandController commandHandler;
         private readonly ITwitchCredentialsProvider credentialsProvider;
-        private IMessageBusSubscription broadcastSubscription;
-        private IMessageBusSubscription messageSubscription;
 
         private TwitchClient client;
         private bool isInitialized;
@@ -57,14 +55,33 @@ namespace ROBot
             tryToReconnect = false;
             if (client.IsConnected)
                 client.Disconnect();
-
-            messageSubscription?.Unsubscribe();
-            broadcastSubscription?.Unsubscribe();
         }
 
         public void SendChatMessage(string channel, string message)
         {
             client.SendMessage(channel, message);
+        }
+
+        public void JoinChannel(string channel)
+        {
+            if (!string.IsNullOrEmpty(channel))
+            {
+                logger.LogDebug("Trying to join a channel without a name.");
+                return;
+            }
+
+            client.JoinChannel(channel);
+        }
+
+        public void LeaveChannel(string channel)
+        {
+            if (!string.IsNullOrEmpty(channel))
+            {
+                logger.LogDebug("Trying to leave a channel without a name.");
+                return;
+            }
+
+            client.LeaveChannel(channel);
         }
 
         private void OnUserLeft(object sender, OnUserLeftArgs e)
@@ -82,13 +99,6 @@ namespace ROBot
         private async void OnCommandReceived(object sender, OnChatCommandReceivedArgs e)
         {
             await commandHandler.HandleAsync(this, e.Command);
-        }
-
-        private void EnsureInitialized()
-        {
-            if (isInitialized) return;
-            client.Initialize(credentialsProvider.Get());
-            isInitialized = true;
         }
 
         private void OnReSub(object sender, OnReSubscriberArgs e)
@@ -111,6 +121,13 @@ namespace ROBot
         {
             logger.LogInformation("Disconnected from the Twitch IRC Server");
             TryToReconnect();
+        }
+
+        private void EnsureInitialized()
+        {
+            if (isInitialized) return;
+            client.Initialize(credentialsProvider.Get());
+            isInitialized = true;
         }
 
         private void CreateTwitchClient()
@@ -195,6 +212,5 @@ namespace ROBot
             Stop();
             disposed = true;
         }
-
     }
 }

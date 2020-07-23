@@ -1,18 +1,19 @@
 ﻿using Microsoft.Extensions.Logging;
 using ROBot.Core;
+using ROBot.Ravenfall;
 using ROBot.Ravenfall.GameServer;
-using Shinobytes.Ravenfall.RavenNet.Core;
+using Shinobytes.Ravenfall.RavenNet.Packets.Client;
 
 namespace ROBot
 {
-    public class App : IApplication
+    public class StreamBotApp : IStreamBotApplication
     {
         private readonly ILogger logger;
         private readonly IRavenfallServerConnection ravenfall;
         private readonly ITwitchCommandClient twitch;
         private bool disposed;
 
-        public App(
+        public StreamBotApp(
             ILogger logger,
             IRavenfallServerConnection ravenfall,
             ITwitchCommandClient twitch
@@ -47,6 +48,16 @@ namespace ROBot
             disposed = true;
             twitch.Dispose();
             ravenfall.Dispose();
+        }
+
+        public void StreamConnect(BotStreamConnect data)
+        {
+            twitch.JoinChannel(data.StreamID);
+        }
+
+        public void StreamDisconnect(BotStreamDisconnect data)
+        {
+            twitch.LeaveChannel(data.StreamID);
         }
     }
 }

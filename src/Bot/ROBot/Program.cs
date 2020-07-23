@@ -11,6 +11,7 @@ using ROBot.Ravenfall.GameServer;
 using Shinobytes.Ravenfall.RavenNet.Core;
 using Shinobytes.Ravenfall.RavenNet.Client;
 using Microsoft.Extensions.Logging;
+using ROBot.Ravenfall;
 
 namespace ROBot
 {
@@ -32,7 +33,7 @@ namespace ROBot
 
             ioc.RegisterShared<ILogger, ConsoleLogger>();
             ioc.RegisterShared<IKernel, Kernel>();
-            ioc.RegisterShared<IApplication, App>();
+            ioc.RegisterShared<IStreamBotApplication, StreamBotApp>();
 
             ioc.RegisterShared<IMessageBus, MessageBus>();
 

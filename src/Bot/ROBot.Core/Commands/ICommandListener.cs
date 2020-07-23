@@ -8,5 +8,7 @@ namespace ROBot.Core
         void Start();
         void Stop();
         void SendChatMessage(string channel, string message);
+        void JoinChannel(string channel);
+        void LeaveChannel(string channel);
     }
 }

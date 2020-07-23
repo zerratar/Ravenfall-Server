@@ -8,11 +8,13 @@ namespace ROBot.Ravenfall.GameServer.PacketHandlers
 {
     public class BotStreamConnectHandler : INetworkPacketHandler<BotStreamConnect>
     {
+        private readonly IStreamBotApplication app;
         private readonly ILogger logger;
         private readonly IModuleManager moduleManager;
 
-        public BotStreamConnectHandler(ILogger logger, IModuleManager moduleManager)
+        public BotStreamConnectHandler(IStreamBotApplication app, ILogger logger, IModuleManager moduleManager)
         {
+            this.app = app;
             this.logger = logger;
             this.moduleManager = moduleManager;
         }
@@ -20,6 +22,8 @@ namespace ROBot.Ravenfall.GameServer.PacketHandlers
         public void Handle(BotStreamConnect data, IRavenNetworkConnection connection, SendOption sendOption)
         {
             logger.LogDebug("Server Requests Connection to Streamer: " + data.StreamID);
+            
+            app.StreamConnect(data);
         }
     }
 }
