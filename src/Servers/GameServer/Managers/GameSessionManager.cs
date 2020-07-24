@@ -32,6 +32,16 @@ namespace GameServer.Managers
             this.entityActionsRepo = entityActionsRepo;
         }
 
+        public IReadOnlyList<IGameSession> GetUserSessions(User user)
+        {
+            return gameSessions.Values.Where(session => session.Players.GetAll().Any(x => x.UserId == user.Id)).ToList();
+        }
+
+        public bool InSession(User user, IGameSession session)
+        {
+            return gameSessions.Values.FirstOrDefault(session => session.Players.GetAll().Any(x => x.UserId == user.Id)) != null;
+        }
+
         public IGameSession Get(Npc npc)
         {
             return gameSessions.Values.FirstOrDefault(session => session.Npcs.GetAll().Any(x => x == npc));
@@ -49,7 +59,19 @@ namespace GameServer.Managers
 
         public IGameSession Get(string sessionKey)
         {
+            if (string.IsNullOrEmpty(sessionKey))
+            {
+                sessionKey = OpenWorldGameSessionKey;
+            }
 
+            if (gameSessions.TryGetValue(sessionKey, out var session))
+            {
+                return session;
+            }
+            return null;
+        }
+        public IGameSession GetOrCreate(string sessionKey)
+        {
             if (string.IsNullOrEmpty(sessionKey))
             {
                 sessionKey = OpenWorldGameSessionKey;

@@ -19,7 +19,7 @@ namespace ROBot.Core.GameServer.PacketHandlers
 
         public void Handle(BotStreamConnect data, IRavenNetworkConnection connection, SendOption sendOption)
         {
-            logger.LogDebug("Server Requests Connection to Streamer: " + data.TwitchId);
+            logger.LogDebug("Server Requests Connection to Streamer: " + data.Session);
 
             app.BeginSession(data);
         }

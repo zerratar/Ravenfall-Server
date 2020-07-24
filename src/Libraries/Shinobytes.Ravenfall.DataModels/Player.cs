@@ -8,5 +8,6 @@
         public Vector3 Destination { get; set; }
         public Appearance Appearance { get; set; }
         public long Coins { get; set; }
+        public string Session { get; set; }
     }
 }

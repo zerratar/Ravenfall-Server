@@ -9,13 +9,14 @@ namespace Shinobytes.Ravenfall.RavenNet.Packets.Client
         public string[] Name { get; set; }
         public int[] CombatLevel { get; set; }
         public Appearance[] Appearance { get; set; }
-
+        public string[] Session { get; set; }
         public static UserPlayerList Create(Player[] players)
         {
             var ids = new int[players.Length];
             var names = new string[players.Length];
             var appearances = new Appearance[players.Length];
             var combatLevels = new int[players.Length];
+            var sessions = new string[players.Length];
 
             for (var i = 0; i < players.Length; ++i)
             {
@@ -23,6 +24,7 @@ namespace Shinobytes.Ravenfall.RavenNet.Packets.Client
                 names[i] = players[i].Name;
                 appearances[i] = players[i].Appearance;
                 combatLevels[i] = players[i].CombatLevel;
+                sessions[i] = players[i].Session ?? "";
             }
 
             return new UserPlayerList
@@ -30,7 +32,8 @@ namespace Shinobytes.Ravenfall.RavenNet.Packets.Client
                 Id = ids,
                 Name = names,
                 CombatLevel = combatLevels,
-                Appearance = appearances
+                Appearance = appearances,
+                Session = sessions
             };
         }
     }

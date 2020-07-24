@@ -20,7 +20,7 @@ namespace ROBot.Core.GameServer.PacketHandlers
         public void Handle(BotAuthResponse data, IRavenNetworkConnection connection, SendOption sendOption)
         {
             logger.LogDebug("Login response: " + data.Status);
-            var auth = moduleManager.GetModule<Authentication>();
+            var auth = moduleManager.GetModule<BotAuthentication>();
             if (auth != null)
             {
                 auth.SetResult(data.Status);

@@ -48,6 +48,7 @@ namespace GameServer.Managers
 
         public void AddPlayer(Player player)
         {
+            player.Session = sessionKey;
             Players.Add(player);
 
             if (Bot != null)
@@ -58,6 +59,7 @@ namespace GameServer.Managers
 
         public void RemovePlayer(Player player)
         {
+            player.Session = null;
             Players.Remove(player);
             Objects.ReleaseLocks(player);
 
@@ -76,6 +78,10 @@ namespace GameServer.Managers
             if (Host != null)
             {
                 bot.Connect(Host.User);
+                foreach (var player in Players.GetAll())
+                {
+                    Bot.OnPlayerAdd(sessionKey, player);
+                }
             }
         }
 

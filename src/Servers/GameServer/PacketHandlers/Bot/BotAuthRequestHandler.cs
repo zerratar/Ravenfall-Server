@@ -15,20 +15,20 @@ namespace GameServer.PacketHandlers
     public class BotAuthRequestHandler : PlayerPacketHandler<BotAuthRequest>
     {
         private readonly ILogger logger;
-        private readonly IUserManager userProvider;
+        private readonly IUserManager userManager;
         private readonly IAuthService authService;
         private readonly IStreamBotFactory botProvider;
         private readonly IStreamBotManager botManager;
 
         public BotAuthRequestHandler(
             ILogger logger,
-            IUserManager userProvider,
+            IUserManager userManager,
             IAuthService authService,
             IStreamBotFactory botProvider,
             IStreamBotManager botManager)
         {
             this.logger = logger;
-            this.userProvider = userProvider;
+            this.userManager = userManager;
             this.authService = authService;
             this.botProvider = botProvider;
             this.botManager = botManager;
@@ -37,10 +37,16 @@ namespace GameServer.PacketHandlers
         protected override void Handle(BotAuthRequest data, PlayerConnection connection)
         {
             logger.LogDebug("Bot Auth Request received. User: " + data.Username + ", Pass: " + data.Password);
-            logger.LogDebug("Sending Auth Response: " + 0);
 
-            var user = userProvider.Get(data.Username);
+            var user = userManager.Get(data.Username);
+            if (user == null)
+            {
+                user = userManager.Create(data.Username, null, null, data.Password);
+            }
+
             var result = authService.Authenticate(user, data.Password);
+
+            logger.LogDebug("Sending Auth Response: " + (int)result);
 
             if (result != AuthResult.Success)
             {

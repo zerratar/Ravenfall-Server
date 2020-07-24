@@ -36,17 +36,20 @@ namespace GameServer.PacketHandlers
         {
 #if DEBUG
             logger.LogDebug("Auth Request received. User: " + data.Username + ", Pass: " + data.Password + ", ClientVersion: " + data.ClientVersion);
-            logger.LogDebug("Sending Auth Response: " + 0);
 #endif
 
             var user = userManager.Get(data.Username);
             if (user == null)
             {
 #warning a user should not be created here.
-                user = userManager.Create(data.Username, null, null);
+                user = userManager.Create(data.Username, null, null, data.Password);
             }
 
             var result = authService.Authenticate(user, data.Password);
+
+#if DEBUG
+            logger.LogDebug("Sending Auth Response: " + (int)result);
+#endif
 
             if (result != AuthResult.Success)
             {

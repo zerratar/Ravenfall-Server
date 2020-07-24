@@ -10,13 +10,16 @@ namespace GameServer.PacketHandlers
     {
         private readonly IWorldProcessor worldProcessor;
         private readonly IPlayerProvider playerProvider;
+        private readonly IGameSessionManager sessionManager;
 
         public UserPlayerSelectHandler(
             IWorldProcessor worldProcessor,
-            IPlayerProvider playerProvider)
+            IPlayerProvider playerProvider,
+            IGameSessionManager sessionManager)
         {
             this.worldProcessor = worldProcessor;
             this.playerProvider = playerProvider;
+            this.sessionManager = sessionManager;
         }
 
         protected override void Handle(UserPlayerSelect data, PlayerConnection connection)
@@ -31,11 +34,21 @@ namespace GameServer.PacketHandlers
             // been selected, since the server wont keep track on a logged in user
             // without a selected player.
 
+            // if the player is already in a game session
+            // remove it from that session.
+            var activeSession = sessionManager.Get(player);
+            var targetSession = sessionManager.Get(data.SessionKey);
+            if (!string.IsNullOrEmpty(player.Session) && activeSession != null && activeSession != targetSession)
+            {
+                worldProcessor.RemovePlayer(player);
+            }
+
             connection.Disconnected -= ClientDisconnected;
             connection.Disconnected += ClientDisconnected;
             connection.PlayerTag = player;
             connection.SessionKey = data.SessionKey;
-            worldProcessor.AddPlayer(data.SessionKey, connection);
+
+            worldProcessor.LinkToGameSession(data.SessionKey, connection);
         }
 
         private void ClientDisconnected(object sender, System.EventArgs e)

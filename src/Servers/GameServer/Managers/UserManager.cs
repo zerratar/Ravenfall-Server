@@ -1,4 +1,5 @@
-﻿using Shinobytes.Ravenfall.RavenNet.Models;
+﻿using Shinobytes.Ravenfall.Core.Security;
+using Shinobytes.Ravenfall.RavenNet.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -36,7 +37,7 @@ namespace GameServer.Managers
             }
         }
 
-        public User Create(string username, string twitchId, string youTubeId)
+        public User Create(string username, string twitchId, string youTubeId, string password = null)
         {
             lock (mutex)
             {
@@ -48,6 +49,7 @@ namespace GameServer.Managers
                     YouTubeId = youTubeId,
                     Username = username,
                     Players = new Player[0],
+                    PasswordHash = StringHasher.Get(password)
                 };
                 users.Add(addedUser);
                 return addedUser;

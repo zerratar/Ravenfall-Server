@@ -87,12 +87,22 @@ namespace GameServer.Processors
             }
         }
 
-        public void AddPlayer(string sessionKey, PlayerConnection myConnection)
+        public void LinkToGameSession(string sessionKey, PlayerConnection myConnection)
         {
             try
             {
-                var session = GetSessionAndEnsureBot(sessionKey);
+                var session = sessions.GetOrCreate(sessionKey);
+
                 session.AddPlayer(myConnection);
+
+                if (!session.IsOpenWorldSession && session.Bot == null)
+                {
+                    var bot = botManager.GetMostAvailable();
+                    if (bot != null)
+                    {
+                        session.AssignBot(bot);
+                    }
+                }
 
                 var allPlayers = session.Players.GetAll();
                 var connections = connectionProvider.GetConnectedActivePlayerConnections(session);
@@ -150,22 +160,6 @@ namespace GameServer.Processors
             {
                 logger.LogInformation(exc.ToString());
             }
-        }
-
-        private IGameSession GetSessionAndEnsureBot(string sessionKey)
-        {
-            var session = sessions.Get(sessionKey);
-
-            if (!session.IsOpenWorldSession && session.Bot == null)
-            {
-                var bot = botManager.GetMostAvailable();
-                if (bot != null)
-                {
-                    session.AssignBot(bot);
-                }
-            }
-
-            return session;
         }
 
         public void RemovePlayer(Player player)

@@ -8,6 +8,6 @@ namespace GameServer.Managers
         User Get(string username);
         User GetByTwitchId(string twitchId);
         User GetByYouTubeId(string youtubeId);
-        User Create(string username, string twitchId, string youTubeId);
+        User Create(string username, string twitchId, string youTubeId, string password = null);
     }
 }

@@ -68,15 +68,16 @@ namespace ROBot
         public void BeginSession(BotStreamConnect data)
         {
             ravenfall.BeginSession(data.Session);
+            twitch.JoinChannel(data.Session);
 
-            if (!string.IsNullOrEmpty(data.TwitchId))
-            {
+            //if (!string.IsNullOrEmpty(data.TwitchId))
+            //{
 
-                // use the twitch API to get the channel name using the twitch ID                
-                // data.TwitchId
+            //    // use the twitch API to get the channel name using the twitch ID                
+            //    // data.TwitchId
 
-                twitch.JoinChannel(data.Session); // if we have a twitch id
-            }
+            //    twitch.JoinChannel(data.Session); // if we have a twitch id
+            //}
 
             //if (!string.IsNullOrEmpty(data.TouTubeId))
             //{
@@ -86,12 +87,13 @@ namespace ROBot
 
         public void EndSession(BotStreamDisconnect data)
         {
-            ravenfall.EndSession(data.TwitchId ?? data.TouTubeId);
+            ravenfall.EndSession(data.Session);
+            twitch.LeaveChannel(data.Session);
 
-            if (!string.IsNullOrEmpty(data.TwitchId))
-            {
-                twitch.LeaveChannel(data.TwitchId);
-            }
+            //if (!string.IsNullOrEmpty(data.TwitchId))
+            //{
+            //    twitch.LeaveChannel(data.TwitchId);
+            //}
 
             //if (!string.IsNullOrEmpty(data.TouTubeId))
             //{

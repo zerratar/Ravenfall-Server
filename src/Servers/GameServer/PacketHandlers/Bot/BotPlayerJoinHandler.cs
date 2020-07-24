@@ -39,6 +39,7 @@ namespace GameServer.PacketHandlers
                 user = userManager.Create(data.Username, data.TwitchId, data.YouTubeId);
             }
 
+
             var player = playerProvider.Get(user, data.CharacterIndex);
             if (player == null)
             {
@@ -48,9 +49,20 @@ namespace GameServer.PacketHandlers
             }
 
             var session = sessionManager.Get(data.Session);
+            if (session != null)
+            {
+                if (sessionManager.InSession(user, session))
+                {
+                    // we cannot join with another player as we are already in
+                    // this session.
 
-            session.AddPlayer(player);
-            worldProcessor.AddPlayer(player);            
+                    logger.LogDebug($"Cannot add User: {data.Username}, Character: {data.CharacterIndex} to this session as the user already have a player in this session.");
+                    return;
+                }
+
+                session.AddPlayer(player);
+                worldProcessor.AddPlayer(player);
+            }
         }
     }
 }

@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using ROBot.Core.GameServer;
@@ -61,12 +63,22 @@ namespace ROBot.Core.Twitch
 
         public void SendChatMessage(string channel, string message)
         {
+            if (!InChannel(channel))
+            {
+                JoinChannel(channel);
+            }
+
             client.SendMessage(channel, message);
         }
 
         public void JoinChannel(string channel)
         {
-            if (!string.IsNullOrEmpty(channel))
+            if (InChannel(channel))
+            {
+                return;
+            }
+
+            if (string.IsNullOrEmpty(channel))
             {
                 logger.LogDebug("Trying to join a channel without a name.");
                 return;
@@ -77,13 +89,23 @@ namespace ROBot.Core.Twitch
 
         public void LeaveChannel(string channel)
         {
-            if (!string.IsNullOrEmpty(channel))
+            if (!InChannel(channel))
+            {
+                return;
+            }
+
+            if (string.IsNullOrEmpty(channel))
             {
                 logger.LogDebug("Trying to leave a channel without a name.");
                 return;
             }
 
             client.LeaveChannel(channel);
+        }
+
+        private bool InChannel(string channel)
+        {
+            return client.JoinedChannels.Any(x => x.Channel.ToLower() == channel.ToLower());
         }
 
         private void OnUserLeft(object sender, OnUserLeftArgs e)
