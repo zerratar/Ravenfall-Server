@@ -2,6 +2,7 @@
 using ROBot.Core;
 using ROBot.Ravenfall;
 using ROBot.Ravenfall.GameServer;
+using Shinobytes.Ravenfall.RavenNet.Packets.Bot;
 using Shinobytes.Ravenfall.RavenNet.Packets.Client;
 
 namespace ROBot

@@ -1,4 +1,5 @@
-﻿using Shinobytes.Ravenfall.RavenNet.Packets.Client;
+﻿using Shinobytes.Ravenfall.RavenNet.Packets.Bot;
+using Shinobytes.Ravenfall.RavenNet.Packets.Client;
 using System;
 using System.Collections.Generic;
 using System.Linq;

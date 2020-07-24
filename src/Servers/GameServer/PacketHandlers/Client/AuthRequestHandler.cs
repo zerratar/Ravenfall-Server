@@ -2,7 +2,7 @@
 using GameServer.Network;
 using GameServer.Services;
 using Microsoft.Extensions.Logging;
-using RavenfallServer.Packets;
+using Shinobytes.Ravenfall.RavenNet.Packets;
 using Shinobytes.Ravenfall.RavenNet;
 using Shinobytes.Ravenfall.RavenNet.Packets.Client;
 using Shinobytes.Ravenfall.RavenNet.Server;

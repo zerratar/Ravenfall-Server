@@ -1,10 +1,11 @@
 ﻿using GameServer.Managers;
 using GameServer.Network;
 using Microsoft.Extensions.Logging;
-using RavenfallServer.Packets;
+using Shinobytes.Ravenfall.RavenNet.Packets;
 using RavenfallServer.Providers;
 using Shinobytes.Ravenfall.RavenNet.Core;
 using Shinobytes.Ravenfall.RavenNet.Server;
+using Shinobytes.Ravenfall.RavenNet.Packets.Client;
 
 namespace GameServer.PacketHandlers
 {

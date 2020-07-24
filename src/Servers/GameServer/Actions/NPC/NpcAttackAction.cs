@@ -147,14 +147,14 @@ public class NpcAttackAction : EntityAction
 
         targetHealth.EffectiveLevel -= damage;
 
-        worldProcessor.NpcDamage(player, npc, damage, targetHealth.EffectiveLevel, targetHealth.Level);
+        worldProcessor.DamageNpc(player, npc, damage, targetHealth.EffectiveLevel, targetHealth.Level);
 
         if (targetHealth.EffectiveLevel <= 0)
         {
             session.Npcs.States.ExitCombat(npc);
 
             // he ded
-            worldProcessor.NpcDeath(player, npc);
+            worldProcessor.KillNpc(player, npc);
 
             // note(zerratar): action that kills the enemy shouldn't be the one responsible for respawning
             //                 this should be moved to a INpcProcessor or similar called from the WorldProcessor Update
@@ -215,7 +215,7 @@ public class NpcAttackAction : EntityAction
     {
         var healthStat = GetHealth(npc);
         healthStat.EffectiveLevel = healthStat.Level;
-        worldProcessor.NpcRespawn(player, npc);
+        worldProcessor.RespawnNpc(player, npc);
         return true;
     }
     private void ExitCombat(Player player, Npc npc, int attackType)

@@ -1,10 +1,12 @@
 ﻿using Microsoft.Extensions.Logging;
+using Shinobytes.Ravenfall.RavenNet.Packets;
 using ROBot.Core;
 using Shinobytes.Ravenfall.RavenNet;
 using Shinobytes.Ravenfall.RavenNet.Core;
 using Shinobytes.Ravenfall.RavenNet.Modules;
 using Shinobytes.Ravenfall.RavenNet.Packets;
 using Shinobytes.Ravenfall.RavenNet.Packets.Client;
+using Shinobytes.Ravenfall.RavenNet.Packets.Bot;
 
 namespace ROBot.Ravenfall.GameServer.PacketHandlers
 {

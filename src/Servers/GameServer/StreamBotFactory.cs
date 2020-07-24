@@ -1,8 +1,9 @@
 ﻿using Microsoft.Extensions.Logging;
-using RavenfallServer.Packets;
+using Shinobytes.Ravenfall.RavenNet.Packets;
 using Shinobytes.Ravenfall.RavenNet.Models;
 using Shinobytes.Ravenfall.RavenNet.Server;
 using System.Threading;
+using Shinobytes.Ravenfall.RavenNet.Packets.Bot;
 
 namespace RavenfallServer.Providers
 {

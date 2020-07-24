@@ -1,8 +1,9 @@
 ﻿using GameServer.Managers;
-using RavenfallServer.Packets;
+using Shinobytes.Ravenfall.RavenNet.Packets;
 using Shinobytes.Ravenfall.RavenNet;
 using Shinobytes.Ravenfall.RavenNet.Server;
 using System.Linq;
+using Shinobytes.Ravenfall.RavenNet.Packets.Client;
 
 namespace GameServer.PacketHandlers
 {

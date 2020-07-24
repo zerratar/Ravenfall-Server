@@ -20,6 +20,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Libraries\Shinobytes.Ravenfall.DataModels\Shinobytes.Ravenfall.DataModels.csproj" />
+    <ProjectReference Include="..\..\Libraries\Shinobytes.Ravenfall.RavenNet.Packets\Shinobytes.Ravenfall.RavenNet.Packets.csproj" />
     <ProjectReference Include="..\..\Libraries\Shinobytes.Ravenfall.RavenNet.Server\Shinobytes.Ravenfall.RavenNet.Server.csproj" />
     <ProjectReference Include="..\..\Libraries\Shinobytes.Ravenfall.RavenNet\Shinobytes.Ravenfall.RavenNet.csproj" />
   </ItemGroup>

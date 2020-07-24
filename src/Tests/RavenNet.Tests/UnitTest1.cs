@@ -1,6 +1,6 @@
 using GameServer;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using RavenfallServer.Packets;
+using Shinobytes.Ravenfall.RavenNet.Packets;
 using Shinobytes.Ravenfall.RavenNet;
 using Shinobytes.Ravenfall.RavenNet.Models;
 using Shinobytes.Ravenfall.RavenNet.Serializers;
@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Shinobytes.Ravenfall.RavenNet.Packets.Client;
 
 namespace RavenNet.Tests
 {
@@ -19,8 +20,8 @@ namespace RavenNet.Tests
         public void CheckForPacketOpCodeCollisions()
         {
             var opcodes = new HashSet<short>();
-            var assembly = Assembly.GetAssembly(typeof(RavenfallServer.Packets.MyPlayerAdd));
-            var packetTypes = assembly.GetTypes().Where(x => x.FullName.Contains("RavenfallServer.Packets"));
+            var assembly = Assembly.GetAssembly(typeof(MyPlayerAdd));
+            var packetTypes = assembly.GetTypes().Where(x => x.FullName.Contains("Shinobytes.Ravenfall.RavenNet.Packets"));
             foreach (var packetType in packetTypes)
             {
                 var opCodeField = packetType.GetField("OpCode");

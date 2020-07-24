@@ -5,12 +5,13 @@ using System.Runtime.CompilerServices;
 using GameServer.Managers;
 using GameServer.Network;
 using Microsoft.Extensions.Logging;
-using RavenfallServer.Packets;
+using Shinobytes.Ravenfall.RavenNet.Packets;
 using RavenfallServer.Providers;
 using Shinobytes.Ravenfall.RavenNet;
 using Shinobytes.Ravenfall.RavenNet.Core;
 using Shinobytes.Ravenfall.RavenNet.Models;
 using Shinobytes.Ravenfall.RavenNet.Server;
+using Shinobytes.Ravenfall.RavenNet.Packets.Client;
 
 namespace GameServer.Processors
 {
@@ -328,7 +329,7 @@ namespace GameServer.Processors
             }
         }
 
-        public void NpcDamage(Player player, Npc npc, int damage, int health, int maxHealth)
+        public void DamageNpc(Player player, Npc npc, int damage, int health, int maxHealth)
         {
             var session = sessions.Get(player);
             foreach (var connection in connectionProvider.GetConnectedActivePlayerConnections(session))
@@ -337,21 +338,21 @@ namespace GameServer.Processors
             }
         }
 
-        public void NpcDeath(Player player, Npc npc)
+        public void KillNpc(Player player, Npc npc)
         {
             var session = sessions.Get(player);
             foreach (var connection in connectionProvider.GetConnectedActivePlayerConnections(session))
             {
-                connection.Send(RavenfallServer.Packets.NpcDeath.Create(npc, player), SendOption.Reliable);
+                connection.Send(NpcDeath.Create(npc, player), SendOption.Reliable);
             }
         }
 
-        public void NpcRespawn(Player player, Npc npc)
+        public void RespawnNpc(Player player, Npc npc)
         {
             var session = sessions.Get(player);
             foreach (var connection in connectionProvider.GetConnectedActivePlayerConnections(session))
             {
-                connection.Send(RavenfallServer.Packets.NpcRespawn.Create(npc, player), SendOption.Reliable);
+                connection.Send(NpcRespawn.Create(npc, player), SendOption.Reliable);
             }
         }
 

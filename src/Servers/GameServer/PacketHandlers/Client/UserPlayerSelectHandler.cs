@@ -1,6 +1,7 @@
 ﻿using GameServer.Managers;
 using GameServer.Processors;
-using RavenfallServer.Packets;
+using Shinobytes.Ravenfall.RavenNet.Packets;
+using Shinobytes.Ravenfall.RavenNet.Packets.Client;
 using Shinobytes.Ravenfall.RavenNet.Server;
 
 namespace GameServer.PacketHandlers

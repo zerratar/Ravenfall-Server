@@ -1,4 +1,4 @@
-﻿using RavenfallServer.Packets;
+﻿using Shinobytes.Ravenfall.RavenNet.Packets.Client;
 using Shinobytes.Ravenfall.RavenNet.Server;
 
 namespace GameServer.PacketHandlers

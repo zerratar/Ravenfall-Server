@@ -24,9 +24,9 @@ namespace GameServer.Processors
         void PlayerNpcInteraction(Player player, Npc npc, EntityAction action, int parameterId);
         void PlayerBuyItem(Player player, Npc npc, int itemId, int amount);
         void PlayerSellItem(Player player, Npc npc, int itemId, int amount);
-        void NpcDamage(Player player, Npc npc, int damage, int health, int maxHealth);
-        void NpcDeath(Player player, Npc npc);
-        void NpcRespawn(Player player, Npc npc);
+        void DamageNpc(Player player, Npc npc, int damage, int health, int maxHealth);
+        void KillNpc(Player player, Npc npc);
+        void RespawnNpc(Player player, Npc npc);
         void UpdateObject(WorldObject obj);
         void SetEntityInterval<TObject>(
             Player player,
