@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-namespace ROBot.Core
+namespace ROBot.Core.Twitch
 {
     public interface ITwitchCommandClient : IDisposable
     {

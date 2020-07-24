@@ -2,11 +2,10 @@
 using Shinobytes.Ravenfall.RavenNet.Packets;
 using Shinobytes.Ravenfall.RavenNet;
 using Shinobytes.Ravenfall.RavenNet.Modules;
-using Shinobytes.Ravenfall.RavenNet.Packets;
-using Shinobytes.Ravenfall.RavenNet.Packets.Client;
 using Shinobytes.Ravenfall.RavenNet.Packets.Bot;
+using ROBot.Ravenfall;
 
-namespace ROBot.Ravenfall.GameServer.PacketHandlers
+namespace ROBot.Core.GameServer.PacketHandlers
 {
     public class BotStreamConnectHandler : INetworkPacketHandler<BotStreamConnect>
     {
@@ -23,9 +22,9 @@ namespace ROBot.Ravenfall.GameServer.PacketHandlers
 
         public void Handle(BotStreamConnect data, IRavenNetworkConnection connection, SendOption sendOption)
         {
-            logger.LogDebug("Server Requests Connection to Streamer: " + data.StreamID);
-            
-            app.StreamConnect(data);
+            logger.LogDebug("Server Requests Connection to Streamer: " + data.TwitchId);
+
+            app.BeginSession(data);
         }
     }
 }

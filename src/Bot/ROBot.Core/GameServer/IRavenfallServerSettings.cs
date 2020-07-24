@@ -1,4 +1,4 @@
-﻿namespace ROBot.Ravenfall.GameServer
+﻿namespace ROBot.Core.GameServer
 {
     public interface IRavenfallServerSettings
     {

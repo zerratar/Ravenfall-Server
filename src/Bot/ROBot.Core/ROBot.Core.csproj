@@ -24,6 +24,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Libraries\Shinobytes.Ravenfall.Core\Shinobytes.Ravenfall.Core.csproj" />
+    <ProjectReference Include="..\..\Libraries\Shinobytes.Ravenfall.RavenNet.Packets\Shinobytes.Ravenfall.RavenNet.Packets.csproj" />
+    <ProjectReference Include="..\..\Libraries\Shinobytes.Ravenfall.RavenNet\Shinobytes.Ravenfall.RavenNet.csproj" />
   </ItemGroup>
 
 </Project>

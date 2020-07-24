@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using ROBot.Core;
-using ROBot.Core.Handlers;
+using ROBot.Core.GameServer;
 using Shinobytes.Ravenfall.RavenNet.Core;
 using TwitchLib.Client;
 using TwitchLib.Client.Events;
@@ -11,12 +10,13 @@ using TwitchLib.Communication.Enums;
 using TwitchLib.Communication.Events;
 using TwitchLib.Communication.Models;
 
-namespace ROBot
+namespace ROBot.Core.Twitch
 {
     public class TwitchCommandClient : ITwitchCommandClient
     {
         private readonly ILogger logger;
         private readonly IKernel kernel;
+        private readonly IRavenfallServerConnection game;
         private readonly ITwitchCommandController commandHandler;
         private readonly ITwitchCredentialsProvider credentialsProvider;
 
@@ -29,14 +29,16 @@ namespace ROBot
         public TwitchCommandClient(
             ILogger logger,
             IKernel kernel,
+            IRavenfallServerConnection game,
             ITwitchCommandController commandHandler,
             ITwitchCredentialsProvider credentialsProvider)
         {
             this.logger = logger;
             this.kernel = kernel;
+            this.game = game;
             this.commandHandler = commandHandler;
             this.credentialsProvider = credentialsProvider;
-            this.CreateTwitchClient();
+            CreateTwitchClient();
         }
 
         public void Start()
@@ -98,7 +100,7 @@ namespace ROBot
 
         private async void OnCommandReceived(object sender, OnChatCommandReceivedArgs e)
         {
-            await commandHandler.HandleAsync(this, e.Command);
+            await commandHandler.HandleAsync(game, this, e.Command);
         }
 
         private void OnReSub(object sender, OnReSubscriberArgs e)

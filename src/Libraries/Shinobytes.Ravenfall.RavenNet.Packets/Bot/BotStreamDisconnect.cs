@@ -3,6 +3,8 @@
     public class BotStreamDisconnect
     {
         public const short OpCode = 1003;
-        public string StreamID { get; set; }
+        public string Session { get; set; }
+        public string TwitchId { get; set; }
+        public string TouTubeId { get; set; }
     }
 }

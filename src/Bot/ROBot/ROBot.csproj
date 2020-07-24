@@ -23,8 +23,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\Libraries\Shinobytes.Ravenfall.RavenNet.Client\Shinobytes.Ravenfall.RavenNet.Client.csproj" />
     <ProjectReference Include="..\ROBot.Core\ROBot.Core.csproj" />
-    <ProjectReference Include="..\ROBot.Ravenfall\ROBot.Ravenfall.csproj" />
   </ItemGroup>
 
   <ItemGroup>

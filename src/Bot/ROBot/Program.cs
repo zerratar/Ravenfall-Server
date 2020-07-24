@@ -1,17 +1,16 @@
 ﻿using System;
 using ROBot.Core;
-using ROBot.Core.Handlers;
 using ROBot.Core.Twitch;
-using ROBot;
 using Shinobytes.Ravenfall.RavenNet.Modules;
 using Shinobytes.Ravenfall.RavenNet;
 using Shinobytes.Ravenfall.RavenNet.Packets;
 using Shinobytes.Ravenfall.RavenNet.Serializers;
-using ROBot.Ravenfall.GameServer;
 using Shinobytes.Ravenfall.RavenNet.Core;
-using Shinobytes.Ravenfall.RavenNet.Client;
 using Microsoft.Extensions.Logging;
 using ROBot.Ravenfall;
+using ROBot.Core.GameServer;
+using Shinobytes.Ravenfall.RavenNet.Client;
+using ROBot.Core.Providers;
 
 namespace ROBot
 {
@@ -38,6 +37,7 @@ namespace ROBot
             ioc.RegisterShared<IMessageBus, MessageBus>();
 
             // Ravenfall stuff
+            ioc.RegisterShared<IUserProvider, UserProvider>();
             ioc.RegisterShared<IBinarySerializer, BinarySerializer>();
             ioc.RegisterShared<INetworkPacketTypeRegistry, NetworkPacketTypeRegistry>();
             ioc.RegisterShared<INetworkPacketSerializer, NetworkPacketSerializer>();
@@ -55,7 +55,7 @@ namespace ROBot
             // YouTube live stuff
             // ... to be added :)
 
-            var app = ioc.Resolve<IApplication>();
+            var app = ioc.Resolve<IStreamBotApplication>();
             {
                 app.Run();
                 while (true)

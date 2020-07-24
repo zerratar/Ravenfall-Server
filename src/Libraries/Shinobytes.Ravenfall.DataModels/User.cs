@@ -6,6 +6,8 @@ namespace Shinobytes.Ravenfall.RavenNet.Models
     {
         public int Id { get; set; }
         public string Username { get; set; }
+        public string TwitchId { get; set; }
+        public string YouTubeId { get; set; }
         public IReadOnlyList<Player> Players { get; set; }
     }
 }

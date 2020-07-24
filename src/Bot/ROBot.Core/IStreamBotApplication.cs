@@ -10,7 +10,7 @@ namespace ROBot.Ravenfall
 {
     public interface IStreamBotApplication : IApplication
     {
-        void StreamConnect(BotStreamConnect data);
-        void StreamDisconnect(BotStreamDisconnect data);
+        void BeginSession(BotStreamConnect data);
+        void EndSession(BotStreamDisconnect data);
     }
 }

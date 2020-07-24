@@ -9,7 +9,6 @@ using Shinobytes.Ravenfall.RavenNet.Packets.Bot;
 using Shinobytes.Ravenfall.RavenNet.Packets.Client;
 using Shinobytes.Ravenfall.RavenNet.Server;
 using System;
-using System.Linq;
 
 namespace GameServer.PacketHandlers
 {

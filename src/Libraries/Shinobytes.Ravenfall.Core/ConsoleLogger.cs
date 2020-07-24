@@ -24,8 +24,8 @@ namespace Shinobytes.Ravenfall.RavenNet.Core
             { LogLevel.Debug, ("DBG", DBG, MSG)},
             { LogLevel.Information, ("MSG", MSG, MSG)},
             { LogLevel.Warning,  ("WRN", WRN, WRN)},
-            { LogLevel.Error,    ("RED", ERR, ERR)},
-            { LogLevel.Critical, ("RED", ERR, ERR)},
+            { LogLevel.Error,    ("ERR", ERR, ERR)},
+            { LogLevel.Critical, ("ERR", ERR, ERR)},
         };
 
         public ConsoleLogger()

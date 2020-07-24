@@ -2,11 +2,10 @@
 using Shinobytes.Ravenfall.RavenNet.Packets;
 using Shinobytes.Ravenfall.RavenNet;
 using Shinobytes.Ravenfall.RavenNet.Modules;
-using Shinobytes.Ravenfall.RavenNet.Packets;
-using Shinobytes.Ravenfall.RavenNet.Packets.Client;
 using Shinobytes.Ravenfall.RavenNet.Packets.Bot;
+using ROBot.Ravenfall;
 
-namespace ROBot.Ravenfall.GameServer.PacketHandlers
+namespace ROBot.Core.GameServer.PacketHandlers
 {
     public class BotStreamDisconnectHandler : INetworkPacketHandler<BotStreamDisconnect>
     {
@@ -23,9 +22,9 @@ namespace ROBot.Ravenfall.GameServer.PacketHandlers
 
         public void Handle(BotStreamDisconnect data, IRavenNetworkConnection connection, SendOption sendOption)
         {
-            logger.LogDebug("Server Requests Disconnect from Streamer: " + data.StreamID);
+            logger.LogDebug("Server Requests Disconnect from Streamer: " + data.TwitchId);
 
-            app.StreamDisconnect(data);
+            app.EndSession(data);
         }
     }
 }

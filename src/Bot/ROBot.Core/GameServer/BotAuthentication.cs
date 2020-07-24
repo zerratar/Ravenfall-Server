@@ -1,9 +1,8 @@
 ﻿using Shinobytes.Ravenfall.RavenNet;
 using Shinobytes.Ravenfall.RavenNet.Modules;
 using Shinobytes.Ravenfall.RavenNet.Packets.Bot;
-using Shinobytes.Ravenfall.RavenNet.Packets.Client;
 
-namespace ROBot.Ravenfall.GameServer
+namespace ROBot.Core.GameServer
 {
     public class BotAuthentication : Authentication
     {

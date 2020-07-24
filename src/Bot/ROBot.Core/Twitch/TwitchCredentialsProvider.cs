@@ -1,6 +1,6 @@
 ﻿using TwitchLib.Client.Models;
 
-namespace ROBot.Core
+namespace ROBot.Core.Twitch
 {
     public class TwitchCredentialsProvider : ITwitchCredentialsProvider
     {

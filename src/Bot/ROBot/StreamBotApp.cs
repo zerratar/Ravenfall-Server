@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
-using ROBot.Core;
+using ROBot.Core.GameServer;
+using ROBot.Core.Twitch;
 using ROBot.Ravenfall;
-using ROBot.Ravenfall.GameServer;
 using Shinobytes.Ravenfall.RavenNet.Packets.Bot;
 using Shinobytes.Ravenfall.RavenNet.Packets.Client;
 
@@ -51,14 +51,34 @@ namespace ROBot
             ravenfall.Dispose();
         }
 
-        public void StreamConnect(BotStreamConnect data)
+        public void BeginSession(BotStreamConnect data)
         {
-            twitch.JoinChannel(data.StreamID);
+            ravenfall.BeginSession(data.TwitchId ?? data.TouTubeId);
+
+            if (!string.IsNullOrEmpty(data.TwitchId))
+            {
+                twitch.JoinChannel(data.TwitchId);
+            }
+            
+            //if (!string.IsNullOrEmpty(data.TouTubeId))
+            //{
+            //    youtube.Join(data.TwitchId);
+            //}
         }
 
-        public void StreamDisconnect(BotStreamDisconnect data)
+        public void EndSession(BotStreamDisconnect data)
         {
-            twitch.LeaveChannel(data.StreamID);
+            ravenfall.EndSession(data.TwitchId ?? data.TouTubeId);
+
+            if (!string.IsNullOrEmpty(data.TwitchId))
+            { 
+                twitch.LeaveChannel(data.TwitchId); 
+            }
+
+            //if (!string.IsNullOrEmpty(data.TouTubeId))
+            //{
+            //    youtube.Leave(data.TwitchId);
+            //}
         }
     }
 }

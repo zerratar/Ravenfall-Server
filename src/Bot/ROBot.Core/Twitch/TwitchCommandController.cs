@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using ROBot.Core.GameServer;
 using Shinobytes.Ravenfall.RavenNet.Core;
 using System;
 using System.Collections.Concurrent;
@@ -7,7 +8,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using TwitchLib.Client.Models;
 
-namespace ROBot.Core.Handlers
+namespace ROBot.Core.Twitch
 {
     public class TwitchCommandController : ITwitchCommandController
     {
@@ -26,13 +27,13 @@ namespace ROBot.Core.Handlers
             RegisterCommandHandlers();
         }
 
-        public async Task HandleAsync(ITwitchCommandClient listener, ChatCommand command)
+        public async Task HandleAsync(IRavenfallServerConnection game, ITwitchCommandClient twitch, ChatCommand command)
         {
             var key = command.CommandText.ToLower();
             ITwitchCommandHandler handler = null;
             if (handlerLookup.TryGetValue(key, out var handlerType))
             {
-                handler = this.ioc.Resolve(handlerType) as ITwitchCommandHandler;
+                handler = ioc.Resolve(handlerType) as ITwitchCommandHandler;
             }
             if (handler == null)
             {
@@ -40,7 +41,7 @@ namespace ROBot.Core.Handlers
                 return;
             }
 
-            await handler.HandleAsync(listener, command);
+            await handler.HandleAsync(game, twitch, command);
         }
 
         private void RegisterCommandHandlers()

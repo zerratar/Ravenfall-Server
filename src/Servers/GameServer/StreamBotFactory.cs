@@ -48,7 +48,9 @@ namespace RavenfallServer.Providers
                 logger.LogDebug("StreamBot connecting to stream: " + user.Username);
                 connection.Send(new BotStreamConnect
                 {
-                    StreamID = user.Username
+                    Session = user.Username,
+                    TouTubeId = user.YouTubeId,
+                    TwitchId = user.TwitchId,
                 },
                 Shinobytes.Ravenfall.RavenNet.SendOption.Reliable);
             }
@@ -59,7 +61,9 @@ namespace RavenfallServer.Providers
                 logger.LogDebug("StreamBot disconnecting from stream: " + user.Username);
                 connection.Send(new BotStreamDisconnect
                 {
-                    StreamID = user.Username
+                    Session = user.Username,
+                    TouTubeId = user.YouTubeId,
+                    TwitchId = user.TwitchId,
                 },
                 Shinobytes.Ravenfall.RavenNet.SendOption.Reliable);
             }
