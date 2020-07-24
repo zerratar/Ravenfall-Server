@@ -3,6 +3,13 @@ using Shinobytes.Ravenfall.RavenNet.Server;
 
 namespace GameServer.Managers
 {
+    public interface IGameSessionController
+    {
+    }
+    public class GameSessionController : IGameSessionController
+    {
+    }
+
     public interface IGameSession
     {
         IPlayerManager Players { get; }
@@ -15,7 +22,7 @@ namespace GameServer.Managers
         /// The current session's host connection. Will be null for non-player hosted sessions.
         /// </summary>
         public PlayerConnection Host { get; }
-        
+
         void AddPlayer(PlayerConnection player);
         void AddPlayer(Player player);
         void RemovePlayer(Player player);

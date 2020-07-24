@@ -1,10 +1,12 @@
 ﻿using GameServer.Managers;
 using GameServer.Network;
 using GameServer.Processors;
+using GameServer.Providers;
 using GameServer.Repositories;
 using GameServer.Services;
 using Microsoft.Extensions.Logging;
 using RavenfallServer.Providers;
+using Shinobytes.Ravenfall.Core.RuleEngine;
 using Shinobytes.Ravenfall.RavenNet;
 using Shinobytes.Ravenfall.RavenNet.Core;
 using Shinobytes.Ravenfall.RavenNet.Packets;
@@ -47,6 +49,9 @@ namespace GameServer
             ioc.RegisterShared<IItemManager, ItemManager>();
             ioc.RegisterShared<IStreamBotManager, StreamBotManager>();
 
+            ioc.RegisterShared<IGameSessionController, GameSessionController>();
+
+
             // IObjectManager and INpcManager should be removed from here
             // they should be instanced per Session
             //ioc.RegisterShared<IObjectManager, ObjectManager>();
@@ -58,6 +63,11 @@ namespace GameServer
             ioc.RegisterShared<IPlayerProcessor, PlayerProcessor>();
             ioc.RegisterShared<INpcProcessor, NpcProcessor>();
             ioc.RegisterShared<IObjectProcessor, ObjectProcessor>();
+
+            // Gambit Rule Engine
+            ioc.RegisterShared<IGambitRuleGenerator, GambitRuleGenerator>();
+            ioc.RegisterShared<IGambitGenerator, GambitGenerator>();
+            ioc.RegisterShared<IPlayerGambitRuleProvider, PlayerGambitRuleProvider>();
 
             // services
             ioc.RegisterShared<IAuthService, AuthService>();
