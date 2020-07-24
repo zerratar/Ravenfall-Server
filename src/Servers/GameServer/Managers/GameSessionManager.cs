@@ -60,7 +60,7 @@ namespace GameServer.Managers
                 return session;
             }
             var isOpenWorldSession = sessionKey == OpenWorldGameSessionKey;
-            return gameSessions[sessionKey] = CreateGameSession(isOpenWorldSession);
+            return gameSessions[sessionKey] = CreateGameSession(sessionKey, isOpenWorldSession);
         }
 
         public IReadOnlyList<IGameSession> GetAll()
@@ -73,11 +73,11 @@ namespace GameServer.Managers
             return gameSessions.Values.Where(x => x.Bot == null).ToList();
         }
 
-        private IGameSession CreateGameSession(bool isOpenWorldSession)
+        private IGameSession CreateGameSession(string sessionKey, bool isOpenWorldSession)
         {
             var npcs = new NpcManager(ioc, npcRepo, itemManager, entityActionsRepo);
             var objects = new ObjectManager(ioc, objRepo, entityActionsRepo);
-            var gameSession = new GameSession(npcs, objects, isOpenWorldSession);
+            var gameSession = new GameSession(sessionKey, npcs, objects, isOpenWorldSession);
             return gameSession;
         }
     }

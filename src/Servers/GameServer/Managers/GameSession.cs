@@ -6,11 +6,15 @@ namespace GameServer.Managers
 {
     public class GameSession : IGameSession
     {
+        private readonly string sessionKey;
+
         public GameSession(
+            string name,
             INpcManager npcManager,
             IObjectManager objectManager,
             bool isOpenWorldSession)
         {
+            this.sessionKey = name;
             Npcs = npcManager;
             Objects = objectManager;
             IsOpenWorldSession = isOpenWorldSession;
@@ -45,12 +49,22 @@ namespace GameServer.Managers
         public void AddPlayer(Player player)
         {
             Players.Add(player);
+
+            if (Bot != null)
+            {
+                Bot.OnPlayerAdd(sessionKey, player);
+            }
         }
 
         public void RemovePlayer(Player player)
         {
             Players.Remove(player);
             Objects.ReleaseLocks(player);
+
+            if (Bot != null)
+            {
+                Bot.OnPlayerRemove(sessionKey, player);
+            }
         }
 
         public void AssignBot(IStreamBot bot)

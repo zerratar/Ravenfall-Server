@@ -14,20 +14,20 @@ namespace GameServer.PacketHandlers
     {
         private readonly ILogger logger;
         private readonly IPlayerProvider playerProvider;
-        private readonly IUserManager userProvider;
+        private readonly IUserManager userManager;
         private readonly IAuthService authService;
         private readonly IPlayerConnectionProvider connectionProvider;
 
         public AuthRequestHandler(
             ILogger logger,
             IPlayerProvider playerProvider,
-            IUserManager userProvider,
+            IUserManager userManager,
             IAuthService authService,
             IPlayerConnectionProvider connectionProvider)
         {
             this.logger = logger;
             this.playerProvider = playerProvider;
-            this.userProvider = userProvider;
+            this.userManager = userManager;
             this.authService = authService;
             this.connectionProvider = connectionProvider;
         }
@@ -39,7 +39,13 @@ namespace GameServer.PacketHandlers
             logger.LogDebug("Sending Auth Response: " + 0);
 #endif
 
-            var user = userProvider.Get(data.Username);
+            var user = userManager.Get(data.Username);
+            if (user == null)
+            {
+#warning a user should not be created here.
+                user = userManager.Create(data.Username, null, null);
+            }
+
             var result = authService.Authenticate(user, data.Password);
 
             if (result != AuthResult.Success)

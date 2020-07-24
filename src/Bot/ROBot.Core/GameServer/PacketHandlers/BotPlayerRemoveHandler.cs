@@ -6,22 +6,21 @@ using ROBot.Ravenfall;
 
 namespace ROBot.Core.GameServer.PacketHandlers
 {
-    public class BotStreamConnectHandler : INetworkPacketHandler<BotStreamConnect>
+    public class BotPlayerRemoveHandler : INetworkPacketHandler<BotPlayerRemove>
     {
         private readonly IStreamBotApplication app;
         private readonly ILogger logger;
 
-        public BotStreamConnectHandler(IStreamBotApplication app, ILogger logger)
+        public BotPlayerRemoveHandler(IStreamBotApplication app, ILogger logger)
         {
             this.app = app;
             this.logger = logger;
         }
 
-        public void Handle(BotStreamConnect data, IRavenNetworkConnection connection, SendOption sendOption)
+        public void Handle(BotPlayerRemove data, IRavenNetworkConnection connection, SendOption sendOption)
         {
-            logger.LogDebug("Server Requests Connection to Streamer: " + data.TwitchId);
-
-            app.BeginSession(data);
+            logger.LogDebug("Server Requests remove player: " + data.Username);
+            app.OnPlayerRemove(data);
         }
     }
 }

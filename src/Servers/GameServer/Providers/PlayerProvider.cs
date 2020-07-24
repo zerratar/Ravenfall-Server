@@ -24,6 +24,13 @@ namespace GameServer.Managers
             lock (mutex) return players.FirstOrDefault(x => x.Id == playerId);
         }
 
+        public Player Get(User user, int characterIndex)
+        {
+            if (user.Players.Count > characterIndex)
+                return user.Players[characterIndex];
+            return null;
+        }
+
         public bool Remove(int playerId)
         {
             lock (mutex)
@@ -34,7 +41,7 @@ namespace GameServer.Managers
             }
         }
 
-        public void Create(User user, string name, Appearance appearance)
+        public Player Create(User user, string name, Appearance appearance)
         {
             var player = CreatePlayer(name);
             player.UserId = user.Id;
@@ -45,6 +52,12 @@ namespace GameServer.Managers
             var newPlayerList = user.Players.ToList();
             newPlayerList.Add(player);
             user.Players = newPlayerList;
+            return player;
+        }
+
+        public Player CreateRandom(User user, string name)
+        {
+            return Create(user, name, GenerateRandomAppearance());
         }
 
         private Player GetOrAddPlayer(string playerName)
@@ -115,5 +128,6 @@ namespace GameServer.Managers
         {
             lock (mutex) return players.Where(x => x.UserId == user.Id).ToList();
         }
+
     }
 }

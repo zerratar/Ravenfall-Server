@@ -10,6 +10,7 @@ namespace GameServer.Processors
     public interface IWorldProcessor
     {
         void RemovePlayer(Player player);
+        void AddPlayer(Player player);
         void AddPlayer(string sessionKey, PlayerConnection connection);
         void PlayerObjectInteraction(Player player, WorldObject serverObject, EntityAction action, int parameterId);
         void PlayAnimation(Player player, string animation, bool enabled = true, bool trigger = false, int number = 0);

@@ -14,21 +14,29 @@ namespace GameServer.Managers
 
         public User Get(string username)
         {
-#warning SHOULD NOT ADD A USER AUTOMATICALLY
-            return GetOrAddUser(username);
-        }
-
-        private User GetOrAddUser(string username)
-        {
             lock (mutex)
             {
-                var player = users.FirstOrDefault(x => x.Username.Equals(username, StringComparison.OrdinalIgnoreCase));
-                if (player != null) return player;
-                return CreateUser(username);
+                return users.FirstOrDefault(x => x.Username.Equals(username, StringComparison.OrdinalIgnoreCase));
             }
         }
 
-        private User CreateUser(string username)
+        public User GetByTwitchId(string twitchId)
+        {
+            lock (mutex)
+            {
+                return users.FirstOrDefault(x => x.TwitchId == twitchId);
+            }
+        }
+
+        public User GetByYouTubeId(string youtubeId)
+        {
+            lock (mutex)
+            {
+                return users.FirstOrDefault(x => x.YouTubeId == youtubeId);
+            }
+        }
+
+        public User Create(string username, string twitchId, string youTubeId)
         {
             lock (mutex)
             {
@@ -36,8 +44,10 @@ namespace GameServer.Managers
                 var addedUser = new User
                 {
                     Id = id,
+                    TwitchId = twitchId,
+                    YouTubeId = youTubeId,
                     Username = username,
-                    Players = new Player[0]
+                    Players = new Player[0],
                 };
                 users.Add(addedUser);
                 return addedUser;

@@ -76,6 +76,17 @@ namespace GameServer.Processors
             }
         }
 
+        public void AddPlayer(Player player)
+        {
+            var session = sessions.Get(player);
+            var connections = connectionProvider.GetConnectedActivePlayerConnections(session);
+            foreach (var connection in connections)
+            {
+                var combatLevel = statsProvider.GetCombatLevel(player.Id);
+                connection.Send(PlayerAdd.Create(player, combatLevel), SendOption.Reliable);
+            }
+        }
+
         public void AddPlayer(string sessionKey, PlayerConnection myConnection)
         {
             try

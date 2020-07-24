@@ -12,5 +12,7 @@ namespace ROBot.Ravenfall
     {
         void BeginSession(BotStreamConnect data);
         void EndSession(BotStreamDisconnect data);
+        void OnPlayerAdd(BotPlayerAdd data);
+        void OnPlayerRemove(BotPlayerRemove data);
     }
 }

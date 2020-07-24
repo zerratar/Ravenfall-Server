@@ -67,6 +67,28 @@ namespace RavenfallServer.Providers
                 },
                 Shinobytes.Ravenfall.RavenNet.SendOption.Reliable);
             }
+
+            public void OnPlayerRemove(string session, Player player)
+            {
+                connection.Send(new BotPlayerRemove
+                {
+                    Session = session,
+                    PlayerId = player.Id,
+                    Username = player.Name
+                },
+                Shinobytes.Ravenfall.RavenNet.SendOption.Reliable);
+            }
+
+            public void OnPlayerAdd(string session, Player player)
+            {
+                connection.Send(new BotPlayerAdd
+                {
+                    Session = session,
+                    PlayerId = player.Id,
+                    Username = player.Name
+                },
+                Shinobytes.Ravenfall.RavenNet.SendOption.Reliable);
+            }
         }
     }
 }

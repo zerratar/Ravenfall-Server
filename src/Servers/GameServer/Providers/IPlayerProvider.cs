@@ -9,6 +9,8 @@ namespace GameServer.Managers
         bool Remove(int playerId);
         IReadOnlyList<Player> GetAll();
         IReadOnlyList<Player> GetPlayers(User user);
-        void Create(User user, string name, Appearance appearance);
+        Player Create(User user, string name, Appearance appearance);
+        Player CreateRandom(User user, string name);
+        Player Get(User user, int characterIndex);
     }
 }
