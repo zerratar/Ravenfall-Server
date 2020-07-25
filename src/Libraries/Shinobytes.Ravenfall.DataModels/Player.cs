@@ -15,7 +15,7 @@ namespace Shinobytes.Ravenfall.RavenNet.Models
         private int skillsId;
         private int attributesId;
         private int health;
-        private long endurance;
+        private int endurance;
         private int level;
         private decimal experience;
 
@@ -28,7 +28,7 @@ namespace Shinobytes.Ravenfall.RavenNet.Models
         public int Level { get => level; set => Set(ref level, value); }
         public decimal Experience { get => experience; set => Set(ref experience, value); }
         public int Health { get => health; set => Set(ref health, value); }
-        public long Endurance { get => endurance; set => Set(ref endurance, value); }
+        public int Endurance { get => endurance; set => Set(ref endurance, value); }
         public long Coins { get => _Coins; set => Set(ref _Coins, value); }
         public int? SessionId { get => _Session; set => Set(ref _Session, value); }
         public DateTime Created { get => _Created; set => Set(ref _Created, value); }

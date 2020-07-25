@@ -10,10 +10,11 @@ namespace Shinobytes.Ravenfall.RavenNet.Packets.Client
         public string Name { get; set; }
         public int Level { get; set; }
         public int Health { get; set; }
+        public int Endurance { get; set; }
+        public Attributes Attributes { get; set; }
         public Vector3 Position { get; set; }
         public Vector3 Destination { get; set; }
         public Appearance Appearance { get; set; }
-        public Attributes Attributes { get; set; }
 
         public static PlayerAdd Create(IGameData gameData, Player player)
         {
@@ -25,6 +26,7 @@ namespace Shinobytes.Ravenfall.RavenNet.Packets.Client
             {
                 PlayerId = player.Id,
                 Name = player.Name,
+                Endurance = player.Endurance,
                 Attributes = attributes,
                 Position = transform.GetPosition(),
                 Destination = transform.GetDestination(),

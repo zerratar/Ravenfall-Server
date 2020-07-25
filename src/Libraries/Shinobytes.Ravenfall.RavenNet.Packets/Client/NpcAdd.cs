@@ -8,20 +8,25 @@ namespace Shinobytes.Ravenfall.RavenNet.Packets.Client
         public const short OpCode = 27;
         public int ServerId { get; set; }
         public int NpcId { get; set; }
+        public int Level { get; set; }
         public int Health { get; set; }
-        public int MaxHealth { get; set; }
+        public int Endurance { get; set; }
+        public Attributes Attributes { get; set; }
         public Vector3 Position { get; set; }
         public Vector3 Rotation { get; set; }
         public Vector3 Destination { get; set; }
-
         public static NpcAdd Create(IGameData gameData, NpcInstance obj, Transform transform)
         {
-
+            var npc = gameData.GetNpc(obj.NpcId);
+            var npcid = npc.NpcId;
             return new NpcAdd
             {
                 ServerId = obj.Id,
-                NpcId = gameData.GetNpc(obj.NpcId).NpcId,
-#warning add health and max health for npc
+                NpcId = npcid,
+                Level = npc.Level,
+                Health = obj.Health,
+                Endurance = obj.Endurance,
+                Attributes = gameData.GetAttributes(npcid),
                 Position = transform.GetPosition(),
                 Rotation = transform.GetRotation(),
                 Destination = transform.GetDestination()

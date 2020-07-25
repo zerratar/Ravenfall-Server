@@ -12,6 +12,7 @@ namespace Shinobytes.Ravenfall.RavenNet.Packets.Client
         public int Level { get; set; }
         public decimal Experience { get; set; }
         public int Health { get; set; }
+        public int Endurance { get; set; }
         public Vector3 Position { get; set; }
         public Professions Professions { get; set; }
         public Attributes Attributes { get; set; }
@@ -46,6 +47,7 @@ namespace Shinobytes.Ravenfall.RavenNet.Packets.Client
                 Experience = player.Experience,
                 Level = player.Level,
                 Health = player.Health,
+                Endurance = player.Endurance,
                 Position = transform.GetPosition(),
                 Attributes = attributes,
                 Professions = professions,
