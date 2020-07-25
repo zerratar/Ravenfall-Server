@@ -1,4 +1,5 @@
 ﻿using GameServer.Repositories;
+using RavenNest.BusinessLogic.Data;
 using Shinobytes.Ravenfall.RavenNet.Core;
 using Shinobytes.Ravenfall.RavenNet.Models;
 using System.Collections.Concurrent;
@@ -12,23 +13,17 @@ namespace GameServer.Managers
         private const string OpenWorldGameSessionKey = "$__OPEN_WORLD__$";
         private readonly ConcurrentDictionary<string, IGameSession> gameSessions = new ConcurrentDictionary<string, IGameSession>();
         private readonly IoC ioc;
-        private readonly INpcRepository npcRepo;
-        private readonly IItemManager itemManager;
+        private readonly IGameData gameData;
         private readonly IEntityActionsRepository entityActionsRepo;
-        private readonly IWorldObjectRepository objRepo;
 
 
         public GameSessionManager(
             IoC ioc,
-            IItemManager itemManager,
-            INpcRepository npcRepo,
-            IWorldObjectRepository objRepo,
+            IGameData gameData,
             IEntityActionsRepository entityActionsRepo)
         {
             this.ioc = ioc;
-            this.itemManager = itemManager;
-            this.npcRepo = npcRepo;
-            this.objRepo = objRepo;
+            this.gameData = gameData;
             this.entityActionsRepo = entityActionsRepo;
         }
 
@@ -42,19 +37,19 @@ namespace GameServer.Managers
             return gameSessions.Values.FirstOrDefault(session => session.Players.GetAll().Any(x => x.UserId == user.Id)) != null;
         }
 
-        public IGameSession Get(Npc npc)
+        public IGameSession Get(NpcInstance npc)
         {
-            return gameSessions.Values.FirstOrDefault(session => session.Npcs.GetAll().Any(x => x == npc));
+            return gameSessions.Values.FirstOrDefault(session => session.Id == npc.SessionId);
         }
 
-        public IGameSession Get(WorldObject obj)
+        public IGameSession Get(GameObjectInstance obj)
         {
-            return gameSessions.Values.FirstOrDefault(session => session.Objects.GetAll().Any(x => x == obj));
+            return gameSessions.Values.FirstOrDefault(session => session.Id == obj.SessionId);
         }
 
         public IGameSession Get(Player player)
         {
-            return gameSessions.Values.FirstOrDefault(session => session.Players.GetAll().Any(x => x.Id == player.Id));
+            return gameSessions.Values.FirstOrDefault(session => session.Id == player.SessionId);
         }
 
         public IGameSession Get(string sessionKey)
@@ -81,6 +76,7 @@ namespace GameServer.Managers
             {
                 return session;
             }
+
             var isOpenWorldSession = sessionKey == OpenWorldGameSessionKey;
             return gameSessions[sessionKey] = CreateGameSession(sessionKey, isOpenWorldSession);
         }
@@ -97,9 +93,39 @@ namespace GameServer.Managers
 
         private IGameSession CreateGameSession(string sessionKey, bool isOpenWorldSession)
         {
-            var npcs = new NpcManager(ioc, npcRepo, itemManager, entityActionsRepo);
-            var objects = new ObjectManager(ioc, objRepo, entityActionsRepo);
-            var gameSession = new GameSession(sessionKey, npcs, objects, isOpenWorldSession);
+            var session = gameData.GetSession(sessionKey);
+            if (session == null)
+            {
+                session = gameData.CreateSession();
+                session.Name = sessionKey;
+
+                foreach (var npc in gameData.GetAllNpcs())
+                {
+                    var srcTransform = gameData.GetTransform(npc.TransformId);
+                    var transform = gameData.CreateTransform();
+                    transform.SetPosition(srcTransform.GetPosition());
+                    transform.SetRotation(srcTransform.GetRotation());
+                    transform.SetDestination(srcTransform.GetDestination());
+
+                    var npcInstance = gameData.CreateNpcInstance();
+                    npcInstance.SessionId = session.Id;
+                    npcInstance.Alignment = npc.Alignment;
+                    npcInstance.NpcId = npc.Id;
+                    npcInstance.TransformId = transform.Id;
+                }
+
+                foreach (var obj in gameData.GetAllGameObjects())
+                {
+                    var newObj = gameData.CreateGameObjectInstance();
+                    newObj.SessionId = session.Id;
+                    newObj.Type = obj.Type;
+                    newObj.ObjectId = obj.Id;
+                }
+            }
+
+            var npcs = new NpcManager(ioc, session, gameData, entityActionsRepo);
+            var objects = new ObjectManager(ioc, session, gameData, entityActionsRepo);
+            var gameSession = new GameSession(session, npcs, objects, isOpenWorldSession);
             return gameSession;
         }
     }

@@ -1,5 +1,6 @@
 ﻿
 using GameServer.Managers;
+using RavenNest.BusinessLogic.Data;
 using Shinobytes.Ravenfall.RavenNet.Models;
 using System.Collections.Concurrent;
 
@@ -10,11 +11,20 @@ namespace RavenfallServer.Providers
         private readonly ConcurrentDictionary<int, Inventory> inventories
             = new ConcurrentDictionary<int, Inventory>();
 
-        private readonly IItemManager itemProvider;
+        private readonly IGameData gameData;
 
-        public PlayerInventoryProvider(IItemManager itemProvider)
+        public PlayerInventoryProvider(IGameData gameData)
         {
-            this.itemProvider = itemProvider;
+            this.gameData = gameData;
+        }
+
+        public void CreateInventory(int playerId)
+        {
+            var inventory = inventories[playerId] = new Inventory(playerId, gameData);
+            // Add Hatchet and Pickaxe as starting items
+            inventory.AddItem(gameData.GetItem(0), 1); // hatchet
+            inventory.AddItem(gameData.GetItem(1), 1); // pickaxe
+            inventory.AddItem(gameData.GetItem(7), 1); // fishing net
         }
 
         public Inventory GetInventory(int playerId)
@@ -22,13 +32,7 @@ namespace RavenfallServer.Providers
             if (inventories.TryGetValue(playerId, out var inventory))
                 return inventory;
 
-            inventory = inventories[playerId] = new Inventory();
-
-            // Add Hatchet and Pickaxe as starting items
-            inventory.AddItem(itemProvider.GetItemById(0), 1); // hatchet
-            inventory.AddItem(itemProvider.GetItemById(1), 1); // pickaxe
-            inventory.AddItem(itemProvider.GetItemById(7), 1); // fishing net
-
+            inventory = inventories[playerId] = new Inventory(playerId, gameData);
             return inventory;
         }
     }

@@ -25,7 +25,6 @@ namespace ROBot.Core.Providers
                 {
                     Id = Interlocked.Increment(ref tempUserIndex),
                     Username = username,
-                    Players = new List<Player>(),
                     TwitchId = twitchId,
                     YouTubeId = youtubeId
                 };

@@ -12,7 +12,7 @@ namespace Shinobytes.Ravenfall.RavenNet.Packets.Client
         public int Health { get; set; }
         public int MaxHealth { get; set; }
 
-        public static NpcHealthChange Create(Npc npc, Player player, int damage, int health, int maxHealth)
+        public static NpcHealthChange Create(NpcInstance npc, Player player, int damage, int health, int maxHealth)
         {
             return new NpcHealthChange
             {

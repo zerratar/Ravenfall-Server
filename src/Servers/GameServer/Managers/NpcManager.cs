@@ -1,19 +1,17 @@
 ﻿using GameServer.Repositories;
 using RavenfallServer.Providers;
+using RavenNest.BusinessLogic.Data;
 using Shinobytes.Ravenfall.RavenNet.Core;
 using Shinobytes.Ravenfall.RavenNet.Models;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 
 namespace GameServer.Managers
 {
     public partial class NpcManager : EntityManager, INpcManager
     {
-        private readonly List<Npc> entities = new List<Npc>();
-        private readonly object mutex = new object();
-        private readonly INpcRepository npcRepository;
-        private int index = 0;
+        private readonly Session session;
+        private readonly IGameData gameData;
 
         public INpcShopInventoryProvider Inventories { get; }
 
@@ -23,51 +21,35 @@ namespace GameServer.Managers
 
         public NpcManager(
             IoC ioc,
-            INpcRepository npcRepo,
-            IItemManager itemManager,
+            Session session,
+            IGameData gameData,
             IEntityActionsRepository actionRepo)
             : base(ioc, actionRepo)
         {
-            npcRepository = npcRepo;
-
+            this.session = session;
+            this.gameData = gameData;
             // Any Npc related stuff should be instanced per Session
             // and should therefor be removed from here.
             Stats = new NpcStatsProvider();
             States = new NpcStateProvider();
-            Inventories = new NpcShopInventoryProvider(itemManager);
+            Inventories = new NpcShopInventoryProvider(gameData);
 
-            AddNpcs();
             AddActions(EntityType.NPC);
+            this.gameData = gameData;
         }
 
-        private void AddNpcs()
+
+        public IReadOnlyList<NpcInstance> GetAll()
         {
-            var npcs = npcRepository.AllNpcs();
-
-            foreach (var npc in npcs)
-            {
-                npc.Id = Interlocked.Increment(ref index);
-                entities.Add(npc);
-            }
+            return gameData.GetAllNpcInstances(session.Id);
         }
 
-        public IReadOnlyList<Npc> GetAll()
+        public NpcInstance Get(int npcInstanceId)
         {
-            lock (mutex)
-            {
-                return entities;
-            }
+            return gameData.GetNpcInstance(npcInstanceId);
         }
 
-        public Npc Get(int npcServerId)
-        {
-            lock (mutex)
-            {
-                return entities.FirstOrDefault(x => x.Id == npcServerId);
-            }
-        }
-
-        public EntityAction GetAction(Npc npc, int actionId)
+        public EntityAction GetAction(NpcInstance npc, int actionId)
         {
             if (entityActions.TryGetValue(npc.NpcId, out var actions))
             {

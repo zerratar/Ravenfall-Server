@@ -39,6 +39,17 @@ namespace RavenNet.Tests
     public class SerializerTests
     {
         [TestMethod]
+        public void TestUserPlayerList()
+        {
+            var payload = new byte[] { 1, 3, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 2, 0, 0, 0, 3, 0, 0, 0, 1, 6, 97, 115, 100, 97, 115, 100, 1, 5, 101, 103, 104, 97, 104, 1, 5, 52, 52, 52, 52, 52, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 21, 0, 0, 0, 13, 0, 0, 0, 0, 0, 0, 0, 255, 255, 255, 255, 1, 255, 255, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 18, 0, 0, 0, 17, 0, 0, 0, 7, 0, 0, 0, 1, 0, 255, 255, 1, 7, 35, 100, 54, 98, 56, 97, 101, 1, 255, 255, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 22, 0, 0, 0, 15, 0, 0, 0, 2, 0, 0, 0, 255, 255, 255, 255, 1, 255, 255, 2, 0, 0, 0, 3, 0, 0, 0, 1, 0, 1, 0, 1, 0, };
+
+            var targetType = typeof(Shinobytes.Ravenfall.RavenNet.Packets.Client.UserPlayerList);
+            var serializer = new BinarySerializer();
+            var data = serializer.Deserialize(payload, targetType);
+
+        }
+
+        [TestMethod]
         public void TestComplexArraySerialization()
         {
             var serializer = new BinarySerializer();

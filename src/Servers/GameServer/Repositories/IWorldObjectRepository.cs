@@ -6,7 +6,7 @@ namespace GameServer.Repositories
 {
     public interface IWorldObjectRepository
     {
-        IReadOnlyList<WorldObject> AllObjects();
-        IReadOnlyList<WorldObjectItemDrops> GetItemDrops();
+        IReadOnlyList<ExtendedGameObject> AllObjects();
+        IReadOnlyList<ItemDrop> GetItemDrops();
     }
 }

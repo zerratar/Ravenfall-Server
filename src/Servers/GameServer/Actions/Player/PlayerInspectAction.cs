@@ -1,4 +1,5 @@
-﻿using Shinobytes.Ravenfall.RavenNet.Models;
+﻿using Shinobytes.Ravenfall.Data.Entities;
+using Shinobytes.Ravenfall.RavenNet.Models;
 
 public class PlayerInspectAction : EntityAction
 {
@@ -9,7 +10,7 @@ public class PlayerInspectAction : EntityAction
 
     public override bool Invoke(
         Player player,
-        Entity obj,
+        IEntity obj,
         int parameterId)
     {
         return false;

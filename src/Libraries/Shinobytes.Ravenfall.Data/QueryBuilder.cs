@@ -120,7 +120,7 @@ namespace Shinobytes.Ravenfall.Data
 
             if (numericTypes.Any(x => x == type))
             {
-                return value.ToString().Replace(',', '.');
+                return value.ToString().Replace(',', '.').Replace('−', '-');
             }
 
             if (typeof(bool) == type)

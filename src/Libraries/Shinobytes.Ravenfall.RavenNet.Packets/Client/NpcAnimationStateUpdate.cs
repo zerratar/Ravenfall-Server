@@ -11,7 +11,7 @@ namespace Shinobytes.Ravenfall.RavenNet.Packets.Client
         public bool Trigger { get; set; }
         public int ActionNumber { get; set; }
 
-        public static NpcAnimationStateUpdate Create(Npc npc, string anim, bool enabled, bool trigger, int number)
+        public static NpcAnimationStateUpdate Create(NpcInstance npc, string anim, bool enabled, bool trigger, int number)
         {
             return new NpcAnimationStateUpdate
             {

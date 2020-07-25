@@ -1,19 +1,21 @@
 ﻿using GameServer.Managers;
 using GameServer.Processors;
 using RavenfallServer.Providers;
+using RavenNest.BusinessLogic.Data;
+using Shinobytes.Ravenfall.Data.Entities;
 using Shinobytes.Ravenfall.RavenNet.Models;
 using System;
 
 public abstract class SkillObjectAction : EntityAction
 {
     private readonly string skillName;
-    private readonly int actionTime; 
+    private readonly int actionTime;
+    
     private readonly IPlayerStatsProvider statsProvider;
     private readonly IPlayerInventoryProvider inventoryProvider;
-    private readonly IItemManager itemProvider;
     private readonly Random random = new Random();
 
-
+    protected readonly IGameData GameData;
     protected readonly IWorldProcessor World;
     protected readonly IGameSessionManager Sessions;
     protected event EventHandler<AfterActionEventArgs> AfterAction;
@@ -23,25 +25,25 @@ public abstract class SkillObjectAction : EntityAction
         string name,
         string skillName,
         int actionTime,
+        IGameData gameData,
         IWorldProcessor worldProcessor,
         IGameSessionManager gameSessionManager,
-        IItemManager itemProvider,
         IPlayerStatsProvider statsProvider,
         IPlayerInventoryProvider inventoryProvider)
         : base(id, name)
     {
         this.skillName = skillName;
         this.actionTime = actionTime;
+        this.GameData = gameData;
         this.World = worldProcessor;
         this.Sessions = gameSessionManager;
-        this.itemProvider = itemProvider;
         this.statsProvider = statsProvider;
         this.inventoryProvider = inventoryProvider;
     }
 
-    public override bool Invoke(Player player, Entity entity, int parameterId)
+    public override bool Invoke(Player player, IEntity entity, int parameterId)
     {
-        if (!(entity is WorldObject obj))
+        if (!(entity is GameObjectInstance obj))
         {
             return false;
         }
@@ -60,18 +62,20 @@ public abstract class SkillObjectAction : EntityAction
             return false;
         }
 
-        if (obj.InteractItemType > 0)
+        var gobj = GameData.GetGameObject(obj.ObjectId);
+        if (gobj.InteractItemType > 0)
         {
             var inventory = inventoryProvider.GetInventory(player.Id);
-            var requiredItem = inventory.GetItemOfType(obj.InteractItemType);
+            var requiredItem = inventory.GetItemOfType(gobj.InteractItemType);
             if (requiredItem == null || requiredItem.Amount < 1)
             {
                 return false;
             }
 
-            if (requiredItem.Item.Equippable)
+            var reqItem = GameData.GetItem(requiredItem.ItemId);
+            if (reqItem.Equippable)
             {
-                World.SetItemEquipState(player, requiredItem.Item, true);
+                World.SetItemEquipState(player, reqItem, true);
             }
         }
 
@@ -79,7 +83,7 @@ public abstract class SkillObjectAction : EntityAction
         return true;
     }
 
-    protected bool HandleObjectTick(Player player, WorldObject obj, TimeSpan totalTime, TimeSpan deltaTime)
+    protected bool HandleObjectTick(Player player, GameObjectInstance obj, TimeSpan totalTime, TimeSpan deltaTime)
     {
         var session = Sessions.Get(player);
         if (!session.Objects.HasAcquiredLock(obj, player))
@@ -95,8 +99,8 @@ public abstract class SkillObjectAction : EntityAction
             StartAnimation(player, obj);
             return false;
         }
-
-        var levelsGaiend = skill.AddExperience(obj.Experience);
+        var gobj = GameData.GetGameObject(obj.ObjectId);
+        var levelsGaiend = skill.AddExperience(gobj.Experience);
         var itemDrops = session.Objects.GetItemDrops(obj);
 
         foreach (var itemDrop in itemDrops)
@@ -104,7 +108,7 @@ public abstract class SkillObjectAction : EntityAction
             if (random.NextDouble() > itemDrop.DropChance)
                 continue;
 
-            World.AddPlayerItem(player, itemProvider.GetItemById(itemDrop.ItemId));
+            World.AddPlayerItem(player, GameData.GetItem(itemDrop.ItemId));
         }
 
         World.UpdatePlayerStat(player, skill);
@@ -122,26 +126,28 @@ public abstract class SkillObjectAction : EntityAction
         return true;
     }
 
-    protected void StartAnimation(Player player, WorldObject obj)
+    protected void StartAnimation(Player player, GameObjectInstance obj)
     {
         World.PlayAnimation(player, skillName, true, true);
         World.SetEntityTimeout(actionTime, player, obj, HandleObjectTick);
     }
 
-    protected void StopAnimation(Player player, WorldObject obj)
+    protected void StopAnimation(Player player, GameObjectInstance obj)
     {
         var session = Sessions.Get(player);
+        var gobj = GameData.GetGameObject(obj.ObjectId);
         var inventory = inventoryProvider.GetInventory(player.Id);
-        var requiredItem = inventory.GetItemOfType(obj.InteractItemType);
+        var requiredItem = inventory.GetItemOfType(gobj.InteractItemType);
         if (requiredItem != null)
         {
-            if (requiredItem.Item.Equippable)
+            var reqItem = GameData.GetItem(requiredItem.ItemId);
+            if (reqItem.Equippable)
             {
-                World.SetItemEquipState(player, requiredItem.Item, false);
+                World.SetItemEquipState(player, reqItem, false);
             }
-            if (requiredItem.Item.Consumable)
+            if (reqItem.Consumable)
             {
-                World.RemovePlayerItem(player, requiredItem.Item);
+                World.RemovePlayerItem(player, reqItem);
             }
             World.PlayAnimation(player, skillName, false);
         }

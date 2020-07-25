@@ -4,34 +4,37 @@ using Shinobytes.Ravenfall.RavenNet;
 using Shinobytes.Ravenfall.RavenNet.Server;
 using System.Linq;
 using Shinobytes.Ravenfall.RavenNet.Packets.Client;
+using RavenNest.BusinessLogic.Data;
 
 namespace GameServer.PacketHandlers
 {
     public class UserPlayerDeleteHandler : PlayerPacketHandler<UserPlayerDelete>
     {
-        private readonly IPlayerProvider playerProvider;
+        private readonly IGameData gameData;
 
-        public UserPlayerDeleteHandler(
-            IPlayerProvider playerProvider)
+        public UserPlayerDeleteHandler(IGameData gameData)
         {
-            this.playerProvider = playerProvider;
+            this.gameData = gameData;
         }
 
         protected override void Handle(UserPlayerDelete data, PlayerConnection connection)
         {
-            var player = playerProvider.Get(data.PlayerId);
+            var player = gameData.GetPlayer(data.PlayerId);
             if (player == null)
             {
                 return;
             }
 
-            playerProvider.Remove(player.Id);
+            gameData.Remove(player);
             SendPlayerList(connection);
         }
 
         private void SendPlayerList(PlayerConnection connection)
         {
-            connection.Send(UserPlayerList.Create(playerProvider.GetPlayers(connection.User).ToArray()), SendOption.Reliable);
+
+            var players = gameData.GetPlayers(connection.User).ToArray();
+            var appearances = players.Select(x => gameData.GetAppearance(x.AppearanceId)).ToArray();
+            connection.Send(UserPlayerList.Create(gameData, players, appearances), SendOption.Reliable);
         }
     }
 }

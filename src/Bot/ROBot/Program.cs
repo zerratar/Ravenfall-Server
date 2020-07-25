@@ -11,6 +11,7 @@ using ROBot.Ravenfall;
 using ROBot.Core.GameServer;
 using Shinobytes.Ravenfall.RavenNet.Client;
 using ROBot.Core.Providers;
+using IAppSettings = ROBot.Core.IAppSettings;
 
 namespace ROBot
 {
@@ -47,7 +48,6 @@ namespace ROBot
             ioc.RegisterShared<IRavenfallServerConnection, RavenfallServerConnection>();
 
             // Twitch stuff
-            ioc.RegisterShared<ITwitchUserStore, TwitchUserStore>();
             ioc.RegisterShared<ITwitchCredentialsProvider, TwitchCredentialsProvider>();
             ioc.RegisterShared<ITwitchCommandController, TwitchCommandController>();
             ioc.RegisterShared<ITwitchCommandClient, TwitchCommandClient>();

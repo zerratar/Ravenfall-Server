@@ -7,7 +7,7 @@ namespace Shinobytes.Ravenfall.RavenNet.Packets.Client
         public const short OpCode = 41;
         public int NpcServerId { get; set; }
         public int PlayerId { get; set; }
-        public static NpcDeath Create(Npc npc, Player player)
+        public static NpcDeath Create(NpcInstance npc, Player player)
         {
             return new NpcDeath
             {

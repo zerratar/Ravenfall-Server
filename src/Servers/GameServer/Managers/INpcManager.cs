@@ -10,8 +10,8 @@ namespace GameServer.Managers
         INpcStatsProvider Stats { get; }
         INpcStateProvider States { get; }
 
-        IReadOnlyList<Npc> GetAll();
-        Npc Get(int npcServerId);
-        EntityAction GetAction(Npc npc, int actionId);
+        IReadOnlyList<NpcInstance> GetAll();
+        NpcInstance Get(int npcServerId);
+        EntityAction GetAction(NpcInstance npc, int actionId);
     }
 }

@@ -6,21 +6,21 @@ namespace GameServer.Repositories
 {
     public class JsonBasedWorldObjectRepository : IWorldObjectRepository
     {
-        private readonly JsonBasedRepository<WorldObject> objectRepo;
-        private readonly JsonBasedRepository<WorldObjectItemDrops> itemDropRepo;
+        private readonly JsonBasedRepository<ExtendedGameObject> objectRepo;
+        private readonly JsonBasedRepository<ItemDrop> itemDropRepo;
 
         public JsonBasedWorldObjectRepository()
         {
-            objectRepo = new JsonBasedRepository<WorldObject>();
-            itemDropRepo = new JsonBasedRepository<WorldObjectItemDrops>();
+            objectRepo = new JsonBasedRepository<ExtendedGameObject>();
+            itemDropRepo = new JsonBasedRepository<ItemDrop>();
         }
 
-        public IReadOnlyList<WorldObject> AllObjects()
+        public IReadOnlyList<ExtendedGameObject> AllObjects()
         {
             return objectRepo.All();
         }
 
-        public IReadOnlyList<WorldObjectItemDrops> GetItemDrops()
+        public IReadOnlyList<ItemDrop> GetItemDrops()
         {
             return itemDropRepo.All();
         }

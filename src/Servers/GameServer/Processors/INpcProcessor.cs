@@ -4,7 +4,7 @@ using System;
 
 namespace GameServer.Processors
 {
-    public interface INpcProcessor : IEntityProcessor<Npc>
+    public interface INpcProcessor : IEntityProcessor<NpcInstance>
     {
     }
 }

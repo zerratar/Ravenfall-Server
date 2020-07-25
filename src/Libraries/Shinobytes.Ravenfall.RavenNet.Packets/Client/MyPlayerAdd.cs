@@ -18,13 +18,13 @@ namespace Shinobytes.Ravenfall.RavenNet.Packets.Client
         public long[] InventoryItemAmount { get; set; }
         public long Coins { get; set; }
 
-        public static MyPlayerAdd Create(Player player, int combatLevel, IEnumerable<EntityStat> stats, IReadOnlyList<Inventory.InventoryItem> items)
+        public static MyPlayerAdd Create(Player player, Appearance appearance, Transform transform, int combatLevel, IEnumerable<EntityStat> stats, IReadOnlyList<InventoryItem> items)
         {
             var itemIds = new int[items.Count];
             var amounts = new long[items.Count];
             for (var i = 0; i < items.Count; ++i)
             {
-                itemIds[i] = items[i].Item.Id;
+                itemIds[i] = items[i].ItemId;
                 amounts[i] = items[i].Amount;
             }
 
@@ -32,11 +32,11 @@ namespace Shinobytes.Ravenfall.RavenNet.Packets.Client
             {
                 PlayerId = player.Id,
                 Name = player.Name,
-                Position = player.Position,
+                Position = transform.GetPosition(),
                 CombatLevel = combatLevel,
                 Experience = stats.Select(x => x.Experience).ToArray(),
                 EffectiveLevel = stats.Select(x => x.EffectiveLevel).ToArray(),
-                Appearance = player.Appearance,
+                Appearance = appearance,
                 InventoryItemId = itemIds,
                 InventoryItemAmount = amounts,
                 Coins = player.Coins

@@ -1,3 +1,4 @@
+using Shinobytes.Ravenfall.Data.Entities;
 using Shinobytes.Ravenfall.RavenNet.Models;
 
 public class ExamineAction : EntityAction
@@ -8,8 +9,8 @@ public class ExamineAction : EntityAction
     }
 
     public override bool Invoke(
-        Player player, 
-        Entity obj, 
+        Player player,
+        IEntity obj, 
         int parameterId)
     {
         return false;

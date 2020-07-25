@@ -1,4 +1,5 @@
 ﻿using GameServer.Repositories;
+using Shinobytes.Ravenfall.Data.Entities;
 using Shinobytes.Ravenfall.RavenNet.Core;
 using Shinobytes.Ravenfall.RavenNet.Models;
 using System;
@@ -29,7 +30,7 @@ namespace GameServer.Managers
             this.actionRepo = actionRepo;
         }
 
-        public bool AcquireLock(Entity obj, Player player)
+        public bool AcquireLock(IEntity obj, Player player)
         {
             if (entityPlayerLocks.TryGetValue(obj.Id, out var ownedPlayer))
             {
@@ -41,7 +42,7 @@ namespace GameServer.Managers
             return true;
         }
 
-        public bool HasAcquiredLock(Entity obj, Player player)
+        public bool HasAcquiredLock(IEntity obj, Player player)
         {
             if (entityPlayerLocks.TryGetValue(obj.Id, out var ownedPlayer))
             {

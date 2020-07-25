@@ -21,7 +21,7 @@ namespace GameServer.Processors
             this.kernel = kernel;
         }
 
-        public void Update(Npc npc, IGameSession session, TimeSpan deltaTime)
+        public void Update(NpcInstance npc, IGameSession session, TimeSpan deltaTime)
         {
         }
     }

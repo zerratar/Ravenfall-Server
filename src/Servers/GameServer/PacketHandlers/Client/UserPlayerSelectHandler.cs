@@ -1,5 +1,6 @@
 ﻿using GameServer.Managers;
 using GameServer.Processors;
+using RavenNest.BusinessLogic.Data;
 using Shinobytes.Ravenfall.RavenNet.Packets;
 using Shinobytes.Ravenfall.RavenNet.Packets.Client;
 using Shinobytes.Ravenfall.RavenNet.Server;
@@ -9,22 +10,22 @@ namespace GameServer.PacketHandlers
     public class UserPlayerSelectHandler : PlayerPacketHandler<UserPlayerSelect>
     {
         private readonly IWorldProcessor worldProcessor;
-        private readonly IPlayerProvider playerProvider;
+        private readonly IGameData gameData;
         private readonly IGameSessionManager sessionManager;
 
         public UserPlayerSelectHandler(
             IWorldProcessor worldProcessor,
-            IPlayerProvider playerProvider,
+            IGameData gameData,
             IGameSessionManager sessionManager)
         {
             this.worldProcessor = worldProcessor;
-            this.playerProvider = playerProvider;
+            this.gameData = gameData;
             this.sessionManager = sessionManager;
         }
 
         protected override void Handle(UserPlayerSelect data, PlayerConnection connection)
         {
-            var player = playerProvider.Get(data.PlayerId);
+            var player = gameData.GetPlayer(data.PlayerId);
             if (player == null)
             {
                 return;
@@ -38,7 +39,7 @@ namespace GameServer.PacketHandlers
             // remove it from that session.
             var activeSession = sessionManager.Get(player);
             var targetSession = sessionManager.Get(data.SessionKey);
-            if (!string.IsNullOrEmpty(player.Session) && activeSession != null && activeSession != targetSession)
+            if (player.SessionId != null && activeSession != null && activeSession != targetSession)
             {
                 worldProcessor.RemovePlayer(player);
             }
@@ -59,8 +60,7 @@ namespace GameServer.PacketHandlers
             if (connection.Player == null)
                 return;
 
-            if (playerProvider.Remove(connection.Player.Id))
-                worldProcessor.RemovePlayer(connection.Player);
+            worldProcessor.RemovePlayer(connection.Player);
         }
     }
 }

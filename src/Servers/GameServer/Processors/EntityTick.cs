@@ -1,4 +1,5 @@
 ﻿using System;
+using Shinobytes.Ravenfall.Data.Entities;
 using Shinobytes.Ravenfall.RavenNet.Models;
 
 namespace GameServer.Processors
@@ -8,7 +9,7 @@ namespace GameServer.Processors
         internal abstract bool Invoke(TimeSpan deltaTime);
     }
 
-    internal class EntityTick<TObject> : EntityTick where TObject : Entity
+    internal class EntityTick<TObject> : EntityTick where TObject : IEntity
     {
         public EntityTick(Player player, TObject obj, EntityTickHandler<TObject> handleObjectTick)
         {

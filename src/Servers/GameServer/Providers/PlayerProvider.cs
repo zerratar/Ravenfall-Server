@@ -1,4 +1,6 @@
-﻿using RavenfallServer.Providers;
+﻿using GameServer.Repositories;
+using RavenfallServer.Providers;
+using RavenNest.BusinessLogic.Data;
 using Shinobytes.Ravenfall.RavenNet.Models;
 using System;
 using System.Collections.Generic;
@@ -9,125 +11,100 @@ namespace GameServer.Managers
 {
     public class PlayerProvider : IPlayerProvider
     {
-        private List<Player> players = new List<Player>();
-        private readonly object mutex = new object();
+        private readonly IGameData gameData;
         private readonly IPlayerStatsProvider statsProvider;
-        private int userIndex = 0;
+        private readonly IPlayerInventoryProvider inventoryProvider;
 
-        public PlayerProvider(IPlayerStatsProvider statsProvider)
+        public PlayerProvider(
+            IGameData gameData,
+            IPlayerStatsProvider statsProvider,
+            IPlayerInventoryProvider inventoryProvider)
         {
+            this.gameData = gameData;
             this.statsProvider = statsProvider;
+            this.inventoryProvider = inventoryProvider;
         }
 
         public Player Get(int playerId)
         {
-            lock (mutex) return players.FirstOrDefault(x => x.Id == playerId);
+            return gameData.GetPlayer(playerId);
         }
 
         public Player Get(User user, int characterIndex)
         {
-            if (user.Players.Count > characterIndex)
-                return user.Players[characterIndex];
+            var chars = gameData.GetPlayers(user);
+            if (chars.Count > characterIndex)
+            {
+                return chars[characterIndex];
+            }
             return null;
         }
 
         public bool Remove(int playerId)
         {
-            lock (mutex)
-            {
-                var player = Get(playerId);
-                if (player == null) return false;
-                return players.Remove(player);
-            }
+            var player = Get(playerId);
+            if (player == null) return false;
+            gameData.Remove(player);
+            return true;
+        }
+        public Player CreateRandom(User user, string name)
+        {
+            return Create(user, name, gameData.GenerateRandomAppearance());
         }
 
         public Player Create(User user, string name, Appearance appearance)
         {
-            var player = CreatePlayer(name);
-            player.UserId = user.Id;
-            if (appearance != null)
+            return CreatePlayer(user.Id, name, appearance);
+        }
+
+        private Player CreatePlayer(int userId, string playerName, Appearance appearance)
+        {
+            var random = new Random();
+            var pos = new Vector3((float)random.NextDouble() * 2f, 7.5f, (float)random.NextDouble() * 2f);
+
+            if (appearance == null)
             {
-                player.Appearance = appearance;
+                appearance = gameData.GenerateRandomAppearance();
             }
-            var newPlayerList = user.Players.ToList();
-            newPlayerList.Add(player);
-            user.Players = newPlayerList;
+            else
+            {
+                appearance = gameData.CreateAppearance(appearance);
+            }
+
+            var transform = gameData.CreateTransform();
+            transform.SetPosition(pos);
+            transform.SetDestination(pos);
+
+            var player = gameData.CreatePlayer();
+            player.UserId = userId;
+            player.Name = playerName;
+            player.TransformId = transform.Id;
+            player.AppearanceId = appearance.Id;
+
+            inventoryProvider.CreateInventory(player.Id);
+
+            //var addedPlayer = new Player()
+            //{
+            //    Id = id,
+            //    Name = playerName,
+            //    UserId = userId,
+            //    TransformId = transform.Id,
+            //    Created = DateTime.UtcNow,
+            //    AppearanceId = appearance.Id
+            //};
+
+            //gameData.Add(player);
             return player;
-        }
-
-        public Player CreateRandom(User user, string name)
-        {
-            return Create(user, name, GenerateRandomAppearance());
-        }
-
-        private Player GetOrAddPlayer(string playerName)
-        {
-            lock (mutex)
-            {
-                var player = players.FirstOrDefault(x => x.Name.Equals(playerName, StringComparison.OrdinalIgnoreCase));
-                if (player != null) return player;
-                return CreatePlayer(playerName);
-            }
-        }
-
-        private Player CreatePlayer(string playerName)
-        {
-            lock (mutex)
-            {
-                var id = Interlocked.Increment(ref userIndex);
-                var random = new Random();
-                var pos = new Vector3((float)random.NextDouble() * 2f, 7.5f, (float)random.NextDouble() * 2f);
-                var appearance = GenerateRandomAppearance();
-
-                var level = statsProvider.GetCombatLevel(id);
-
-                var addedPlayer = new Player()
-                {
-                    Id = id,
-                    Name = playerName,
-                    CombatLevel = level,
-                    Position = pos,
-                    Destination = pos,
-                    Appearance = appearance
-                };
-
-                players.Add(addedPlayer);
-                return addedPlayer;
-            }
-        }
-
-        private Appearance GenerateRandomAppearance()
-        {
-            var gender = Utility.Random<Gender>();
-            var skinColor = Utility.Random("#d6b8ae");
-            var hairColor = Utility.Random("#A8912A", "#27ae60", "#2980b9", "#8e44ad");
-            var beardColor = Utility.Random("#A8912A", "#27ae60", "#2980b9", "#8e44ad");
-            return new Appearance
-            {
-                Gender = gender,
-                SkinColor = skinColor,
-                HairColor = hairColor,
-                BeardColor = beardColor,
-                StubbleColor = skinColor,
-                WarPaintColor = hairColor,
-                EyeColor = Utility.Random("#000000", "#c0392b", "#2c3e50"),
-                Eyebrows = Utility.Random(0, gender == Gender.Male ? 10 : 7),
-                Hair = Utility.Random(0, 38),
-                FacialHair = gender == Gender.Male ? Utility.Random(0, 18) : -1,
-                Head = Utility.Random(0, 23),
-                HelmetVisible = true
-            };
         }
 
         public IReadOnlyList<Player> GetAll()
         {
-            lock (mutex) return players.ToList();
+            return gameData.GetAllPlayers();
         }
 
         public IReadOnlyList<Player> GetPlayers(User user)
         {
-            lock (mutex) return players.Where(x => x.UserId == user.Id).ToList();
+            return gameData.GetPlayers(user);
         }
-
     }
 }

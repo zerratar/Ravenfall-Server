@@ -1,7 +1,9 @@
 ﻿using GameServer.Managers;
 using GameServer.Processors;
 using RavenfallServer.Providers;
+using RavenNest.BusinessLogic.Data;
 using Shinobytes.Ravenfall.Core;
+using Shinobytes.Ravenfall.Data.Entities;
 using Shinobytes.Ravenfall.RavenNet.Models;
 using System;
 using System.Runtime.CompilerServices;
@@ -21,19 +23,21 @@ public class NpcAttackAction : EntityAction
     private const string SkillAttack = "Attack";
     private const string SkillDefense = "Defense";
     private const string SkillStrength = "Strength";
-
+    private readonly IGameData gameData;
     private readonly IWorldProcessor worldProcessor;
     private readonly IGameSessionManager sessionManager;
     private readonly IPlayerStatsProvider playerStatsProvider;
     private readonly IPlayerStateProvider playerState;
 
     public NpcAttackAction(
+        IGameData gameData,
         IWorldProcessor worldProcessor,
         IGameSessionManager sessionManager,
         IPlayerStatsProvider playerStatsProvider,
         IPlayerStateProvider playerStateProvider)
         : base(10, "Npc Attack")
     {
+        this.gameData = gameData;
         this.worldProcessor = worldProcessor;
         this.sessionManager = sessionManager;
         this.playerStatsProvider = playerStatsProvider;
@@ -42,10 +46,10 @@ public class NpcAttackAction : EntityAction
 
     public override bool Invoke(
         Player player,
-        Entity obj,
+        IEntity obj,
         int attackType)
     {
-        if (!(obj is Npc npc))
+        if (!(obj is NpcInstance npc))
         {
             return false;
         }
@@ -57,7 +61,7 @@ public class NpcAttackAction : EntityAction
 
     private bool Invoke(
         Player player,
-        Npc npc,
+        NpcInstance npc,
         TimeSpan totalTime,
         TimeSpan deltaTime)
     {
@@ -92,7 +96,7 @@ public class NpcAttackAction : EntityAction
         return false;
     }
 
-    private void PlayerAttack(Player player, Npc npc, int attackType)
+    private void PlayerAttack(Player player, NpcInstance npc, int attackType)
     {
         var session = sessionManager.Get(player);
 
@@ -104,7 +108,7 @@ public class NpcAttackAction : EntityAction
         worldProcessor.SetEntityTimeout(PlayerMeleeAttackIntervalMs, player, npc, OnPlayerAfflictDamage);
     }
 
-    private void NpcAttack(Player player, Npc npc)
+    private void NpcAttack(Player player, NpcInstance npc)
     {
         var session = sessionManager.Get(player);
 
@@ -117,7 +121,7 @@ public class NpcAttackAction : EntityAction
 
     private bool OnNpcAfflictDamage(
         Player player,
-        Npc npc,
+        NpcInstance npc,
         TimeSpan totalTime,
         TimeSpan deltaTime)
     {
@@ -128,7 +132,7 @@ public class NpcAttackAction : EntityAction
 
     private bool OnPlayerAfflictDamage(
         Player player,
-        Npc npc,
+        NpcInstance npc,
         TimeSpan totalTime,
         TimeSpan deltaTime)
     {
@@ -158,7 +162,7 @@ public class NpcAttackAction : EntityAction
 
             // note(zerratar): action that kills the enemy shouldn't be the one responsible for respawning
             //                 this should be moved to a INpcProcessor or similar called from the WorldProcessor Update
-            worldProcessor.SetEntityTimeout(npc.RespawnTimeMs, player, npc, OnRespawn);
+            worldProcessor.SetEntityTimeout(gameData.GetNpc(npc.NpcId).RespawnTimeMs, player, npc, OnRespawn);
 
             var npcCombatLevel = session.Npcs.Stats.GetCombatLevel(npc.Id);
             var experience = GameMath.CombatExperience(npcCombatLevel);
@@ -169,7 +173,7 @@ public class NpcAttackAction : EntityAction
             //{
             //    if (random.NextDouble() > itemDrop.DropChance)
             //        continue;
-            //    worldProcessor.AddPlayerItem(player, itemProvider.GetItemById(itemDrop.ItemId));
+            //    worldProcessor.AddPlayerItem(player, gameData.GetItem(itemDrop.ItemId));
             //}
 
             worldProcessor.UpdatePlayerStat(player, playerTrainingSkill);
@@ -211,14 +215,14 @@ public class NpcAttackAction : EntityAction
             bProvider is INpcStatsProvider);
     }
 
-    private bool OnRespawn(Player player, Npc npc, TimeSpan totalTime, TimeSpan deltaTime)
+    private bool OnRespawn(Player player, NpcInstance npc, TimeSpan totalTime, TimeSpan deltaTime)
     {
         var healthStat = GetHealth(npc);
         healthStat.EffectiveLevel = healthStat.Level;
         worldProcessor.RespawnNpc(player, npc);
         return true;
     }
-    private void ExitCombat(Player player, Npc npc, int attackType)
+    private void ExitCombat(Player player, NpcInstance npc, int attackType)
     {
         playerState.ExitCombat(player);
         playerState.ClearAttackTime(player, npc);
@@ -227,7 +231,7 @@ public class NpcAttackAction : EntityAction
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private void StopAttackAnimation(Npc npc)
+    private void StopAttackAnimation(NpcInstance npc)
     {
         worldProcessor.PlayAnimation(npc, AttackAnimationName, true, true);
     }
@@ -239,7 +243,7 @@ public class NpcAttackAction : EntityAction
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private void PlayAttackAnimation(Npc npc)
+    private void PlayAttackAnimation(NpcInstance npc)
     {
         worldProcessor.PlayAnimation(npc, AttackAnimationName, true, true);
     }
@@ -251,7 +255,7 @@ public class NpcAttackAction : EntityAction
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private bool IsDead(Npc npc)
+    private bool IsDead(NpcInstance npc)
     {
         return GetHealth(npc).EffectiveLevel <= 0;
     }
@@ -269,7 +273,7 @@ public class NpcAttackAction : EntityAction
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private EntityStat GetHealth(Npc player)
+    private EntityStat GetHealth(NpcInstance player)
     {
         var session = sessionManager.Get(player);
         return session.Npcs.Stats.GetStatByName(player.Id, SkillHealth);
@@ -282,7 +286,7 @@ public class NpcAttackAction : EntityAction
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private bool ReadyForAttack(Player player, Npc npc, int attackType)
+    private bool ReadyForAttack(Player player, NpcInstance npc, int attackType)
     {
         var lastAttack = playerState.GetAttackTime(player, npc);
         var timeDelta = DateTime.UtcNow - lastAttack;
@@ -290,9 +294,11 @@ public class NpcAttackAction : EntityAction
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private bool WithinDistance(Player player, Npc npc, int attackType)
+    private bool WithinDistance(Player player, NpcInstance npc, int attackType)
     {
-        var delta = player.Position - npc.Position;
+        var playerTransform = gameData.GetTransform(player.TransformId);
+        var npcTransform = gameData.GetTransform(npc.TransformId);
+        var delta = playerTransform.GetPosition() - npcTransform.GetPosition();
         var distance = delta.SqrtMagnitude;
         return distance <= MeleeRange; // change depending how player attacks.
     }

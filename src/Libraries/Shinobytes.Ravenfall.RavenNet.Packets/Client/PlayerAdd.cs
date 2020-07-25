@@ -13,17 +13,17 @@ namespace Shinobytes.Ravenfall.RavenNet.Packets.Client
         public Vector3 Position { get; set; }
         public Vector3 Destination { get; set; }
         public Appearance Appearance { get; set; }
-        public static PlayerAdd Create(Player player, int combatLevel)
+        public static PlayerAdd Create(Player player, Appearance appearance, Transform transform, int combatLevel)
         {
             return new PlayerAdd
             {
                 PlayerId = player.Id,
                 Name = player.Name,
                 CombatLevel = combatLevel,
-                Position = player.Position,
+                Position = transform.GetPosition(),
 #warning add health and maxhealth for player
-                Destination = player.Destination,
-                Appearance = player.Appearance
+                Destination = transform.GetDestination(),
+                Appearance = appearance
             };
         }
     }

@@ -114,7 +114,7 @@ namespace Shinobytes.Ravenfall.RavenNet.Serializers
 
             if (!writePropsCache.TryGetValue(type.Name, out var props))
             {
-                props = type.GetProperties(BindingFlags.Public | BindingFlags.Instance);
+                props = type.GetProperties(BindingFlags.Public | BindingFlags.Instance).OrderBy(x => x.Name).ToArray();
                 writePropsCache[type.Name] = props;
             }
 
@@ -129,7 +129,7 @@ namespace Shinobytes.Ravenfall.RavenNet.Serializers
 
             if (!writeFieldsCache.TryGetValue(type.Name, out var fields))
             {
-                fields = type.GetFields(BindingFlags.Public | BindingFlags.Instance);
+                fields = type.GetFields(BindingFlags.Public | BindingFlags.Instance).OrderBy(x => x.Name).ToArray();
                 writeFieldsCache[type.Name] = fields;
             }
             //var fields = type.GetFields(BindingFlags.Public | BindingFlags.Instance);
@@ -298,7 +298,7 @@ namespace Shinobytes.Ravenfall.RavenNet.Serializers
 
             if (!readPropsCache.TryGetValue(type.Name, out var props))
             {
-                props = type.GetProperties(BindingFlags.Public | BindingFlags.Instance);
+                props = type.GetProperties(BindingFlags.Public | BindingFlags.Instance).OrderBy(x => x.Name).ToArray();
                 readPropsCache[type.Name] = props;
             }
 
@@ -314,7 +314,7 @@ namespace Shinobytes.Ravenfall.RavenNet.Serializers
 
             if (!readFieldsCache.TryGetValue(type.Name, out var fields))
             {
-                fields = type.GetFields(BindingFlags.Public | BindingFlags.Instance);
+                fields = type.GetFields(BindingFlags.Public | BindingFlags.Instance).OrderBy(x => x.Name).ToArray();
                 readFieldsCache[type.Name] = fields;
             }
 

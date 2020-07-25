@@ -2,6 +2,7 @@ using GameServer.Managers;
 using GameServer.Network;
 using GameServer.Processors;
 using RavenfallServer.Providers;
+using RavenNest.BusinessLogic.Data;
 using Shinobytes.Ravenfall.RavenNet.Core;
 using Shinobytes.Ravenfall.RavenNet.Models;
 
@@ -11,19 +12,18 @@ public class TreeChopAction : SkillObjectAction
 
     public TreeChopAction(
         IKernel kernel,
+        IGameData gameData,
         IWorldProcessor worldProcessor,
         IGameSessionManager sessionManager,
-        IItemManager itemProvider,
         IPlayerStatsProvider statsProvider,
-        IPlayerInventoryProvider inventoryProvider,
-        IPlayerConnectionProvider connectionProvider)
+        IPlayerInventoryProvider inventoryProvider)
         : base(1,
               "Chop",
               "Woodcutting",
               2000,
+              gameData,
               worldProcessor,
               sessionManager,
-              itemProvider,
               statsProvider,
               inventoryProvider)
     {
@@ -31,16 +31,17 @@ public class TreeChopAction : SkillObjectAction
         AfterAction += (_, ev) => MakeTreeStump(ev.Object);
     }
 
-    private void MakeTreeStump(WorldObject tree)
+    private void MakeTreeStump(GameObjectInstance tree)
     {
-        tree.DisplayObjectId = 0;
+        tree.Type = 0;
         World.UpdateObject(tree);
-        kernel.SetTimeout(() => RespawnTree(tree), tree.RespawnMilliseconds);
+        kernel.SetTimeout(() => RespawnTree(tree), GameData.GetGameObject(tree.ObjectId).RespawnMilliseconds);
     }
 
-    private void RespawnTree(WorldObject tree)
-    {        
-        tree.DisplayObjectId = tree.ObjectId;
+    private void RespawnTree(GameObjectInstance tree)
+    {
+        var obj = GameData.GetGameObject(tree.ObjectId);
+        tree.Type = obj.Type;
         World.UpdateObject(tree);
     }
 }

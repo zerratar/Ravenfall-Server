@@ -12,6 +12,9 @@ using Shinobytes.Ravenfall.RavenNet.Core;
 using Shinobytes.Ravenfall.RavenNet.Models;
 using Shinobytes.Ravenfall.RavenNet.Server;
 using Shinobytes.Ravenfall.RavenNet.Packets.Client;
+using GameServer.Repositories;
+using RavenNest.BusinessLogic.Data;
+using Shinobytes.Ravenfall.Data.Entities;
 
 namespace GameServer.Processors
 {
@@ -25,7 +28,7 @@ namespace GameServer.Processors
         private readonly IGameSessionProcessor gameSessionProcessor;
         private readonly IGameSessionManager sessions;
         private readonly IStreamBotManager botManager;
-        private readonly IItemManager itemProvider;
+        private readonly IGameData gameData;
 
         private readonly object objectUpdateMutex = new object();
 
@@ -37,10 +40,10 @@ namespace GameServer.Processors
             IPlayerConnectionProvider connectionProvider,
             IPlayerInventoryProvider playerInventoryProvider,
             IPlayerStatsProvider statsProvider,
-            IItemManager itemProvider,
             IGameSessionProcessor gameSessionProcessor,
             IGameSessionManager gameSessionManager,
-            IStreamBotManager botManager)
+            IStreamBotManager botManager,
+            IGameData gameData)
         {
             this.logger = logger;
             this.kernel = kernel;
@@ -50,7 +53,7 @@ namespace GameServer.Processors
             this.gameSessionProcessor = gameSessionProcessor;
             this.sessions = gameSessionManager;
             this.botManager = botManager;
-            this.itemProvider = itemProvider;
+            this.gameData = gameData;
             this.kernel.RegisterTickUpdate(Update, TimeSpan.FromSeconds(1f / 60f));
         }
 
@@ -67,12 +70,14 @@ namespace GameServer.Processors
             }
         }
 
-        public void UpdateObject(WorldObject obj)
+        public void UpdateObject(GameObjectInstance obj)
         {
             var session = sessions.Get(obj);
+            var gobj = gameData.GetGameObject(obj.ObjectId);
+            var transform = gameData.GetTransform(gobj.TransformId);
             foreach (var playerConnection in connectionProvider.GetAllActivePlayerConnections(session))
             {
-                playerConnection.Send(ObjectUpdate.Create(obj), SendOption.Reliable);
+                playerConnection.Send(ObjectUpdate.Create(obj, transform, gobj.Static), SendOption.Reliable);
             }
         }
 
@@ -80,10 +85,13 @@ namespace GameServer.Processors
         {
             var session = sessions.Get(player);
             var connections = connectionProvider.GetConnectedActivePlayerConnections(session);
+            var transform = gameData.GetTransform(player.TransformId);
+            var appearance = gameData.GetAppearance(player.AppearanceId);
+            var combatLevel = statsProvider.GetCombatLevel(player.Id);
+
             foreach (var connection in connections)
             {
-                var combatLevel = statsProvider.GetCombatLevel(player.Id);
-                connection.Send(PlayerAdd.Create(player, combatLevel), SendOption.Reliable);
+                connection.Send(PlayerAdd.Create(player, appearance, transform, combatLevel), SendOption.Reliable);
             }
         }
 
@@ -110,50 +118,57 @@ namespace GameServer.Processors
                 var objects = session.Objects.GetAll();
                 var npcs = session.Npcs.GetAll();
 
+                var myInventory = playerInventoryProvider.GetInventory(myConnection.Player.Id);
+                var myAppearance = gameData.GetAppearance(myConnection.Player.AppearanceId);
+                var myTransform = gameData.GetTransform(myConnection.Player.TransformId);
+                var myStats = statsProvider.GetStats(myConnection.Player.Id);
+                var myCombatLevel = statsProvider.GetCombatLevel(myConnection.Player.Id);
+
                 foreach (var connection in connections)
                 {
                     var isMe = connection.InstanceID == myConnection.InstanceID;
                     if (isMe)
                     {
-                        var stats = statsProvider.GetStats(myConnection.Player.Id);
-                        var level = statsProvider.GetCombatLevel(myConnection.Player.Id);
-                        var inventory = playerInventoryProvider.GetInventory(myConnection.Player.Id);
-                        connection.Send(MyPlayerAdd.Create(myConnection.Player, level, stats, inventory.Items), SendOption.Reliable);
+                        connection.Send(MyPlayerAdd.Create(myConnection.Player, myAppearance, myTransform, myCombatLevel, myStats, myInventory.Items), SendOption.Reliable);
                         //connection.Send(PlayerInventory.Create(myConnection.Player, inventory.Items), SendOption.Reliable);
                     }
                     else
                     {
                         var combatLevel = statsProvider.GetCombatLevel(connection.Player.Id);
-                        connection.Send(PlayerAdd.Create(myConnection.Player, combatLevel), SendOption.Reliable);
+                        connection.Send(PlayerAdd.Create(myConnection.Player, myAppearance, myTransform, combatLevel), SendOption.Reliable);
                     }
                 }
 
                 foreach (var player in allPlayers)
                 {
                     if (player.Id == myConnection.Player.Id) continue;
-                    var combatLevel = statsProvider.GetCombatLevel(myConnection.Player.Id);
-                    myConnection.Send(PlayerAdd.Create(player, combatLevel), SendOption.Reliable);
+                    var combatLevel = statsProvider.GetCombatLevel(player.Id);
+                    var appearance = gameData.GetAppearance(player.AppearanceId);
+                    var transform = gameData.GetTransform(player.TransformId);
+                    myConnection.Send(PlayerAdd.Create(player, appearance, transform, combatLevel), SendOption.Reliable);
                 }
 
                 foreach (var obj in objects)
                 {
-                    if (obj.Static)
+                    var gobj = gameData.GetGameObject(obj.ObjectId);
+                    var transform = gameData.GetTransform(gobj.TransformId);
+                    if (gobj.Static)
                     {
-                        if (obj.DisplayObjectId != obj.ObjectId)
+                        if (obj.Type != gobj.Type)
                         {
-                            myConnection.Send(ObjectUpdate.Create(obj), SendOption.Reliable);
+                            myConnection.Send(ObjectUpdate.Create(obj, transform, gobj.Static), SendOption.Reliable);
                         }
                     }
                     else
                     {
-                        myConnection.Send(ObjectAdd.Create(obj), SendOption.Reliable);
+                        myConnection.Send(ObjectAdd.Create(obj, transform), SendOption.Reliable);
                     }
                 }
 
-
                 foreach (var npc in npcs)
                 {
-                    myConnection.Send(NpcAdd.Create(npc), SendOption.Reliable);
+                    var transform = gameData.GetTransform(npc.TransformId);
+                    myConnection.Send(NpcAdd.Create(gameData, npc, transform), SendOption.Reliable);
                 }
             }
             catch (Exception exc)
@@ -165,6 +180,7 @@ namespace GameServer.Processors
         public void RemovePlayer(Player player)
         {
             var session = sessions.Get(player);
+            if (session == null) return;
 
             session.RemovePlayer(player);
 
@@ -183,7 +199,7 @@ namespace GameServer.Processors
             }
         }
 
-        public void PlayAnimation(Npc npc, string animation, bool enabled = true, bool trigger = false, int number = 0)
+        public void PlayAnimation(NpcInstance npc, string animation, bool enabled = true, bool trigger = false, int number = 0)
         {
             var session = sessions.Get(npc);
             foreach (var connection in connectionProvider.GetConnectedActivePlayerConnections(session))
@@ -230,10 +246,10 @@ namespace GameServer.Processors
         }
 
 
-        public void PlayerBuyItem(Player player, Npc npc, int itemId, int amount)
+        public void PlayerBuyItem(Player player, NpcInstance npc, int itemId, int amount)
         {
             var session = sessions.Get(player);
-            var item = itemProvider.GetItemById(itemId);
+            var item = gameData.GetItem(itemId);
             if (item == null) return;
 
             var shopInventory = session.Npcs.Inventories.GetInventory(npc.Id);
@@ -254,10 +270,10 @@ namespace GameServer.Processors
             }
         }
 
-        public void PlayerSellItem(Player player, Npc npc, int itemId, int amount)
+        public void PlayerSellItem(Player player, NpcInstance npc, int itemId, int amount)
         {
             var session = sessions.Get(player);
-            var item = itemProvider.GetItemById(itemId);
+            var item = gameData.GetItem(itemId);
             if (item == null) return;
 
             var inventory = playerInventoryProvider.GetInventory(player.Id);
@@ -293,7 +309,7 @@ namespace GameServer.Processors
             }, SendOption.Reliable);
         }
 
-        public void NpcTradeUpdateStock(Npc npc)
+        public void NpcTradeUpdateStock(NpcInstance npc)
         {
             var session = sessions.Get(npc);
             var shopInventory = session.Npcs.Inventories.GetInventory(npc.Id);
@@ -307,7 +323,7 @@ namespace GameServer.Processors
             for (var i = 0; i < itemCount; ++i)
             {
                 var item = shopInventory.Items[i];
-                itemIds[i] = item.Item.Id;
+                itemIds[i] = item.ItemId;
                 itemPrice[i] = item.Price;
                 itemStock[i] = item.Amount;
             }
@@ -334,7 +350,7 @@ namespace GameServer.Processors
             }
         }
 
-        public void DamageNpc(Player player, Npc npc, int damage, int health, int maxHealth)
+        public void DamageNpc(Player player, NpcInstance npc, int damage, int health, int maxHealth)
         {
             var session = sessions.Get(player);
             foreach (var connection in connectionProvider.GetConnectedActivePlayerConnections(session))
@@ -343,7 +359,7 @@ namespace GameServer.Processors
             }
         }
 
-        public void KillNpc(Player player, Npc npc)
+        public void KillNpc(Player player, NpcInstance npc)
         {
             var session = sessions.Get(player);
             foreach (var connection in connectionProvider.GetConnectedActivePlayerConnections(session))
@@ -352,7 +368,7 @@ namespace GameServer.Processors
             }
         }
 
-        public void RespawnNpc(Player player, Npc npc)
+        public void RespawnNpc(Player player, NpcInstance npc)
         {
             var session = sessions.Get(player);
             foreach (var connection in connectionProvider.GetConnectedActivePlayerConnections(session))
@@ -376,7 +392,7 @@ namespace GameServer.Processors
             }
         }
 
-        public void OpenTradeWindow(Player player, Npc npc, string shopName, ShopInventory shopInventory)
+        public void OpenTradeWindow(Player player, NpcInstance npc, string shopName, ShopInventory shopInventory)
         {
             var playerConnection = connectionProvider.GetPlayerConnection(player);
             if (playerConnection == null)
@@ -392,7 +408,7 @@ namespace GameServer.Processors
             for (var i = 0; i < itemCount; ++i)
             {
                 var item = shopInventory.Items[i];
-                itemIds[i] = item.Item.Id;
+                itemIds[i] = item.ItemId;
                 itemPrice[i] = item.Price;
                 itemStock[i] = item.Amount;
             }
@@ -409,7 +425,7 @@ namespace GameServer.Processors
         }
 
         public void PlayerNpcInteraction(
-            Player player, Npc npc, EntityAction action, int parameterId)
+            Player player, NpcInstance npc, EntityAction action, int parameterId)
         {
             if (action.Invoke(player, npc, parameterId))
             {
@@ -428,7 +444,7 @@ namespace GameServer.Processors
         }
 
         public void PlayerObjectInteraction(
-            Player player, WorldObject obj, EntityAction action, int parameterId)
+            Player player, GameObjectInstance obj, EntityAction action, int parameterId)
         {
             // use 
             if (action.Invoke(player, obj, parameterId))
@@ -449,7 +465,7 @@ namespace GameServer.Processors
 
         public void SetEntityInterval<TObject>(
             Player player, TObject obj, EntityTickHandler<TObject> handleObjectTick)
-            where TObject : Entity
+            where TObject : IEntity
         {
             lock (objectUpdateMutex)
                 entityIntervalItems.Add(
@@ -460,7 +476,7 @@ namespace GameServer.Processors
             Player player,
             TObject obj,
             EntityTickHandler<TObject> handleObjectTick)
-            where TObject : Entity
+            where TObject : IEntity
         {
             var tick = new EntityTick<TObject>(player, obj, handleObjectTick);
             var started = DateTime.Now;

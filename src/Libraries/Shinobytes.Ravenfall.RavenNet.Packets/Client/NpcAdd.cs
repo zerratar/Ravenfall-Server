@@ -1,4 +1,5 @@
-﻿using Shinobytes.Ravenfall.RavenNet.Models;
+﻿using RavenNest.BusinessLogic.Data;
+using Shinobytes.Ravenfall.RavenNet.Models;
 
 namespace Shinobytes.Ravenfall.RavenNet.Packets.Client
 {
@@ -13,16 +14,17 @@ namespace Shinobytes.Ravenfall.RavenNet.Packets.Client
         public Vector3 Rotation { get; set; }
         public Vector3 Destination { get; set; }
 
-        public static NpcAdd Create(Npc obj)
+        public static NpcAdd Create(IGameData gameData, NpcInstance obj, Transform transform)
         {
+
             return new NpcAdd
             {
                 ServerId = obj.Id,
-                NpcId = obj.NpcId,
+                NpcId = gameData.GetNpc(obj.NpcId).NpcId,
 #warning add health and max health for npc
-                Position = obj.Position,
-                Rotation = obj.Rotation,
-                Destination = obj.Destination
+                Position = transform.GetPosition(),
+                Rotation = transform.GetRotation(),
+                Destination = transform.GetDestination()
             };
         }
     }

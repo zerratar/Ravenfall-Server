@@ -6,23 +6,27 @@ using RavenfallServer.Providers;
 using Shinobytes.Ravenfall.RavenNet.Core;
 using Shinobytes.Ravenfall.RavenNet.Server;
 using Shinobytes.Ravenfall.RavenNet.Packets.Client;
+using RavenNest.BusinessLogic.Data;
 
 namespace GameServer.PacketHandlers
 {
     public class PlayerMoveRequestHandler : PlayerPacketHandler<PlayerMoveRequest>
     {
         private readonly ILogger logger;
+        private readonly IGameData gameData;
         private readonly IPlayerStateProvider playerState;
         private readonly IPlayerConnectionProvider connectionProvider;
         private readonly IGameSessionManager sessionManager;
 
         public PlayerMoveRequestHandler(
             ILogger logger,
+            IGameData gameData,
             IPlayerStateProvider playerState,
             IPlayerConnectionProvider connectionProvider,
             IGameSessionManager sessionManager)
         {
             this.logger = logger;
+            this.gameData = gameData;
             this.playerState = playerState;
             this.connectionProvider = connectionProvider;
             this.sessionManager = sessionManager;
@@ -41,8 +45,11 @@ namespace GameServer.PacketHandlers
             logger.LogDebug($"Move Request from {connection.Player.Id} from {data.Position} to {data.Destination}");
 
             var player = connection.Player;
-            player.Position = data.Position;
-            player.Destination = data.Destination;
+
+            var transform = gameData.GetTransform(player.TransformId);
+
+            transform.SetPosition(data.Position);
+            transform.SetDestination(data.Destination);
 
             var session = sessionManager.Get(player);
 
@@ -58,7 +65,7 @@ namespace GameServer.PacketHandlers
                 {
                     PlayerId = player.Id,
                     Destination = data.Destination,
-                    Position = player.Position,
+                    Position = data.Position,
                     Running = data.Running
                 }, Shinobytes.Ravenfall.RavenNet.SendOption.Reliable);
             }

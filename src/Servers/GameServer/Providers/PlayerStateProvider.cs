@@ -27,19 +27,19 @@ namespace RavenfallServer.Providers
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public DateTime GetAttackTime(Player player, Npc npc)
+        public DateTime GetAttackTime(Player player, NpcInstance npc)
         {
             return GetState<DateTime>(player, AttackTimeStatePrefix + TagNPC + npc.Id);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void UpdateAttackTime(Player player, Npc npc)
+        public void UpdateAttackTime(Player player, NpcInstance npc)
         {
             SetState(player, AttackTimeStatePrefix + TagNPC + npc.Id, DateTime.UtcNow);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void ClearAttackTime(Player player, Npc npc)
+        public void ClearAttackTime(Player player, NpcInstance npc)
         {
             SetState(player, AttackTimeStatePrefix + TagNPC + npc.Id, DateTime.MinValue);
         }
@@ -54,13 +54,13 @@ namespace RavenfallServer.Providers
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void EnterCombat(Player player, Npc opponent)
+        public void EnterCombat(Player player, NpcInstance opponent)
         {
             SetState(player, InCombatState + TagNPC + opponent.Id, true);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool InCombat(Player player, Npc opponent)
+        public bool InCombat(Player player, NpcInstance opponent)
         {
             return GetState<bool>(player, InCombatState + TagNPC + opponent.Id);
         }

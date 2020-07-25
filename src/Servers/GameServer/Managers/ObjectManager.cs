@@ -1,33 +1,37 @@
 ﻿using GameServer.Repositories;
+using RavenNest.BusinessLogic.Data;
 using Shinobytes.Ravenfall.RavenNet.Core;
 using Shinobytes.Ravenfall.RavenNet.Models;
-using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 
 namespace GameServer.Managers
 {
     public class ObjectManager : EntityManager, IObjectManager
     {
-        private readonly ConcurrentDictionary<int, ObjectItemDrop[]> objectItemDrops
-            = new ConcurrentDictionary<int, ObjectItemDrop[]>();
+        private readonly ConcurrentDictionary<int, ItemDrop[]> objectItemDrops
+            = new ConcurrentDictionary<int, ItemDrop[]>();
 
-        private readonly List<Shinobytes.Ravenfall.RavenNet.Models.WorldObject> entities = new List<Shinobytes.Ravenfall.RavenNet.Models.WorldObject>();
+        private readonly List<GameObjectInstance> entities = new List<GameObjectInstance>();
         private readonly object mutex = new object();
         private readonly IoC ioc;
-        private readonly IWorldObjectRepository objectRepository;
+        private readonly Session gameSession;
+        private readonly IGameData gameData;
         private readonly IEntityActionsRepository actionRepo;
         private int index = 0;
 
         public ObjectManager(
-            IoC ioc, IWorldObjectRepository objRepo, IEntityActionsRepository actionRepo)
+            IoC ioc,
+            Session gameSession,
+            IGameData gameData,
+            IEntityActionsRepository actionRepo)
             : base(ioc, actionRepo)
 
         {
             this.ioc = ioc;
-            objectRepository = objRepo;
+            this.gameSession = gameSession;
+            this.gameData = gameData;
             this.actionRepo = actionRepo;
 
             AddGameObjects();
@@ -35,34 +39,36 @@ namespace GameServer.Managers
             AddActions(EntityType.Object);
         }
 
-        public ObjectItemDrop[] GetItemDrops(Shinobytes.Ravenfall.RavenNet.Models.WorldObject obj)
+        public ItemDrop[] GetItemDrops(GameObjectInstance obj)
         {
-            if (objectItemDrops.TryGetValue(obj.ObjectId, out var drops))
+            var type = gameData.GetGameObject(obj.ObjectId).Type;
+            if (objectItemDrops.TryGetValue(type, out var drops))
             {
                 return drops;
             }
 
-            return new ObjectItemDrop[0];
+            return new ItemDrop[0];
         }
 
-        public Shinobytes.Ravenfall.RavenNet.Models.WorldObject Get(int objectServerId)
+        public GameObjectInstance Get(int instanceId)
         {
             lock (mutex)
             {
-                return entities.FirstOrDefault(x => x.Id == objectServerId);
+                return entities.FirstOrDefault(x => x.Id == instanceId);
             }
         }
 
-        public EntityAction GetAction(Shinobytes.Ravenfall.RavenNet.Models.WorldObject obj, int actionId)
+        public EntityAction GetAction(GameObjectInstance obj, int actionId)
         {
-            if (entityActions.TryGetValue(obj.ObjectId, out var actions))
+            var type = gameData.GetGameObject(obj.ObjectId).Type;
+            if (entityActions.TryGetValue(type, out var actions))
             {
                 return actions.Select(x => x.Value).FirstOrDefault(x => x.Id == actionId);
             }
             return null;
         }
 
-        public IReadOnlyList<Shinobytes.Ravenfall.RavenNet.Models.WorldObject> GetAll()
+        public IReadOnlyList<GameObjectInstance> GetAll()
         {
             lock (mutex)
             {
@@ -70,39 +76,39 @@ namespace GameServer.Managers
             }
         }
 
-        public Shinobytes.Ravenfall.RavenNet.Models.WorldObject Replace(int serverObjectId, int newObjectId)
+        public GameObjectInstance Replace(int instanceId, int newType)
         {
             lock (mutex)
             {
-                var targetObject = entities.FirstOrDefault(x => x.Id == serverObjectId);
+                var targetObject = entities.FirstOrDefault(x => x.Id == instanceId);
                 if (targetObject == null) return null;
-                targetObject.ObjectId = newObjectId;
+                targetObject.Type = newType;
                 return targetObject;
             }
         }
 
-        private void RegisterObjectItemDrop(int objectId, params ObjectItemDrop[] items)
+        private void RegisterObjectItemDrop(int objectId, params ItemDrop[] items)
         {
             objectItemDrops[objectId] = items;
         }
 
         protected void AddGameObjects()
         {
-            var objects = objectRepository.AllObjects();
+            var objects = gameData.GetAllGameObjectInstances(this.gameSession.Id);
 
             foreach (var obj in objects)
             {
-                obj.Id = Interlocked.Increment(ref index);
                 entities.Add(obj);
             }
         }
 
         private void AddObjectDrops()
         {
-            var drops = objectRepository.GetItemDrops();
+            IReadOnlyList<ItemDrop> drops = gameData.GetAllObjectItemDrops();
+            //var drops = objectRepository.GetItemDrops();
             foreach (var drop in drops)
             {
-                RegisterObjectItemDrop(drop.ObjectId, drop.Drops);
+                RegisterObjectItemDrop(drop.EntityId, drop);
             }
         }
     }

@@ -1,20 +1,24 @@
-﻿using System;
-using System.Collections.Concurrent;
+﻿using RavenNest.BusinessLogic.Data;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Shinobytes.Ravenfall.RavenNet.Models
 {
     public class ShopInventory
     {
-        private readonly ConcurrentDictionary<int, ShopInventoryItem> items
-            = new ConcurrentDictionary<int, ShopInventoryItem>();
+        private readonly int npcInstanceId;
+        private readonly IGameData gameData;
 
-        public IReadOnlyList<ShopInventoryItem> Items => items.Values.ToList();
+        public IReadOnlyList<ShopItem> Items => gameData.GetShopItems(npcInstanceId);
 
-        public ShopInventoryItem GetItem(int id)
+        public ShopInventory(int npcInstanceId, IGameData gameData)
         {
-            return items.TryGetValue(id, out var invItem) ? invItem : null;
+            this.npcInstanceId = npcInstanceId;
+            this.gameData = gameData;
+        }
+
+        public ShopItem GetItem(int id)
+        {
+            return gameData.GetShopItem(npcInstanceId, id);
         }
 
         public bool HasItem(int itemId, int amount)
@@ -35,34 +39,31 @@ namespace Shinobytes.Ravenfall.RavenNet.Models
 
         public void AddItem(Item item, int amount, int price)
         {
-            if (items.TryGetValue(item.Id, out var existing))
+            var existing = gameData.GetShopItem(npcInstanceId, item.Id);
+            if (existing != null)
             {
                 existing.Amount += amount;
             }
             else
             {
-                items[item.Id] = new ShopInventoryItem
-                {
-                    Item = item,
-                    Amount = amount,
-                    Price = price,
-                };
+                var shopItem = gameData.CreateShopItem();
+                shopItem.NpcInstanceId = npcInstanceId;
+                shopItem.ItemId = item.Id;
+                shopItem.Amount = amount;
+                shopItem.Price = price;
             }
         }
 
         public void RemoveItem(Item item, int amount)
         {
-            if (!items.TryGetValue(item.Id, out var existing))
-                return;
+            var shopItem = gameData.GetShopItem(npcInstanceId, item.Id);
+            if (shopItem == null) return;
 
-            existing.Amount -= amount;
-        }
-
-        public class ShopInventoryItem
-        {
-            public Item Item { get; set; }
-            public int Amount { get; set; }
-            public int Price { get; set; }
+            shopItem.Amount -= amount;
+            if (shopItem.Amount < 0)
+            {
+                gameData.Remove(shopItem);
+            }
         }
     }
 }

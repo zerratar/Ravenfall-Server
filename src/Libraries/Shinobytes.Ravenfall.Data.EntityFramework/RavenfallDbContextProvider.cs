@@ -1,16 +1,15 @@
 ﻿using Microsoft.Data.SqlClient;
-using Microsoft.Extensions.Options;
 using Shinobytes.Ravenfall.RavenNet.Core;
 
 namespace Shinobytes.Ravenfall.Data.EntityFramework.Legacy
 {
     public class RavenfallDbContextProvider : IRavenfallDbContextProvider
     {
-        private readonly AppSettings settings;
+        private readonly IAppSettings settings;
 
-        public RavenfallDbContextProvider(IOptions<AppSettings> settings)
+        public RavenfallDbContextProvider(IAppSettings settings)
         {
-            this.settings = settings.Value;
+            this.settings = settings;
         }
 
         public RavenfallDbContext Get()

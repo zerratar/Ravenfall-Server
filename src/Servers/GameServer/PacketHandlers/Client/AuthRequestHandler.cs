@@ -7,12 +7,14 @@ using Shinobytes.Ravenfall.RavenNet;
 using Shinobytes.Ravenfall.RavenNet.Packets.Client;
 using Shinobytes.Ravenfall.RavenNet.Server;
 using System.Linq;
+using RavenNest.BusinessLogic.Data;
 
 namespace GameServer.PacketHandlers
 {
     public class AuthRequestHandler : PlayerPacketHandler<AuthRequest>
     {
         private readonly ILogger logger;
+        private readonly IGameData gameData;
         private readonly IPlayerProvider playerProvider;
         private readonly IUserManager userManager;
         private readonly IAuthService authService;
@@ -20,12 +22,14 @@ namespace GameServer.PacketHandlers
 
         public AuthRequestHandler(
             ILogger logger,
+            IGameData gameData,
             IPlayerProvider playerProvider,
             IUserManager userManager,
             IAuthService authService,
             IPlayerConnectionProvider connectionProvider)
         {
             this.logger = logger;
+            this.gameData = gameData;
             this.playerProvider = playerProvider;
             this.userManager = userManager;
             this.authService = authService;
@@ -91,7 +95,10 @@ namespace GameServer.PacketHandlers
 
         private void SendPlayerList(PlayerConnection connection)
         {
-            connection.Send(UserPlayerList.Create(playerProvider.GetPlayers(connection.User).ToArray()), SendOption.Reliable);
+            var players = playerProvider.GetPlayers(connection.User).ToArray();
+            var appearances = players.Select(x => gameData.GetAppearance(x.AppearanceId)).ToArray();
+
+            connection.Send(UserPlayerList.Create(gameData, players, appearances), SendOption.Reliable);
         }
     }
 }

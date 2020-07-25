@@ -41,7 +41,7 @@ namespace GameServer.Network
             // try and get the player connection, if its null get the session host instead.
             // as it might be a player without a client (instantiated by Twitch commands)
             return GetConnection<PlayerConnection>(x =>
-                   x != null &&
+                   x != null && x.Player != null &&
                    x.Player.Id == player.Id) ?? session.Host;
         }
 

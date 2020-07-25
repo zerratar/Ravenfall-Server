@@ -6,7 +6,7 @@ namespace GameServer.Processors
 {
     public class ObjectProcessor : IObjectProcessor
     {
-        public void Update(WorldObject item, IGameSession session, TimeSpan deltaTime)
+        public void Update(GameObjectInstance obj, IGameSession session, TimeSpan deltaTime)
         {
         }
     }

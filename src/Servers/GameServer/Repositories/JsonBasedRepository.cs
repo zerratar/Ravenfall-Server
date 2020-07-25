@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 
 namespace GameServer.Repositories
@@ -10,10 +12,15 @@ namespace GameServer.Repositories
         private readonly string repositoryFile;
         private List<T> itemSource;
 
-
         public JsonBasedRepository()
         {
             repositoryFile = typeof(T).FullName + ".json";
+            LoadRepository();
+        }
+
+        public JsonBasedRepository(string file)
+        {
+            repositoryFile = file;
             LoadRepository();
         }
 
@@ -22,6 +29,41 @@ namespace GameServer.Repositories
             lock (mutex)
             {
                 return this.itemSource;
+            }
+        }
+
+        public void Add(T item)
+        {
+            lock (mutex)
+            {
+                itemSource.Add(item);
+                Save();
+            }
+        }
+        public void Remove(T item)
+        {
+            lock (mutex)
+            {
+                itemSource.Remove(item);
+                Save();
+            }
+        }
+
+        public T FirstOrDefault(Func<T, bool> predicate)
+        {
+            lock (mutex)
+            {
+                return this.itemSource.FirstOrDefault(predicate);
+            }
+        }
+
+        public void Save()
+        {
+            lock (mutex)
+            {
+                var file = GetRepositoryFilePath();
+                var data = Newtonsoft.Json.JsonConvert.SerializeObject(this.itemSource);
+                System.IO.File.WriteAllText(file, data);
             }
         }
 
@@ -40,6 +82,7 @@ namespace GameServer.Repositories
                 this.itemSource = Newtonsoft.Json.JsonConvert.DeserializeObject<List<T>>(data);
             }
         }
+
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private string GetRepositoryFilePath()

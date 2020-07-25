@@ -6,29 +6,29 @@ namespace GameServer.Managers
 {
     public class GameSession : IGameSession
     {
-        private readonly string sessionKey;
+        private readonly Session session;
 
         public GameSession(
-            string name,
+            Session session,
             INpcManager npcManager,
             IObjectManager objectManager,
             bool isOpenWorldSession)
         {
-            this.sessionKey = name;
+            this.session = session;
+
             Npcs = npcManager;
             Objects = objectManager;
             IsOpenWorldSession = isOpenWorldSession;
-            Items = new ItemManager();
             Players = new PlayerManager();
         }
 
         public IStreamBot Bot { get; private set; }
-        public IItemManager Items { get; private set; }
         public INpcManager Npcs { get; private set; }
         public IObjectManager Objects { get; private set; }
         public IPlayerManager Players { get; private set; }
         public PlayerConnection Host { get; private set; }
         public bool IsOpenWorldSession { get; }
+        public int Id => session.Id;
 
         public bool ContainsPlayer(Player player)
         {
@@ -41,6 +41,7 @@ namespace GameServer.Managers
             if (!IsOpenWorldSession && Host == null)
             {
                 Host = connection;
+                session.UserId = connection.User.Id;
             }
 
             AddPlayer(connection.Player);
@@ -48,24 +49,24 @@ namespace GameServer.Managers
 
         public void AddPlayer(Player player)
         {
-            player.Session = sessionKey;
+            player.SessionId = session.Id;
             Players.Add(player);
 
             if (Bot != null)
             {
-                Bot.OnPlayerAdd(sessionKey, player);
+                Bot.OnPlayerAdd(session.Name, player);
             }
         }
 
         public void RemovePlayer(Player player)
         {
-            player.Session = null;
+            player.SessionId = null;
             Players.Remove(player);
             Objects.ReleaseLocks(player);
 
             if (Bot != null)
             {
-                Bot.OnPlayerRemove(sessionKey, player);
+                Bot.OnPlayerRemove(session.Name, player);
             }
         }
 
@@ -80,7 +81,7 @@ namespace GameServer.Managers
                 bot.Connect(Host.User);
                 foreach (var player in Players.GetAll())
                 {
-                    Bot.OnPlayerAdd(sessionKey, player);
+                    Bot.OnPlayerAdd(session.Name, player);
                 }
             }
         }

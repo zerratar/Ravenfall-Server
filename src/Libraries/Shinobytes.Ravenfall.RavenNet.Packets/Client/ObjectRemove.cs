@@ -7,7 +7,7 @@ namespace Shinobytes.Ravenfall.RavenNet.Packets.Client
         public const short OpCode = 10;
         public int ObjectServerId { get; set; }
 
-        public static ObjectRemove Create(WorldObject obj)
+        public static ObjectRemove Create(GameObject obj)
         {
             return new ObjectRemove
             {

@@ -9,14 +9,14 @@ namespace Shinobytes.Ravenfall.RavenNet.Packets.Client
         public int ObjectId { get; set; }
         public Vector3 Position { get; set; }
         public bool Static { get; set; }
-        public static ObjectUpdate Create(WorldObject obj)
+        public static ObjectUpdate Create(GameObjectInstance obj, Transform transform, bool isStatic)
         {
             return new ObjectUpdate
             {
                 ObjectServerId = obj.Id,
-                ObjectId = obj.DisplayObjectId,
-                Position = obj.Position,
-                Static = obj.Static
+                ObjectId = obj.Type,
+                Position = transform.GetPosition(),
+                Static = isStatic
             };
         }
     }

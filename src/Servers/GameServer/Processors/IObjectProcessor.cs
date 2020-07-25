@@ -2,7 +2,7 @@
 
 namespace GameServer.Processors
 {
-    public interface IObjectProcessor : IEntityProcessor<WorldObject>
+    public interface IObjectProcessor : IEntityProcessor<GameObjectInstance>
     {
     }
 }

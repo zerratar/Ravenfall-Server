@@ -4,6 +4,7 @@ namespace RavenfallServer.Providers
 {
     public interface IPlayerInventoryProvider
     {
-        Inventory GetInventory(int id);
+        Inventory GetInventory(int playerId);
+        void CreateInventory(int playerId);
     }
 }

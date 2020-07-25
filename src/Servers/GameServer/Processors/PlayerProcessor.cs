@@ -1,5 +1,6 @@
 ﻿using GameServer.Managers;
 using GameServer.Providers;
+using GameServer.Repositories;
 using Shinobytes.Ravenfall.Core.RuleEngine;
 using Shinobytes.Ravenfall.RavenNet.Models;
 using System;
@@ -12,7 +13,6 @@ namespace GameServer.Processors
         private readonly IPlayerGambitRuleProvider ruleProvider;
         private readonly IGambitGenerator engineGenerator;
         private readonly IGambitRuleGenerator ruleGenerator;
-
         public PlayerProcessor(
             IGameSessionController sessionController,
             IPlayerGambitRuleProvider ruleProvider,
@@ -34,6 +34,7 @@ namespace GameServer.Processors
                 engine.AddRules(rules);
                 engine.ProcessRules(new PlayerKnowledgeBase() { Player = player, Session = gameSession });
             }
+
         }
     }
 }

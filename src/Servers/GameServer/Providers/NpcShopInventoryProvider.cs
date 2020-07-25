@@ -1,5 +1,6 @@
 ﻿
 using GameServer.Managers;
+using RavenNest.BusinessLogic.Data;
 using Shinobytes.Ravenfall.RavenNet.Models;
 using System.Collections.Concurrent;
 
@@ -9,27 +10,29 @@ namespace RavenfallServer.Providers
     {
         private readonly ConcurrentDictionary<int, ShopInventory> inventories
           = new ConcurrentDictionary<int, ShopInventory>();
+        private readonly IGameData gameData;
 
-        private readonly IItemManager itemProvider;
-
-        public NpcShopInventoryProvider(IItemManager itemProvider)
+        public NpcShopInventoryProvider(IGameData gameData)
         {
-            this.itemProvider = itemProvider;
+            this.gameData = gameData;
         }
 
-        public ShopInventory GetInventory(int npcServerId)
+        public ShopInventory GetInventory(int npcInstanceId)
         {
-            if (inventories.TryGetValue(npcServerId, out var inventory))
+            if (inventories.TryGetValue(npcInstanceId, out var inventory))
                 return inventory;
 
-            inventory = inventories[npcServerId] = new ShopInventory();
+            inventory = inventories[npcInstanceId] = new ShopInventory(npcInstanceId, gameData);
 
-            // Add Hatchet and Pickaxe as starting items
-            inventory.AddItem(itemProvider.GetItemById(0), 1, 10); // hatchet
-            inventory.AddItem(itemProvider.GetItemById(1), 1, 10); // pickaxe
-            inventory.AddItem(itemProvider.GetItemById(7), 1, 10); // fishing net
-            inventory.AddItem(itemProvider.GetItemById(2), 0, 10); // copper ore
-            inventory.AddItem(itemProvider.GetItemById(3), 0, 10); // logs
+            if (inventory.Items.Count == 0)
+            {
+                // Add Hatchet and Pickaxe as starting items
+                inventory.AddItem(gameData.GetItem(0), 1, 10); // hatchet
+                inventory.AddItem(gameData.GetItem(1), 1, 10); // pickaxe
+                inventory.AddItem(gameData.GetItem(7), 1, 10); // fishing net
+                inventory.AddItem(gameData.GetItem(2), 0, 10); // copper ore
+                inventory.AddItem(gameData.GetItem(3), 0, 10); // logs
+            }
 
             return inventory;
         }

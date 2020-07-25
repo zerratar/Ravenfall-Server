@@ -1,12 +1,13 @@
 ﻿using GameServer.Managers;
 using GameServer.Processors;
 using RavenfallServer.Providers;
+using RavenNest.BusinessLogic.Data;
 
 public class FishAction : SkillObjectAction
 {
     public FishAction(
+        IGameData gameData,
         IWorldProcessor worldProcessor,
-        IItemManager itemProvider,
         IGameSessionManager sessionManager,
         IPlayerStatsProvider statsProvider,
         IPlayerInventoryProvider inventoryProvider)
@@ -14,9 +15,9 @@ public class FishAction : SkillObjectAction
       "Fish",
       "Fishing",
       2000,
+      gameData,
       worldProcessor,
       sessionManager,
-      itemProvider,
       statsProvider,
       inventoryProvider)
     {

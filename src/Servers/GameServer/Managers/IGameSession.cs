@@ -12,9 +12,9 @@ namespace GameServer.Managers
 
     public interface IGameSession
     {
+        int Id { get; }
         IPlayerManager Players { get; }
         INpcManager Npcs { get; }
-        IItemManager Items { get; }
         IObjectManager Objects { get; }
         IStreamBot Bot { get; }
         bool IsOpenWorldSession { get; }

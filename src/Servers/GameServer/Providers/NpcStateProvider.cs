@@ -10,7 +10,7 @@ namespace RavenfallServer.Providers
         private ConcurrentDictionary<int, Dictionary<int, NpcAlignment>> alignments =
             new ConcurrentDictionary<int, Dictionary<int, NpcAlignment>>();
 
-        public NpcAlignment SetAlignment(Player player, Npc npc, NpcAlignment alignment)
+        public NpcAlignment SetAlignment(Player player, NpcInstance npc, NpcAlignment alignment)
         {
             if (alignments.TryGetValue(player.Id, out var a))
             {
@@ -28,7 +28,7 @@ namespace RavenfallServer.Providers
             return alignments[player.Id][npc.Id];
         }
 
-        public NpcAlignment GetAlignment(Player player, Npc npc)
+        public NpcAlignment GetAlignment(Player player, NpcInstance npc)
         {
             if (alignments.TryGetValue(player.Id, out var a))
             {
@@ -42,16 +42,16 @@ namespace RavenfallServer.Providers
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool IsEnemy(Player player, Npc npc)
+        public bool IsEnemy(Player player, NpcInstance npc)
         {
             return GetAlignment(player, npc) == NpcAlignment.Enemy;
         }
 
-        public void ExitCombat(Npc npc)
+        public void ExitCombat(NpcInstance npc)
         {
         }
 
-        public void EnterCombat(Npc npc, Player player)
+        public void EnterCombat(NpcInstance npc, Player player)
         {
         }
     }

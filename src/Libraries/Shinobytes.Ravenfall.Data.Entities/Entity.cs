@@ -6,10 +6,17 @@ using System.Runtime.CompilerServices;
 
 namespace Shinobytes.Ravenfall.Data.Entities
 {
-    public interface IEntity { }
+    public interface IEntity
+    {
+        int Id { get; set; }
+    }
+
     public class Entity<TModel> : IEntity, INotifyPropertyChanged
     {
+        private int id;
+
         public event PropertyChangedEventHandler PropertyChanged;
+        public int Id { get => id; set => Set(ref id, value); }
 
         protected bool Set<TProp>(ref TProp item, TProp value, [CallerMemberName] string propertyName = null)
         {
@@ -40,12 +47,4 @@ namespace Shinobytes.Ravenfall.Data.Entities
             return values.Select(x => new KeyValuePair<TKey, TValue>(keySelector(x), valueSelector(x)));
         }
     }
-
-    //public enum EntityState
-    //{
-    //    Unchanged,
-    //    Added,
-    //    Modified,
-    //    Removed
-    //}
 }

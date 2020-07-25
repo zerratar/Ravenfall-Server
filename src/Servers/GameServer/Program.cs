@@ -6,7 +6,10 @@ using GameServer.Repositories;
 using GameServer.Services;
 using Microsoft.Extensions.Logging;
 using RavenfallServer.Providers;
+using RavenNest.BusinessLogic.Data;
 using Shinobytes.Ravenfall.Core.RuleEngine;
+using Shinobytes.Ravenfall.Data;
+using Shinobytes.Ravenfall.Data.EntityFramework.Legacy;
 using Shinobytes.Ravenfall.RavenNet;
 using Shinobytes.Ravenfall.RavenNet.Core;
 using Shinobytes.Ravenfall.RavenNet.Packets;
@@ -24,6 +27,10 @@ namespace GameServer
         {
             var ioc = new IoC();
             ioc.RegisterCustomShared<IoC>(() => ioc);
+            ioc.RegisterCustomShared<IAppSettings>(() => new AppSettings
+            {
+                DbConnectionString = "Server=localhost;Database=Ravenfall2;Trusted_Connection=True;Integrated Security=True;"
+            });
             ioc.RegisterShared<IKernel, Kernel>();
             ioc.RegisterShared<ILogger, ConsoleLogger>();
             ioc.RegisterShared<IBinarySerializer, BinarySerializer>();
@@ -46,11 +53,14 @@ namespace GameServer
             // Managers
             ioc.RegisterShared<IGameSessionManager, GameSessionManager>();
             ioc.RegisterShared<IUserManager, UserManager>();
-            ioc.RegisterShared<IItemManager, ItemManager>();
             ioc.RegisterShared<IStreamBotManager, StreamBotManager>();
 
             ioc.RegisterShared<IGameSessionController, GameSessionController>();
 
+            // db
+            ioc.RegisterShared<IRavenfallDbContextProvider, RavenfallDbContextProvider>();
+            ioc.RegisterShared<IQueryBuilder, QueryBuilder>();
+            ioc.RegisterShared<IGameData, GameData>();
 
             // IObjectManager and INpcManager should be removed from here
             // they should be instanced per Session
@@ -72,14 +82,10 @@ namespace GameServer
             // services
             ioc.RegisterShared<IAuthService, AuthService>();
 
-
             // repositories
             ioc.RegisterShared<IWorldObjectRepository, JsonBasedWorldObjectRepository>();
             ioc.RegisterShared<IItemRepository, JsonBasedItemRepository>();
-            ioc.RegisterShared<INpcRepository, JsonBasedNpcRepository>();
-            ioc.RegisterShared<IPlayerRepository, JsonBasedPlayerRepository>();
             ioc.RegisterShared<IEntityActionsRepository, JsonBasedEntityActionsRepository>();
-
 
             var logger = ioc.Resolve<ILogger>();
             var sessionManager = ioc.Resolve<IGameSessionManager>();

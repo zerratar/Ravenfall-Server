@@ -10,13 +10,13 @@ namespace Shinobytes.Ravenfall.RavenNet.Packets.Client
         public int[] ItemId { get; set; }
         public long[] Amount { get; set; }
         public long Coins { get; set; }
-        public static PlayerInventory Create(Player player, IReadOnlyList<Inventory.InventoryItem> items)
+        public static PlayerInventory Create(Player player, IReadOnlyList<InventoryItem> items)
         {
             var itemIds = new int[items.Count];
             var amounts = new long[items.Count];
             for (var i = 0; i < items.Count; ++i)
             {
-                itemIds[i] = items[i].Item.Id;
+                itemIds[i] = items[i].ItemId;
                 amounts[i] = items[i].Amount;
             }
 

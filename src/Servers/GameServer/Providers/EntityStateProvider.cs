@@ -1,4 +1,5 @@
 ﻿using RavenfallServer.Providers;
+using Shinobytes.Ravenfall.Data.Entities;
 using Shinobytes.Ravenfall.RavenNet.Models;
 using System.Collections.Concurrent;
 
@@ -8,12 +9,12 @@ namespace GameServer.Providers
     {
         protected readonly ConcurrentDictionary<string, object> State
              = new ConcurrentDictionary<string, object>();
-        public void RemoveState(Entity entity, string key)
+        public void RemoveState(IEntity entity, string key)
         {
             State.TryRemove(entity.Id + key, out _);
         }
 
-        public T GetState<T>(Entity entity, string key)
+        public T GetState<T>(IEntity entity, string key)
         {
             var rowKey = entity.Id + key;
             if (State.TryGetValue(rowKey, out var value))
@@ -23,7 +24,7 @@ namespace GameServer.Providers
             return default;
         }
 
-        public void SetState<T>(Entity entity, string key, T value)
+        public void SetState<T>(IEntity entity, string key, T value)
         {
             var rowKey = entity.Id + key;
             State[rowKey] = value;

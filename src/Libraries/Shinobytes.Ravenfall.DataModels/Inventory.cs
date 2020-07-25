@@ -1,26 +1,33 @@
-﻿using System;
+﻿using RavenNest.BusinessLogic.Data;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace Shinobytes.Ravenfall.RavenNet.Models
 {
-
     public class Inventory
     {
-        private readonly ConcurrentDictionary<int, InventoryItem> inventoryItems
-            = new ConcurrentDictionary<int, InventoryItem>();
+        private readonly int playerId;
+        private readonly IGameData gameData;
 
-        public IReadOnlyList<InventoryItem> Items => inventoryItems.Values.ToList();
+        public Inventory(int playerId, IGameData gameData)
+        {
+            this.playerId = playerId;
+            this.gameData = gameData;
+        }
+
+
+        public IReadOnlyList<InventoryItem> Items => gameData.GetAllPlayerItems(playerId);
 
         public InventoryItem GetItem(int id)
         {
-            return inventoryItems.TryGetValue(id, out var invItem) ? invItem : null;
+            return gameData.GetInventoryItem(playerId, id);
         }
 
         public InventoryItem GetItemOfType(int interactItemType)
         {
-            return inventoryItems.Values.FirstOrDefault(x => x.Item.Type == interactItemType);
+            return Items.FirstOrDefault(x => gameData.GetItem(x.ItemId).Type == interactItemType);
         }
 
         public void EquipItem(Item item)
@@ -44,32 +51,31 @@ namespace Shinobytes.Ravenfall.RavenNet.Models
 
         public void AddItem(Item item, int amount)
         {
-            if (inventoryItems.TryGetValue(item.Id, out var existing))
+            var existing = GetItem(item.Id);
+            if (existing != null)
             {
                 existing.Amount += amount;
             }
             else
             {
-                inventoryItems[item.Id] = new InventoryItem
-                {
-                    Item = item,
-                    Amount = amount
-                };
+                var inventoryItem = gameData.CreateInventoryItem();
+                inventoryItem.ItemId = item.Id;
+                inventoryItem.PlayerId = playerId;
+                inventoryItem.Amount = amount;
             }
         }
 
         public void RemoveItem(Item item, int amount)
         {
-            if (!inventoryItems.TryGetValue(item.Id, out var existing))
-                return;
-
-            existing.Amount -= amount;
-        }
-
-        public class InventoryItem
-        {
-            public Item Item { get; set; }
-            public long Amount { get; set; }
+            var existing = GetItem(item.Id);
+            if (existing != null)
+            {
+                existing.Amount -= amount;
+                if (existing.Amount <= 0)
+                {
+                    gameData.Remove(existing);
+                }
+            }
         }
     }
 }

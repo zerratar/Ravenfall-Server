@@ -1,6 +1,7 @@
 ﻿using GameServer.Managers;
 using GameServer.Processors;
 using RavenfallServer.Providers;
+using Shinobytes.Ravenfall.Data.Entities;
 using Shinobytes.Ravenfall.RavenNet.Models;
 
 public class NpcTradeAction : EntityAction
@@ -19,10 +20,10 @@ public class NpcTradeAction : EntityAction
 
     public override bool Invoke(
         Player player,
-        Entity obj,
+        IEntity obj,
         int parameterId)
     {        
-        if (!(obj is Npc npc))
+        if (!(obj is NpcInstance npc))
         {
             return false;
         }

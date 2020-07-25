@@ -7,11 +7,11 @@ namespace GameServer.Managers
     {
         IReadOnlyList<IGameSession> GetAll();
         IReadOnlyList<IGameSession> GetUserSessions(User user);
-        IGameSession Get(Npc npc);
+        IGameSession Get(NpcInstance npc);
         IGameSession Get(Player player);
-        IGameSession Get(WorldObject obj);
+        IGameSession Get(GameObjectInstance obj);
         IGameSession Get(string sessionKey);
-        IGameSession GetOrCreate(string sessionKey);        
+        IGameSession GetOrCreate(string sessionKey);
 
         /// <summary>
         ///     Gets all <see cref="IGameSession"/> that has no <see cref="Shinobytes.Ravenfall.RavenNet.Server.IStreamBot"/> monitoring.

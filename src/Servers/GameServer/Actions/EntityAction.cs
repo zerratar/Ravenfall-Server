@@ -1,3 +1,4 @@
+using Shinobytes.Ravenfall.Data.Entities;
 using Shinobytes.Ravenfall.RavenNet.Models;
 
 public abstract class EntityAction
@@ -10,5 +11,5 @@ public abstract class EntityAction
 
     public int Id { get; }
     public string Name { get; }
-    public abstract bool Invoke(Player player, Entity obj, int parameterId);
+    public abstract bool Invoke(Player player, IEntity obj, int parameterId);
 }
