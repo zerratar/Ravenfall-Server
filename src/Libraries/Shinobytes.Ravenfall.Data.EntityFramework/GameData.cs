@@ -34,6 +34,8 @@ namespace Shinobytes.Ravenfall.Data.EntityFramework.Legacy
         private readonly EntitySet<GameObjectInstance, int> objectInstances;
         private readonly EntitySet<NpcInstance, int> npcInstances;
         private readonly EntitySet<ItemDrop, int> itemDrops;
+        private readonly EntitySet<Professions, int> professions;
+        private readonly EntitySet<Attributes, int> attributes;
 
         private readonly IEntitySet[] entitySets;
 
@@ -60,11 +62,13 @@ namespace Shinobytes.Ravenfall.Data.EntityFramework.Legacy
                 players = new EntitySet<Player, int>(ctx.Player.ToList(), i => i.Id);
                 players.RegisterLookupGroup(nameof(User), x => x.UserId);
 
+
                 // we can still store the game events, but no need to load them on startup as the DB will quickly be filled.
                 // and take a long time to load
 
                 itemDrops = new EntitySet<ItemDrop, int>(ctx.ItemDrop.ToList(), i => i.Id);
-
+                attributes = new EntitySet<Attributes, int>(ctx.Attributes.ToList(), i => i.Id);
+                professions = new EntitySet<Professions, int>(ctx.Professions.ToList(), i => i.Id);
 
                 sessions = new EntitySet<Session, int>(ctx.Session.ToList(), i => i.Id);
                 objectInstances = new EntitySet<GameObjectInstance, int>(ctx.GameObjectInstance.ToList(), i => i.Id);
@@ -103,6 +107,8 @@ namespace Shinobytes.Ravenfall.Data.EntityFramework.Legacy
                     npcs,
                     npcInstances,
                     objectInstances,
+                    attributes,
+                    professions,
                     sessions,
                     transforms,
                 };
@@ -117,6 +123,11 @@ namespace Shinobytes.Ravenfall.Data.EntityFramework.Legacy
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Add(GameObjectInstance entity) => Update(() => objectInstances.Add(entity));
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void Add(Professions entity) => Update(() => professions.Add(entity));
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void Add(Attributes entity) => Update(() => attributes.Add(entity));
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Add(Session entity) => Update(() => sessions.Add(entity));
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -240,6 +251,12 @@ namespace Shinobytes.Ravenfall.Data.EntityFramework.Legacy
         public Appearance GetAppearance(int appearanceId) => appearances[appearanceId];
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public Attributes GetAttributes(int attributesId) => attributes[attributesId];
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public Professions GetProfessions(int proffessionId) => professions[proffessionId];
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Session GetSession(string sessionKey) => sessions.Entities.OrderByDescending(x => x.Created).FirstOrDefault(x => x.Name == sessionKey);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -261,6 +278,12 @@ namespace Shinobytes.Ravenfall.Data.EntityFramework.Legacy
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Remove(Appearance appearance) => appearances.Remove(appearance);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void Remove(Attributes entity) => attributes.Remove(entity);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void Remove(Professions entity) => professions.Remove(entity);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Remove(User user) => users.Remove(user);
@@ -322,6 +345,45 @@ namespace Shinobytes.Ravenfall.Data.EntityFramework.Legacy
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Remove(Session session) => sessions.Remove(session);
+
+        public Attributes CreateAttributes()
+        {
+            var id = GetNextId(attributes.Entities);
+            var attr = new Attributes()
+            {
+                Id = id,
+                Agility = 1,
+                Attack = 1,
+                Defense = 1,
+                Dexterity = 1,
+                Endurance = 1,
+                Evasion = 1,
+                Health = 10,
+                Intellect = 1,
+                Strength = 1
+            };
+            Add(attr);
+            return attr;
+        }
+
+        public Professions CreateProfessions()
+        {
+            var id = GetNextId(professions.Entities);
+            var attr = new Professions()
+            {
+                Id = id,
+                Cooking = 1,
+                Crafting = 1,
+                Farming = 1,
+                Fishing = 1,
+                Mining = 1,
+                Sailing = 1,
+                Slayer = 1,
+                Woodcutting = 1
+            };
+            Add(attr);
+            return attr;
+        }
 
         public Session CreateSession()
         {
@@ -461,6 +523,10 @@ namespace Shinobytes.Ravenfall.Data.EntityFramework.Legacy
             var player = new Player
             {
                 Id = id,
+                Level = 1,
+                Endurance = 1,
+                Coins = 0,
+                Health = 10,
                 Created = DateTime.UtcNow
             };
 

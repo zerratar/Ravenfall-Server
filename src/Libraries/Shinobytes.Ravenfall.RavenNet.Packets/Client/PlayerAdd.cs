@@ -1,4 +1,5 @@
-﻿using Shinobytes.Ravenfall.RavenNet.Models;
+﻿using RavenNest.BusinessLogic.Data;
+using Shinobytes.Ravenfall.RavenNet.Models;
 
 namespace Shinobytes.Ravenfall.RavenNet.Packets.Client
 {
@@ -7,23 +8,29 @@ namespace Shinobytes.Ravenfall.RavenNet.Packets.Client
         public const short OpCode = 2;
         public int PlayerId { get; set; }
         public string Name { get; set; }
-        public int CombatLevel { get; set; }
+        public int Level { get; set; }
         public int Health { get; set; }
-        public int MaxHealth { get; set; }
         public Vector3 Position { get; set; }
         public Vector3 Destination { get; set; }
         public Appearance Appearance { get; set; }
-        public static PlayerAdd Create(Player player, Appearance appearance, Transform transform, int combatLevel)
+        public Attributes Attributes { get; set; }
+
+        public static PlayerAdd Create(IGameData gameData, Player player)
         {
+            var appearance = gameData.GetAppearance(player.AppearanceId);
+            var transform = gameData.GetTransform(player.TransformId);
+            var attributes = gameData.GetAttributes(player.AttributesId);
+
             return new PlayerAdd
             {
                 PlayerId = player.Id,
                 Name = player.Name,
-                CombatLevel = combatLevel,
+                Attributes = attributes,
                 Position = transform.GetPosition(),
-#warning add health and maxhealth for player
                 Destination = transform.GetDestination(),
-                Appearance = appearance
+                Appearance = appearance,
+                Health = player.Health,
+                Level = player.Level
             };
         }
     }

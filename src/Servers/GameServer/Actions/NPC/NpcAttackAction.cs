@@ -72,7 +72,7 @@ public class NpcAttackAction : EntityAction
             return false;
         }
 
-        if (IsDead(npc))
+        if (npc.Health <= 0)
         {
             return false;
         }
@@ -144,16 +144,20 @@ public class NpcAttackAction : EntityAction
             return false;
         }
 
+        var npcRecord = gameData.GetNpc(npc.NpcId);
+        var npcAttributes = gameData.GetAttributes(npcRecord.AttributesId);
+        var playerAttributes = gameData.GetAttributes(player.AttributesId);
+
         var session = sessionManager.Get(player);
-        var damage = CalculateDamage(player.Id, npc.Id, playerStatsProvider, session.Npcs.Stats);
-        var playerTrainingSkill = playerStatsProvider.GetStatByName(player.Id, SkillAttack); // NEEDS TO BE UPDATED!!!
-        var targetHealth = GetHealth(npc);
+        var damage = CalculateDamage(playerAttributes, npcAttributes);
 
-        targetHealth.EffectiveLevel -= damage;
+        var trainingSkill = SkillAttack;
 
-        worldProcessor.DamageNpc(player, npc, damage, targetHealth.EffectiveLevel, targetHealth.Level);
+        npc.Health -= damage;
 
-        if (targetHealth.EffectiveLevel <= 0)
+        worldProcessor.DamageNpc(player, npc, damage, npc.Health, npcAttributes.Health);
+
+        if (npc.Health <= 0)
         {
             session.Npcs.States.ExitCombat(npc);
 
@@ -164,9 +168,10 @@ public class NpcAttackAction : EntityAction
             //                 this should be moved to a INpcProcessor or similar called from the WorldProcessor Update
             worldProcessor.SetEntityTimeout(gameData.GetNpc(npc.NpcId).RespawnTimeMs, player, npc, OnRespawn);
 
-            var npcCombatLevel = session.Npcs.Stats.GetCombatLevel(npc.Id);
-            var experience = GameMath.CombatExperience(npcCombatLevel);
-            var levelsGaiend = playerTrainingSkill.AddExperience(experience);
+            var experience = GameMath.CombatExperience(npcRecord.Level);
+            int levelsGaiend = playerStatsProvider.AddExperience(player.Id, trainingSkill, experience);
+            var newExp = playerStatsProvider.GetExperience(player.Id, trainingSkill);
+            var newLevel = playerStatsProvider.GetLevel(player.Id, trainingSkill);
 
             //var itemDrops = npcProvider.GetItemDrops(npc);
             //foreach (var itemDrop in itemDrops)
@@ -176,11 +181,11 @@ public class NpcAttackAction : EntityAction
             //    worldProcessor.AddPlayerItem(player, gameData.GetItem(itemDrop.ItemId));
             //}
 
-            worldProcessor.UpdatePlayerStat(player, playerTrainingSkill);
+            worldProcessor.UpdatePlayerStat(player, trainingSkill, newLevel, newExp);
 
             if (levelsGaiend > 0)
             {
-                worldProcessor.PlayerStatLevelUp(player, playerTrainingSkill, levelsGaiend);
+                worldProcessor.PlayerStatLevelUp(player, trainingSkill, levelsGaiend);
             }
 
             ExitCombat(player, npc, attackType);
@@ -191,34 +196,30 @@ public class NpcAttackAction : EntityAction
         return false;
     }
 
-    private int CalculateDamage(
-        int aEntityId,
-        int bEntityId,
-        IEntityStatsProvider aProvider,
-        IEntityStatsProvider bProvider)
+    private int CalculateDamage(Attributes a, Attributes b)
     {
-        var aAttack = aProvider.GetStatByName(aEntityId, SkillAttack);
-        var aStrength = aProvider.GetStatByName(aEntityId, SkillDefense);
+        var aAttack = a.Attack;
+        var aStrength = a.Strength;
         var aWeaponPower = 0;
         var aWeaponAim = 0;
         var aCombatStyle = 0;
 
-        var bStrength = bProvider.GetStatByName(bEntityId, SkillStrength);
-        var bDefense = bProvider.GetStatByName(bEntityId, SkillDefense);
+        var bStrength = b.Strength;
+        var bDefense = b.Defense;
         var bArmorPower = 0;
         var bCombatStyle = 0;
 
         return (int)GameMath.CalculateDamage(
-            aAttack.EffectiveLevel, aStrength.EffectiveLevel, aCombatStyle, aWeaponPower, aWeaponAim,
-            bStrength.EffectiveLevel, bDefense.EffectiveLevel, bCombatStyle, bArmorPower,
-            aProvider is IPlayerStatsProvider,
-            bProvider is INpcStatsProvider);
+            aAttack, aStrength, aCombatStyle, aWeaponPower, aWeaponAim,
+            bStrength, bDefense, bCombatStyle, bArmorPower, false, true);
     }
 
     private bool OnRespawn(Player player, NpcInstance npc, TimeSpan totalTime, TimeSpan deltaTime)
     {
-        var healthStat = GetHealth(npc);
-        healthStat.EffectiveLevel = healthStat.Level;
+        var n = gameData.GetNpc(npc.NpcId);
+        var attributes = gameData.GetAttributes(n.AttributesId);
+        npc.Health = attributes.Health;
+        npc.Endurance = attributes.Endurance;
         worldProcessor.RespawnNpc(player, npc);
         return true;
     }
@@ -252,31 +253,6 @@ public class NpcAttackAction : EntityAction
     private void PlayAttackAnimation(Player player, int attackType)
     {
         worldProcessor.PlayAnimation(player, AttackAnimationName, true, true, GetAttackAnimationNumber(attackType));
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private bool IsDead(NpcInstance npc)
-    {
-        return GetHealth(npc).EffectiveLevel <= 0;
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private bool IsDead(Player player)
-    {
-        return GetHealth(player).EffectiveLevel <= 0;
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private EntityStat GetHealth(Player player)
-    {
-        return playerStatsProvider.GetStatByName(player.Id, SkillHealth);
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private EntityStat GetHealth(NpcInstance player)
-    {
-        var session = sessionManager.Get(player);
-        return session.Npcs.Stats.GetStatByName(player.Id, SkillHealth);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

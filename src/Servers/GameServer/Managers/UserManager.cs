@@ -37,5 +37,16 @@ namespace GameServer.Managers
             user.PasswordHash = StringHasher.Get(password);
             return user;
         }
+
+        public void LinkSreamerId(User user, string twitchId, string youTubeId)
+        {
+            if (user == null) 
+                return;
+
+            if (!string.IsNullOrEmpty(twitchId))
+                user.TwitchId = twitchId;
+            if (!string.IsNullOrEmpty(youTubeId))
+                user.YouTubeId = youTubeId;
+        }
     }
 }

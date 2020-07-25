@@ -10,7 +10,7 @@ public abstract class SkillObjectAction : EntityAction
 {
     private readonly string skillName;
     private readonly int actionTime;
-    
+
     private readonly IPlayerStatsProvider statsProvider;
     private readonly IPlayerInventoryProvider inventoryProvider;
     private readonly Random random = new Random();
@@ -92,15 +92,15 @@ public abstract class SkillObjectAction : EntityAction
             return true;
         }
 
-        var skill = statsProvider.GetStatByName(player.Id, skillName);
-        var chance = 0.05f + skill.EffectiveLevel * 0.05f;
+        var skillLevel = statsProvider.GetLevel(player.Id, skillName);
+        var chance = 0.05f + skillLevel * 0.05f;
         if (random.NextDouble() <= chance)
         {
             StartAnimation(player, obj);
             return false;
         }
         var gobj = GameData.GetGameObject(obj.ObjectId);
-        var levelsGaiend = skill.AddExperience(gobj.Experience);
+        var levelsGaiend = statsProvider.AddExperience(player.Id, skillName, gobj.Experience);
         var itemDrops = session.Objects.GetItemDrops(obj);
 
         foreach (var itemDrop in itemDrops)
@@ -111,11 +111,12 @@ public abstract class SkillObjectAction : EntityAction
             World.AddPlayerItem(player, GameData.GetItem(itemDrop.ItemId));
         }
 
-        World.UpdatePlayerStat(player, skill);
+        var exp = statsProvider.GetExperience(player.Id, skillName);
+        World.UpdatePlayerStat(player, skillName, skillLevel + levelsGaiend, exp);
 
         if (levelsGaiend > 0)
         {
-            World.PlayerStatLevelUp(player, skill, levelsGaiend);
+            World.PlayerStatLevelUp(player, skillName, levelsGaiend);
         }
 
         StopAnimation(player, obj);

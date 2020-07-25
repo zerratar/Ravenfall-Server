@@ -22,6 +22,11 @@ namespace Shinobytes.Ravenfall.RavenNet.Server
 
         public bool IsBot => Bot != null;
         public bool IsPlayer => Player != null;
+
+        public void SendInfoMessage(string message)
+        {
+            this.Send(new InfoMessage { Message = message }, SendOption.Reliable);
+        }
     }
 
 }

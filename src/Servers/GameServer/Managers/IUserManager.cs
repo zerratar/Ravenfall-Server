@@ -9,5 +9,6 @@ namespace GameServer.Managers
         User GetByTwitchId(string twitchId);
         User GetByYouTubeId(string youtubeId);
         User Create(string username, string twitchId, string youTubeId, string password = null);
+        void LinkSreamerId(User user, string twitchId, string youTubeId);
     }
 }

@@ -1,11 +1,8 @@
-﻿using GameServer.Repositories;
-using RavenfallServer.Providers;
+﻿using RavenfallServer.Providers;
 using RavenNest.BusinessLogic.Data;
 using Shinobytes.Ravenfall.RavenNet.Models;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
 
 namespace GameServer.Managers
 {
@@ -75,9 +72,14 @@ namespace GameServer.Managers
             transform.SetPosition(pos);
             transform.SetDestination(pos);
 
+            var attributes = gameData.CreateAttributes();
+            var professions = gameData.CreateProfessions();
+
             var player = gameData.CreatePlayer();
             player.UserId = userId;
             player.Name = playerName;
+            player.AttributesId = attributes.Id;
+            player.ProfessionsId = professions.Id;
             player.TransformId = transform.Id;
             player.AppearanceId = appearance.Id;
 

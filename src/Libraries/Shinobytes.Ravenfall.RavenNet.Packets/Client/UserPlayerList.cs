@@ -1,40 +1,25 @@
 ﻿using RavenNest.BusinessLogic.Data;
 using Shinobytes.Ravenfall.RavenNet.Models;
+using System.Linq;
 
 namespace Shinobytes.Ravenfall.RavenNet.Packets.Client
 {
     public class UserPlayerList
     {
         public const short OpCode = 22;
-        public int[] Id { get; set; }
-        public string[] Name { get; set; }
-        public int[] CombatLevel { get; set; }
-        public Appearance[] Appearance { get; set; }
-        public SessionInfo[] Session { get; set; }
+        public SelectablePlayer[] Players { get; set; }
         public static UserPlayerList Create(IGameData gameData, Player[] players, Appearance[] appearances)
         {
-            var ids = new int[players.Length];
-            var names = new string[players.Length];
-            //var appearances = new Appearance[players.Length];
-            var combatLevels = new int[players.Length];
-            var sessions = new SessionInfo[players.Length];
-
-            for (var i = 0; i < players.Length; ++i)
-            {
-                ids[i] = players[i].Id;
-                names[i] = players[i].Name;
-                //appearances[i] = players[i].Appearance;
-                //combatLevels[i] = players[i].CombatLevel;
-                sessions[i] = GetSession(gameData, players[i].SessionId);
-            }
-
             return new UserPlayerList
             {
-                Id = ids,
-                Name = names,
-                CombatLevel = combatLevels,
-                Appearance = appearances,
-                Session = sessions
+                Players = players.Select((player, index) => new SelectablePlayer
+                {
+                    Appearance = appearances[index],
+                    Id = player.Id,
+                    Level = player.Level,
+                    Name = player.Name,
+                    Session = GetSession(gameData, player.SessionId)
+                }).ToArray()
             };
         }
 
@@ -57,5 +42,15 @@ namespace Shinobytes.Ravenfall.RavenNet.Packets.Client
             public int Id { get; set; }
             public string Name { get; set; }
         }
+
+        public class SelectablePlayer
+        {
+            public int Id { get; set; }
+            public string Name { get; set; }
+            public int Level { get; set; }
+            public Appearance Appearance { get; set; }
+            public SessionInfo Session { get; set; }
+        }
     }
+
 }

@@ -85,13 +85,10 @@ namespace GameServer.Processors
         {
             var session = sessions.Get(player);
             var connections = connectionProvider.GetConnectedActivePlayerConnections(session);
-            var transform = gameData.GetTransform(player.TransformId);
-            var appearance = gameData.GetAppearance(player.AppearanceId);
-            var combatLevel = statsProvider.GetCombatLevel(player.Id);
 
             foreach (var connection in connections)
             {
-                connection.Send(PlayerAdd.Create(player, appearance, transform, combatLevel), SendOption.Reliable);
+                connection.Send(PlayerAdd.Create(gameData, player), SendOption.Reliable);
             }
         }
 
@@ -119,33 +116,25 @@ namespace GameServer.Processors
                 var npcs = session.Npcs.GetAll();
 
                 var myInventory = playerInventoryProvider.GetInventory(myConnection.Player.Id);
-                var myAppearance = gameData.GetAppearance(myConnection.Player.AppearanceId);
-                var myTransform = gameData.GetTransform(myConnection.Player.TransformId);
-                var myStats = statsProvider.GetStats(myConnection.Player.Id);
-                var myCombatLevel = statsProvider.GetCombatLevel(myConnection.Player.Id);
 
                 foreach (var connection in connections)
                 {
                     var isMe = connection.InstanceID == myConnection.InstanceID;
                     if (isMe)
                     {
-                        connection.Send(MyPlayerAdd.Create(myConnection.Player, myAppearance, myTransform, myCombatLevel, myStats, myInventory.Items), SendOption.Reliable);
+                        connection.Send(MyPlayerAdd.Create(gameData, myConnection.Player, myInventory.Items), SendOption.Reliable);
                         //connection.Send(PlayerInventory.Create(myConnection.Player, inventory.Items), SendOption.Reliable);
                     }
                     else
                     {
-                        var combatLevel = statsProvider.GetCombatLevel(connection.Player.Id);
-                        connection.Send(PlayerAdd.Create(myConnection.Player, myAppearance, myTransform, combatLevel), SendOption.Reliable);
+                        connection.Send(PlayerAdd.Create(gameData, myConnection.Player), SendOption.Reliable);
                     }
                 }
 
                 foreach (var player in allPlayers)
                 {
                     if (player.Id == myConnection.Player.Id) continue;
-                    var combatLevel = statsProvider.GetCombatLevel(player.Id);
-                    var appearance = gameData.GetAppearance(player.AppearanceId);
-                    var transform = gameData.GetTransform(player.TransformId);
-                    myConnection.Send(PlayerAdd.Create(player, appearance, transform, combatLevel), SendOption.Reliable);
+                    myConnection.Send(PlayerAdd.Create(gameData, player), SendOption.Reliable);
                 }
 
                 foreach (var obj in objects)
@@ -208,14 +197,15 @@ namespace GameServer.Processors
             }
         }
 
-        public void UpdatePlayerStat(Player player, EntityStat skill)
+        public void UpdatePlayerStat(Player player, string skill, int level, decimal exp)
         {
             var playerConnection = connectionProvider.GetPlayerConnection(player);
             if (playerConnection != null)
             {
-                playerConnection.Send(PlayerStatUpdate.Create(player, skill), SendOption.Reliable);
+                playerConnection.Send(PlayerStatUpdate.Create(player, skill, level, exp), SendOption.Reliable);
             }
         }
+
         public void AddPlayerItem(Player player, Item item, int amount = 1)
         {
             var playerConnection = connectionProvider.GetPlayerConnection(player);
@@ -341,7 +331,7 @@ namespace GameServer.Processors
             }
         }
 
-        public void PlayerStatLevelUp(Player player, EntityStat skill, int levelsGained)
+        public void PlayerStatLevelUp(Player player, string skill, int levelsGained)
         {
             var session = sessions.Get(player);
             foreach (var connection in connectionProvider.GetConnectedActivePlayerConnections(session))

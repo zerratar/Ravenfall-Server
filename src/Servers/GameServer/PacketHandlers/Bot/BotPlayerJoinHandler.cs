@@ -1,7 +1,6 @@
 ﻿using GameServer.Managers;
 using GameServer.Processors;
 using Microsoft.Extensions.Logging;
-using Shinobytes.Ravenfall.RavenNet.Models;
 using Shinobytes.Ravenfall.RavenNet.Packets.Bot;
 using Shinobytes.Ravenfall.RavenNet.Server;
 
@@ -38,7 +37,10 @@ namespace GameServer.PacketHandlers
             {
                 user = userManager.Create(data.Username, data.TwitchId, data.YouTubeId);
             }
-
+            else
+            {
+                userManager.LinkSreamerId(user, data.TwitchId, data.YouTubeId);
+            }
 
             var player = playerProvider.Get(user, data.CharacterIndex);
             if (player == null)

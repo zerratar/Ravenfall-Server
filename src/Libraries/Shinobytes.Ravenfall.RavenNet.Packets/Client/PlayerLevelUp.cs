@@ -6,15 +6,15 @@ namespace Shinobytes.Ravenfall.RavenNet.Packets.Client
     {
         public const short OpCode = 15;
         public int PlayerId { get; set; }
-        public int Skill { get; set; }
+        public string Skill { get; set; }
         public int GainedLevels { get; set; }
 
-        public static PlayerLevelUp Create(Player player, EntityStat stat, int gainedLevels)
+        public static PlayerLevelUp Create(Player player, string skill, int gainedLevels)
         {
             return new PlayerLevelUp
             {
                 PlayerId = player.Id,
-                Skill = stat.Index,
+                Skill = skill,
                 GainedLevels = gainedLevels
             };
         }

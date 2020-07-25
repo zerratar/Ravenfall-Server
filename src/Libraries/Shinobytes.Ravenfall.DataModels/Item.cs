@@ -4,13 +4,6 @@ namespace Shinobytes.Ravenfall.RavenNet.Models
 {
     public class Item : Entity<Item>
     {
-        // code structure is a bit ugly here but
-        // it is because it was auto generated with:
-
-        // REGEX REPLACE: public ([a-zA-Z0-9|\?]+) ([a-zA-Z0-9]+) { get; set; }
-        //          WITH: private $1 _$2; public $1 $2 { get => _$2; set => Set(ref _$2, value); }
-        // To save some time. uggah
-
         private string _Name;
         private bool _Stackable;
         private bool _Equippable;
@@ -25,6 +18,6 @@ namespace Shinobytes.Ravenfall.RavenNet.Models
         public bool Consumable { get => _Consumable; set => Set(ref _Consumable, value); }
         public int Tier { get => _Tier; set => Set(ref _Tier, value); }
         public int Type { get => _Type; set => Set(ref _Type, value); }
-        public int Value { get => _Value; set => Set(ref _Value, value); }
+        public int Value { get => _Value; set => Set(ref _Value, value); }        
     }
 }

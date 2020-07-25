@@ -25,7 +25,19 @@ namespace GameServer.PacketHandlers
                 return;
             }
 
+            gameData.Remove(gameData.GetAppearance(player.AppearanceId));
+            gameData.Remove(gameData.GetTransform(player.TransformId));
+            gameData.Remove(gameData.GetAttributes(player.AttributesId));
+            gameData.Remove(gameData.GetProfessions(player.ProfessionsId));
+
+            var items = gameData.GetAllPlayerItems(player.Id);
+            foreach (var item in items)
+            {
+                gameData.Remove(item);
+            }
+
             gameData.Remove(player);
+
             SendPlayerList(connection);
         }
 

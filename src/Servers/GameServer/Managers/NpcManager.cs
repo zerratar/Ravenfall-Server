@@ -30,7 +30,7 @@ namespace GameServer.Managers
             this.gameData = gameData;
             // Any Npc related stuff should be instanced per Session
             // and should therefor be removed from here.
-            Stats = new NpcStatsProvider();
+            Stats = new NpcStatsProvider(gameData);
             States = new NpcStateProvider();
             Inventories = new NpcShopInventoryProvider(gameData);
 

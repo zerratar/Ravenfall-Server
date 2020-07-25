@@ -8,6 +8,8 @@ namespace RavenNest.BusinessLogic.Data
     {
         void Add(Item entity);
         void Add(Session entity);
+        void Add(Professions entity);
+        void Add(Attributes entity);
         void Add(Appearance entity);
         void Add(Transform entity);
         void Add(Player entity);
@@ -25,6 +27,8 @@ namespace RavenNest.BusinessLogic.Data
         ShopItem GetShopItem(int npcId, int id);
         User FindUser(string userIdOrUsername);
         Transform GetTransform(int transformId);
+        Attributes GetAttributes(int attributesId);
+        Professions GetProfessions(int professionsId);
         Player GetPlayer(int playerId);
         Player GetPlayerByUserId(int userId);
         Player GetPlayerByStreamId(string twitchUserId);
@@ -54,6 +58,10 @@ namespace RavenNest.BusinessLogic.Data
         IReadOnlyList<GameObject> GetAllGameObjects();
         IReadOnlyList<ItemDrop> GetAllObjectItemDrops();
         IReadOnlyList<ItemDrop> GetAllNpcItemDrops();
+
+
+        void Remove(Professions entity);
+        void Remove(Attributes entity);
         void Remove(GameObjectInstance obj);
         void Remove(NpcInstance npc);
         void Remove(Session session);
@@ -66,6 +74,8 @@ namespace RavenNest.BusinessLogic.Data
         void RemoveRange(IReadOnlyList<InventoryItem> items);
         void Remove(ShopItem shopItem);
 
+        Attributes CreateAttributes();
+        Professions CreateProfessions();
         GameObject CreateGameObject();
         Appearance CreateAppearance(Appearance source);
         User CreateUser();
