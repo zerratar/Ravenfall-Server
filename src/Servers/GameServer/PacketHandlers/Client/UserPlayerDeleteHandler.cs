@@ -5,16 +5,21 @@ using Shinobytes.Ravenfall.RavenNet.Server;
 using System.Linq;
 using Shinobytes.Ravenfall.RavenNet.Packets.Client;
 using RavenNest.BusinessLogic.Data;
+using GameServer.Processors;
 
 namespace GameServer.PacketHandlers
 {
     public class UserPlayerDeleteHandler : PlayerPacketHandler<UserPlayerDelete>
     {
         private readonly IGameData gameData;
+        private readonly IWorldProcessor worldProcessor;
 
-        public UserPlayerDeleteHandler(IGameData gameData)
+        public UserPlayerDeleteHandler(
+            IGameData gameData, 
+            IWorldProcessor worldProcessor)
         {
             this.gameData = gameData;
+            this.worldProcessor = worldProcessor;
         }
 
         protected override void Handle(UserPlayerDelete data, PlayerConnection connection)
@@ -24,6 +29,8 @@ namespace GameServer.PacketHandlers
             {
                 return;
             }
+
+            worldProcessor.RemovePlayer(player);
 
             gameData.Remove(gameData.GetAppearance(player.AppearanceId));
             gameData.Remove(gameData.GetTransform(player.TransformId));

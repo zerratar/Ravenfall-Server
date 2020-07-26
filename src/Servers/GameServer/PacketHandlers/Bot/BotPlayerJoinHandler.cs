@@ -1,4 +1,5 @@
 ﻿using GameServer.Managers;
+using GameServer.Network;
 using GameServer.Processors;
 using Microsoft.Extensions.Logging;
 using Shinobytes.Ravenfall.RavenNet.Packets.Bot;
@@ -12,6 +13,7 @@ namespace GameServer.PacketHandlers
         private readonly IWorldProcessor worldProcessor;
         private readonly IPlayerProvider playerProvider;
         private readonly IUserManager userManager;
+        private readonly IPlayerConnectionProvider connectionProvider;
         private readonly IGameSessionManager sessionManager;
 
         public BotPlayerJoinHandler(
@@ -19,12 +21,14 @@ namespace GameServer.PacketHandlers
             IWorldProcessor worldProcessor,
             IPlayerProvider playerProvider,
             IUserManager userManager,
+            IPlayerConnectionProvider connectionProvider,
             IGameSessionManager sessionManager)
         {
             this.logger = logger;
             this.worldProcessor = worldProcessor;
             this.playerProvider = playerProvider;
             this.userManager = userManager;
+            this.connectionProvider = connectionProvider;
             this.sessionManager = sessionManager;
         }
 
@@ -60,6 +64,28 @@ namespace GameServer.PacketHandlers
 
                     logger.LogDebug($"Cannot add User: {data.Username}, Character: {data.CharacterIndex} to this session as the user already have a player in this session.");
                     return;
+                }
+
+                // check if this player is in an active session already.
+                // if it is, we cannot join IF that session is hosted by the same user.
+                // otherwise remove it from the existing session
+                var activePlayerSession = sessionManager.Get(player);
+                if (activePlayerSession != null)
+                {
+                    if (activePlayerSession.Host != null && activePlayerSession.Host.Player != null && activePlayerSession.Host.Player.Id == player.Id)
+                    {
+                        logger.LogDebug($"Cannot add User: {data.Username}, Character: {data.CharacterIndex} to this session as the character is being used in a hosted session.");
+                        return;
+                    }
+
+                    var playerConnection = connectionProvider.GetPlayerConnection(player);
+                    if (playerConnection != null && playerConnection.User?.Id == user.Id)
+                    {
+                        logger.LogDebug($"Cannot add User: {data.Username}, Character: {data.CharacterIndex} to this session as the character is being used in a hosted session.");
+                        return;
+                    }
+
+                    worldProcessor.RemovePlayer(player);
                 }
 
                 session.AddPlayer(player);
