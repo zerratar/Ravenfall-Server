@@ -1,0 +1,21 @@
+<?xml version="1.0" ?>
+<!DOCTYPE svg PUBLIC '-//W3C//DTD SVG 1.1//EN' 'http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd'><svg
+    enable-background="new 0 0 50 50" id="Layer_1" version="1.1" viewBox="0 0 50 50" xml:space="preserve"
+    xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <defs>
+        <mask id="twitch">
+            <rect width="100%" height="100%" fill="#ffffff"/>
+            <path
+                d="M29.9,35.4H25l-2.4,3.2h-3.2v-3.2h-5.7V18.5l1.6-4.2h21.1v14.6L29.9,35.4z M33.9,28.1V16.8h-17   v15.4h4.9v3.2l3.2-3.2h4.9L33.9,28.1z"
+                fill="#000000" id="Dialog" />
+            <rect fill="#000000" height="6.5" id="_x7C_" width="2.4" x="27.4" y="20.8" />
+            <rect fill="#000000" height="6.5" id="_x7C__2_" width="2.4" x="22.6" y="20.8" />
+        </mask>
+    </defs>
+
+    <g id="_x7C___x7C_">
+        
+        <circle cx="25" cy="25" fill="#ffffff" id="ellipse" r="25" mask="url(#twitch)" />
+        
+    </g>
+</svg>

@@ -1,0 +1,107 @@
+body {
+    background: #14222b url('BG.png') 50% 50% no-repeat;
+    display: flex;
+    min-height: 100vh;
+    flex-direction: column;
+    justify-content: center;
+    background-size: cover;
+    overflow: hidden;    
+    font-size: 18px;
+}
+
+.inner {
+    padding: 0.5em;
+    box-sizing: border-box;
+    text-align: center;
+}
+
+.logo > img {
+    width: 800px;
+    max-width: 100%;
+    margin-bottom: 5em;
+}
+
+.logo-tiny > img {
+    width: 250px;
+    max-width: 70%;
+    margin-bottom: 5em;
+}
+
+.text {
+    margin-bottom: 0.8em;
+    background: linear-gradient(#ffffff, #bbbbbb);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-family: 'Noto Sans', sans-serif;
+    font-weight: bold;
+    font-size: 1em;
+    text-transform: uppercase;
+}
+
+.social-icons a:hover {
+    opacity: 1;
+}
+
+.social-icons a {
+    display: inline-block;
+    width: 34px;
+    height: 34px;
+    margin: 0 .7em;
+    background: 50% 50% no-repeat;
+    background-size: 32px;
+    opacity: .7;
+    transition: opacity .2s;
+    will-change: opacity;
+    mask-size: cover;
+}
+
+.social-icons a.discord {
+    background-image: url(logo_discord.svg);
+    /* https://www.iconfinder.com/icons/5474124/discord_game_gaming_voice_chat_icon */
+}
+
+.social-icons a.github {
+    background-image: url(logo_github.svg);
+    /* https://www.iconfinder.com/icons/107173/circle_github_icon */
+}
+
+.social-icons a.twitch {
+    background-image: url(logo_twitch.svg);
+    /* https://www.iconfinder.com/icons/940984/twitch_twitch.tv_icon_icon */
+}
+
+.social-icons a.twitter {
+    background-image: url(logo_twitter.svg);
+    /* https://www.iconfinder.com/icons/834708/twitter_icon */
+}
+
+.social-icons .separator {
+    display: inline-block;
+    vertical-align: 25%;
+    width: 1px;
+    height: 26px;
+    background: #ecdffd;
+}
+
+
+.fancy-hr {
+    margin-top: 1em;
+    position: relative;
+    background: url('horizontal.png') bottom center no-repeat;
+    background-size: 50%;
+    height: 1px;
+    width: 100%;
+    background: linear-gradient(to right, rgba(63, 49, 70, 0) 0%, #ffffff 20%, #ffffff 80%, rgba(58, 49, 70, 0) 100%);
+}
+
+.copyright {
+    margin-top: 2em;
+    background: linear-gradient(#9c9c9c, #757575);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-family: 'Noto Sans', sans-serif;
+    font-weight: bold;
+    font-size: 0.7em;
+}
