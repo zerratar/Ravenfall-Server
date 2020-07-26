@@ -1,9 +1,11 @@
 ﻿
 using Shinobytes.Ravenfall.RavenNet.Models;
+using System;
 using System.Collections.Generic;
 
 namespace GameServer.Repositories
 {
+    [Obsolete("Only being used for quick import of new gameobjects when updating the client.")]
     public class JsonBasedWorldObjectRepository : IWorldObjectRepository
     {
         private readonly JsonBasedRepository<ExtendedGameObject> objectRepo;

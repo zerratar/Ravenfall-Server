@@ -1,7 +1,7 @@
 ﻿using Shinobytes.Ravenfall.Data.Entities;
 using Shinobytes.Ravenfall.RavenNet.Models;
 
-public class PlayerAttackAction : EntityAction
+public class PlayerAttackAction : EntityActionInvoker
 {
     public PlayerAttackAction()
         : base(7, "Player Attack")

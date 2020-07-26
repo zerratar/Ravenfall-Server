@@ -7,15 +7,15 @@ namespace Shinobytes.Ravenfall.RavenNet.Models
         private Gender gender;
         private int hair;
         private int head;
-        private string warPaintColor; 
-        private string stubbleColor; 
-        private bool helmetVisible; 
-        private string eyeColor; 
-        private string beardColor; 
-        private string hairColor; 
-        private string skinColor; 
-        private int facialHair; 
-        private int eyebrows; 
+        private string warPaintColor;
+        private string stubbleColor;
+        private bool helmetVisible;
+        private string eyeColor;
+        private string beardColor;
+        private string hairColor;
+        private string skinColor;
+        private int facialHair;
+        private int eyebrows;
 
         public Gender Gender { get => gender; set => Set(ref gender, value); }
         public int Hair { get => hair; set => Set(ref hair, value); }

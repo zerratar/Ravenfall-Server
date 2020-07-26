@@ -8,7 +8,7 @@ using Shinobytes.Ravenfall.RavenNet.Models;
 using System;
 using System.Runtime.CompilerServices;
 
-public class NpcAttackAction : EntityAction
+public class NpcAttackAction : EntityActionInvoker
 {
     private const float MeleeRange = 3f;
 

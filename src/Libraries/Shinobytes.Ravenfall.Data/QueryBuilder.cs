@@ -33,7 +33,7 @@ namespace Shinobytes.Ravenfall.Data
         private SqlSaveQuery BuildUpdateQuery(EntityStoreItems saveData)
         {
             StringBuilder sb = new StringBuilder();
-            sb.AppendLine("BEGIN TRANSACTION;");
+            //sb.AppendLine("BEGIN TRANSACTION;");
             foreach (var entity in saveData.Entities)
             {
                 var type = entity.GetType();
@@ -45,14 +45,14 @@ namespace Shinobytes.Ravenfall.Data
                 sb.AppendLine($"WHERE Id = {GetSqlReadyPropertyValue(idProperty.PropertyType, idProperty.GetValue(entity))};");
             }
 
-            sb.AppendLine("COMMIT;");
+            //sb.AppendLine("COMMIT;");
             return new SqlSaveQuery(sb.ToString());
         }
 
         private SqlSaveQuery BuildDeleteQuery(EntityStoreItems saveData)
         {
             StringBuilder sb = new StringBuilder();
-            sb.AppendLine("BEGIN TRANSACTION;");
+            //sb.AppendLine("BEGIN TRANSACTION;");
             foreach (var group in saveData.Entities.GroupBy(x => x.GetType()))
             {
                 var type = group.Key;
@@ -65,14 +65,14 @@ namespace Shinobytes.Ravenfall.Data
 
                 sb.AppendLine(";");
             }
-            sb.AppendLine("COMMIT;");
+            //sb.AppendLine("COMMIT;");
             return new SqlSaveQuery(sb.ToString());
         }
 
         private SqlSaveQuery BuildInsertQuery(EntityStoreItems saveData)
         {
             StringBuilder sb = new StringBuilder();
-            sb.AppendLine("BEGIN TRANSACTION;");
+            //sb.AppendLine("BEGIN TRANSACTION;");
             foreach (var group in saveData.Entities.GroupBy(x => x.GetType()))
             {
                 var type = group.Key;
@@ -85,7 +85,7 @@ namespace Shinobytes.Ravenfall.Data
                 sb.Append(line);
                 sb.AppendLine(";");
             }
-            sb.AppendLine("COMMIT;");
+            //sb.AppendLine("COMMIT;");
             return new SqlSaveQuery(sb.ToString());
         }
 

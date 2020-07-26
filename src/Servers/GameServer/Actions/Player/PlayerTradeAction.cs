@@ -1,7 +1,7 @@
 ﻿using Shinobytes.Ravenfall.Data.Entities;
 using Shinobytes.Ravenfall.RavenNet.Models;
 
-public class PlayerTradeAction : EntityAction
+public class PlayerTradeAction : EntityActionInvoker
 {
     public PlayerTradeAction()
         : base(5, "Player Trade")

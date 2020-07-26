@@ -22,9 +22,8 @@ namespace GameServer.Managers
         public NpcManager(
             IoC ioc,
             Session session,
-            IGameData gameData,
-            IEntityActionsRepository actionRepo)
-            : base(ioc, actionRepo)
+            IGameData gameData)
+            : base(ioc, gameData)
         {
             this.session = session;
             this.gameData = gameData;
@@ -35,7 +34,6 @@ namespace GameServer.Managers
             Inventories = new NpcShopInventoryProvider(gameData);
 
             AddActions(EntityType.NPC);
-            this.gameData = gameData;
         }
 
 
@@ -49,8 +47,9 @@ namespace GameServer.Managers
             return gameData.GetNpcInstance(npcInstanceId);
         }
 
-        public EntityAction GetAction(NpcInstance npc, int actionId)
+        public EntityActionInvoker GetAction(NpcInstance npcInstance, int actionId)
         {
+            var npc = gameData.GetNpc(npcInstance.NpcId);
             if (entityActions.TryGetValue(npc.NpcId, out var actions))
             {
                 return actions.Select(x => x.Value).FirstOrDefault(x => x.Id == actionId);

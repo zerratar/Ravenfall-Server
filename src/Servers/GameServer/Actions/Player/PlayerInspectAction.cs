@@ -1,7 +1,7 @@
 ﻿using Shinobytes.Ravenfall.Data.Entities;
 using Shinobytes.Ravenfall.RavenNet.Models;
 
-public class PlayerInspectAction : EntityAction
+public class PlayerInspectAction : EntityActionInvoker
 {
     public PlayerInspectAction()
         : base(4, "Player Inspect")

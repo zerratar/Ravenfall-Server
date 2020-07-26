@@ -12,6 +12,6 @@ namespace GameServer.Managers
 
         IReadOnlyList<NpcInstance> GetAll();
         NpcInstance Get(int npcServerId);
-        EntityAction GetAction(NpcInstance npc, int actionId);
+        EntityActionInvoker GetAction(NpcInstance npc, int actionId);
     }
 }

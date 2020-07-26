@@ -6,7 +6,7 @@ using Shinobytes.Ravenfall.Data.Entities;
 using Shinobytes.Ravenfall.RavenNet.Models;
 using System;
 
-public abstract class SkillObjectAction : EntityAction
+public abstract class SkillObjectAction : EntityActionInvoker
 {
     private readonly string skillName;
     private readonly int actionTime;

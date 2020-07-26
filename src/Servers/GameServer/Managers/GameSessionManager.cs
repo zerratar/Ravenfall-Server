@@ -14,17 +14,14 @@ namespace GameServer.Managers
         private readonly ConcurrentDictionary<string, IGameSession> gameSessions = new ConcurrentDictionary<string, IGameSession>();
         private readonly IoC ioc;
         private readonly IGameData gameData;
-        private readonly IEntityActionsRepository entityActionsRepo;
 
 
         public GameSessionManager(
             IoC ioc,
-            IGameData gameData,
-            IEntityActionsRepository entityActionsRepo)
+            IGameData gameData)
         {
             this.ioc = ioc;
             this.gameData = gameData;
-            this.entityActionsRepo = entityActionsRepo;
         }
 
         public IReadOnlyList<IGameSession> GetUserSessions(User user)
@@ -123,8 +120,8 @@ namespace GameServer.Managers
                 }
             }
 
-            var npcs = new NpcManager(ioc, session, gameData, entityActionsRepo);
-            var objects = new ObjectManager(ioc, session, gameData, entityActionsRepo);
+            var npcs = new NpcManager(ioc, session, gameData);
+            var objects = new ObjectManager(ioc, session, gameData);
             var gameSession = new GameSession(session, npcs, objects, isOpenWorldSession);
             return gameSession;
         }

@@ -1,7 +1,7 @@
 ﻿using Shinobytes.Ravenfall.Data.Entities;
 using Shinobytes.Ravenfall.RavenNet.Models;
 
-public class PlayerDuelAction : EntityAction
+public class PlayerDuelAction : EntityActionInvoker
 {
     public PlayerDuelAction()
         : base(6, "Player Duel")

@@ -1,4 +1,5 @@
 ﻿using GameServer.Repositories;
+using RavenNest.BusinessLogic.Data;
 using Shinobytes.Ravenfall.Data.Entities;
 using Shinobytes.Ravenfall.RavenNet.Core;
 using Shinobytes.Ravenfall.RavenNet.Models;
@@ -11,8 +12,8 @@ namespace GameServer.Managers
 {
     public abstract class EntityManager
     {
-        protected readonly ConcurrentDictionary<int, Lazy<EntityAction>[]> entityActions
-            = new ConcurrentDictionary<int, Lazy<EntityAction>[]>();
+        protected readonly ConcurrentDictionary<int, Lazy<EntityActionInvoker>[]> entityActions
+            = new ConcurrentDictionary<int, Lazy<EntityActionInvoker>[]>();
 
         private ConcurrentDictionary<string, Type> loadedActionTypes;
 
@@ -22,12 +23,12 @@ namespace GameServer.Managers
         // playerObjectLocks: Key: playerId, Value: objectId
         private readonly ConcurrentDictionary<int, int> playerEntityLocks = new ConcurrentDictionary<int, int>();
         private readonly IoC ioc;
-        private readonly IEntityActionsRepository actionRepo;
+        private readonly IGameData gameData;
 
-        public EntityManager(IoC ioc, IEntityActionsRepository actionRepo)
+        public EntityManager(IoC ioc, IGameData gameData)
         {
             this.ioc = ioc;
-            this.actionRepo = actionRepo;
+            this.gameData = gameData;
         }
 
         public bool AcquireLock(IEntity obj, Player player)
@@ -63,22 +64,22 @@ namespace GameServer.Managers
 
         protected void AddActions(EntityType type)
         {
-            var actions = actionRepo.GetActions(type);
+            var actions = gameData.GetActions(type);
             foreach (var action in actions)
             {
-                Type[] actionTypes = ResolveActionTypes(action.ActionTypes);
+                Type[] actionTypes = ResolveActionTypes(action.Action);
                 RegisterActions(action.EntityId, actionTypes);
             }
         }
 
-        protected Type[] ResolveActionTypes(string[] actionTypes)
+        protected Type[] ResolveActionTypes(params string[] actionTypes)
         {
             if (loadedActionTypes == null)
             {
                 var assemblies = AppDomain.CurrentDomain.GetAssemblies();
                 loadedActionTypes = new ConcurrentDictionary<string, Type>(
                     assemblies
-                    .SelectMany(x => x.GetTypes().Where(x => typeof(EntityAction).IsAssignableFrom(x)))
+                    .SelectMany(x => x.GetTypes().Where(x => typeof(EntityActionInvoker).IsAssignableFrom(x)))
                     .ToDictionary(x => x.FullName, y => y));
             }
 
@@ -89,11 +90,11 @@ namespace GameServer.Managers
 
         private void RegisterActions(int entityId, params Type[] actionTypes)
         {
-            var actions = new List<Lazy<EntityAction>>();
+            var actions = new List<Lazy<EntityActionInvoker>>();
             foreach (var type in actionTypes)
             {
                 ioc.RegisterShared(type, type);
-                actions.Add(new Lazy<EntityAction>(() => (EntityAction)ioc.Resolve(type)));
+                actions.Add(new Lazy<EntityActionInvoker>(() => (EntityActionInvoker)ioc.Resolve(type)));
             }
 
             entityActions[entityId] = actions.ToArray();

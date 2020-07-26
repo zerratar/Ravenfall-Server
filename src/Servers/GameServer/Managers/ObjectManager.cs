@@ -18,21 +18,18 @@ namespace GameServer.Managers
         private readonly IoC ioc;
         private readonly Session gameSession;
         private readonly IGameData gameData;
-        private readonly IEntityActionsRepository actionRepo;
         private int index = 0;
 
         public ObjectManager(
             IoC ioc,
             Session gameSession,
-            IGameData gameData,
-            IEntityActionsRepository actionRepo)
-            : base(ioc, actionRepo)
+            IGameData gameData)
+            : base(ioc, gameData)
 
         {
             this.ioc = ioc;
             this.gameSession = gameSession;
             this.gameData = gameData;
-            this.actionRepo = actionRepo;
 
             AddGameObjects();
             AddObjectDrops();
@@ -58,7 +55,7 @@ namespace GameServer.Managers
             }
         }
 
-        public EntityAction GetAction(GameObjectInstance obj, int actionId)
+        public EntityActionInvoker GetAction(GameObjectInstance obj, int actionId)
         {
             var type = gameData.GetGameObject(obj.ObjectId).Type;
             if (entityActions.TryGetValue(type, out var actions))

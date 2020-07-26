@@ -1,7 +1,7 @@
 ﻿using Shinobytes.Ravenfall.Data.Entities;
 using Shinobytes.Ravenfall.RavenNet.Models;
 
-public class NpcTalkAction : EntityAction
+public class NpcTalkAction : EntityActionInvoker
 {
     public NpcTalkAction()
         : base(8, "Npc Talk")

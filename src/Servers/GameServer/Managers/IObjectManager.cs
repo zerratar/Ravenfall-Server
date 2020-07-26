@@ -9,7 +9,7 @@ namespace GameServer.Managers
         IReadOnlyList<GameObjectInstance> GetAll();
         GameObjectInstance Replace(int serverObjectId, int newObjectId);
         GameObjectInstance Get(int objectServerId);
-        EntityAction GetAction(GameObjectInstance serverObject, int actionId);
+        EntityActionInvoker GetAction(GameObjectInstance serverObject, int actionId);
         ItemDrop[] GetItemDrops(GameObjectInstance obj);
         void ReleaseLocks(Player player);
         bool AcquireLock(IEntity obj, Player player);

@@ -40,6 +40,7 @@ namespace GameServer.PacketHandlers
 
             var npc = session.Npcs.Get(data.NpcServerId);
             if (npc == null) return;
+
             var action = session.Npcs.GetAction(npc, data.ActionId);
             if (action == null) return;
 

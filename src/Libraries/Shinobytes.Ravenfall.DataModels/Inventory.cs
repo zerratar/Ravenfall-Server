@@ -32,6 +32,7 @@ namespace Shinobytes.Ravenfall.RavenNet.Models
 
         public void EquipItem(Item item)
         {
+
         }
 
         public void UnEquipItem(Item item)

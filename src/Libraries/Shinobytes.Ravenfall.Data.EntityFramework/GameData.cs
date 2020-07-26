@@ -36,6 +36,8 @@ namespace Shinobytes.Ravenfall.Data.EntityFramework.Legacy
         private readonly EntitySet<ItemDrop, int> itemDrops;
         private readonly EntitySet<Professions, int> professions;
         private readonly EntitySet<Attributes, int> attributes;
+        private readonly EntitySet<EntityAction, int> entityActions;
+
 
         private readonly IEntitySet[] entitySets;
 
@@ -62,6 +64,7 @@ namespace Shinobytes.Ravenfall.Data.EntityFramework.Legacy
                 players = new EntitySet<Player, int>(ctx.Player.ToList(), i => i.Id);
                 players.RegisterLookupGroup(nameof(User), x => x.UserId);
 
+                entityActions = new EntitySet<EntityAction, int>(ctx.EntityAction.ToList(), i => i.Id);
 
                 // we can still store the game events, but no need to load them on startup as the DB will quickly be filled.
                 // and take a long time to load
@@ -182,6 +185,14 @@ namespace Shinobytes.Ravenfall.Data.EntityFramework.Legacy
                     x.YouTubeId == userIdOrUsername ||
                     x.Username.Equals(userIdOrUsername, StringComparison.OrdinalIgnoreCase));
 
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public EntityAction GetAction(int actionId) => entityActions[actionId];
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public IReadOnlyList<EntityAction> GetActions(int entityId, EntityType type) => entityActions.Entities.Where(x => x.EntityType == type && x.EntityId == entityId).ToList();
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public IReadOnlyList<EntityAction> GetActions(EntityType type) => entityActions.Entities.Where(x => x.EntityType == type).ToList();
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IReadOnlyList<Npc> GetAllNpcs() => npcs.Entities.ToList();

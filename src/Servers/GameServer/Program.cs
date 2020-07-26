@@ -85,7 +85,6 @@ namespace GameServer
             // repositories
             ioc.RegisterShared<IWorldObjectRepository, JsonBasedWorldObjectRepository>();
             ioc.RegisterShared<IItemRepository, JsonBasedItemRepository>();
-            ioc.RegisterShared<IEntityActionsRepository, JsonBasedEntityActionsRepository>();
 
             var logger = ioc.Resolve<ILogger>();
             var sessionManager = ioc.Resolve<IGameSessionManager>();

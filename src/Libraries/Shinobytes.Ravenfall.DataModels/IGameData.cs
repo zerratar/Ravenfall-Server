@@ -32,7 +32,8 @@ namespace RavenNest.BusinessLogic.Data
         Player GetPlayer(int playerId);
         Player GetPlayerByUserId(int userId);
         Player GetPlayerByStreamId(string twitchUserId);
-
+                
+        EntityAction GetAction(int actionId);
         Item GetItem(int id);
         Npc GetNpc(int npcId);
         GameObject GetGameObject(int objectId);
@@ -41,6 +42,8 @@ namespace RavenNest.BusinessLogic.Data
         Session GetSession(int value);
         NpcInstance GetNpcInstance(int npcInstanceId);
 
+        IReadOnlyList<EntityAction> GetActions(EntityType type);
+        IReadOnlyList<EntityAction> GetActions(int entityId, EntityType type);
         IReadOnlyList<ShopItem> GetShopItems(int npcInstanceId);
         IReadOnlyList<Player> GetPlayers(User user);
         IReadOnlyList<Player> GetPlayers(Func<Player, bool> predicate);

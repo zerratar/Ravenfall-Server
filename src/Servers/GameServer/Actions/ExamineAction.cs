@@ -1,7 +1,7 @@
 using Shinobytes.Ravenfall.Data.Entities;
 using Shinobytes.Ravenfall.RavenNet.Models;
 
-public class ExamineAction : EntityAction
+public class ExamineAction : EntityActionInvoker
 {
     public ExamineAction()
         : base(0, "Examine")

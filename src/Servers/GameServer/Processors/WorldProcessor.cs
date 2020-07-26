@@ -415,7 +415,7 @@ namespace GameServer.Processors
         }
 
         public void PlayerNpcInteraction(
-            Player player, NpcInstance npc, EntityAction action, int parameterId)
+            Player player, NpcInstance npc, EntityActionInvoker action, int parameterId)
         {
             if (action.Invoke(player, npc, parameterId))
             {
@@ -434,7 +434,7 @@ namespace GameServer.Processors
         }
 
         public void PlayerObjectInteraction(
-            Player player, GameObjectInstance obj, EntityAction action, int parameterId)
+            Player player, GameObjectInstance obj, EntityActionInvoker action, int parameterId)
         {
             // use 
             if (action.Invoke(player, obj, parameterId))

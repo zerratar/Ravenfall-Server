@@ -4,7 +4,7 @@ using RavenfallServer.Providers;
 using Shinobytes.Ravenfall.Data.Entities;
 using Shinobytes.Ravenfall.RavenNet.Models;
 
-public class NpcTradeAction : EntityAction
+public class NpcTradeAction : EntityActionInvoker
 {
     private readonly IWorldProcessor worldProcessor;
     private readonly IGameSessionManager sessionManager;

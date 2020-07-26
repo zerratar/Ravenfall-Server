@@ -32,6 +32,7 @@ namespace Shinobytes.Ravenfall.Data.EntityFramework.Legacy
         public virtual DbSet<ItemDrop> ItemDrop { get; set; }
         public virtual DbSet<Professions> Professions { get; set; }
         public virtual DbSet<Attributes> Attributes { get; set; }
+        public virtual DbSet<EntityAction> EntityAction { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -55,6 +56,9 @@ namespace Shinobytes.Ravenfall.Data.EntityFramework.Legacy
             modelBuilder.Entity<Professions>(entity =>
                 entity.Property(e => e.Id).ValueGeneratedOnAdd());
 
+            modelBuilder.Entity<EntityAction>(entity =>
+                entity.Property(e => e.Id).ValueGeneratedOnAdd());
+            
             modelBuilder.Entity<ItemDrop>(entity =>
                 entity.Property(e => e.Id).ValueGeneratedOnAdd());
 
