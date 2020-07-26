@@ -5,8 +5,9 @@ body {
     flex-direction: column;
     justify-content: center;
     background-size: cover;
-    overflow: hidden;    
+    overflow: auto;    
     font-size: 18px;
+    margin: 0;
 }
 
 .inner {
@@ -25,6 +26,19 @@ body {
     width: 250px;
     max-width: 70%;
     margin-bottom: 5em;
+}
+
+.logo {
+    display: none;
+}
+
+@media screen and (min-width: 701px) {
+    .logo {
+        display: block;
+    }
+    .logo-tiny {
+        display: none;
+    }
 }
 
 .text {
