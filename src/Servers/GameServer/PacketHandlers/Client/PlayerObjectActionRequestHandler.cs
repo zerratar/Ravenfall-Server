@@ -28,11 +28,11 @@ namespace GameServer.PacketHandlers
             // actionId 0 is examine and is client side
             if (data.ActionId == 0)
             {
-                logger.LogDebug("Player sent examine action, ignoring");
+                logger.LogDebug(connection.Player.Name + ":" + connection.Player.Id + " sent examine action, ignoring.");
                 return;
             }
 
-            logger.LogDebug("Player " + connection.Player.Id + " interacting with object: " + data.ObjectServerId + " action " + data.ActionId + " parameter " + data.ParameterId);
+            logger.LogDebug(connection.Player.Name + ":" + connection.Player.Id + " interacting with object: " + data.ObjectServerId + " action " + data.ActionId + " parameter " + data.ParameterId);
 
             var session = sessionManager.Get(connection.Player);
             var serverObject = session.Objects.Get(data.ObjectServerId);
@@ -44,7 +44,7 @@ namespace GameServer.PacketHandlers
             // ignore it.
             if (session.Objects.HasAcquiredLock(serverObject, connection.Player))
             {
-                logger.LogDebug("Player is already interacting with object. Ignore");
+                logger.LogDebug(connection.Player.Name + ":" + connection.Player.Id + " is already interacting with object. Ignore");
                 return;
             }
 

@@ -34,7 +34,7 @@ namespace GameServer.PacketHandlers
 
         protected override void Handle(BotPlayerJoin data, PlayerConnection connection)
         {
-            logger.LogDebug($"Player join Request from {connection.Player.Id}. User: {data.Username}, Character: {data.CharacterIndex}");
+            logger.LogDebug($"Player join Request to {connection.User.Username}. User: {data.Username}, Character: {data.CharacterIndex}");
 
             var user = userManager.GetByTwitchId(data.TwitchId) ?? userManager.GetByYouTubeId(data.TwitchId) ?? userManager.Get(data.Username);
             if (user == null)
@@ -46,12 +46,12 @@ namespace GameServer.PacketHandlers
                 userManager.LinkSreamerId(user, data.TwitchId, data.YouTubeId);
             }
 
-            var player = playerProvider.Get(user, data.CharacterIndex);
-            if (player == null)
+            var joiningPlayer = playerProvider.Get(user, data.CharacterIndex);
+            if (joiningPlayer == null)
             {
                 // this user doesnt have any players yet.
                 // create one for them.
-                player = playerProvider.CreateRandom(user, user.Username);
+                joiningPlayer = playerProvider.CreateRandom(user, user.Username);
             }
 
             var session = sessionManager.Get(data.Session);
@@ -69,27 +69,27 @@ namespace GameServer.PacketHandlers
                 // check if this player is in an active session already.
                 // if it is, we cannot join IF that session is hosted by the same user.
                 // otherwise remove it from the existing session
-                var activePlayerSession = sessionManager.Get(player);
+                var activePlayerSession = sessionManager.Get(joiningPlayer);
                 if (activePlayerSession != null)
                 {
-                    if (activePlayerSession.Host != null && activePlayerSession.Host.Player != null && activePlayerSession.Host.Player.Id == player.Id)
-                    {
-                        logger.LogDebug($"Cannot add User: {data.Username}, Character: {data.CharacterIndex} to this session as the character is being used in a hosted session.");
-                        return;
-                    }
+                    //if (activePlayerSession.Id == session.Id)
+                    //{
+                    //    logger.LogDebug($"Cannot add User: {data.Username}, Character: {data.CharacterIndex} to this session as the character is being used in a hosted session.");
+                    //    return;
+                    //}
 
-                    var playerConnection = connectionProvider.GetPlayerConnection(player);
-                    if (playerConnection != null && playerConnection.User?.Id == user.Id)
-                    {
-                        logger.LogDebug($"Cannot add User: {data.Username}, Character: {data.CharacterIndex} to this session as the character is being used in a hosted session.");
-                        return;
-                    }
+                    //var playerConnection = connectionProvider.GetPlayerConnection(joiningPlayer);
+                    //if (playerConnection != null && playerConnection.User?.Id == user.Id)
+                    //{
+                    //    logger.LogDebug($"Cannot add User: {data.Username}, Character: {data.CharacterIndex} to this session as the character is being used in a hosted session.");
+                    //    return;
+                    //}
 
-                    worldProcessor.RemovePlayer(player);
+                    worldProcessor.RemovePlayer(joiningPlayer);
                 }
 
-                session.AddPlayer(player);
-                worldProcessor.AddPlayer(player);
+                session.AddPlayer(joiningPlayer);
+                worldProcessor.AddPlayer(joiningPlayer);
             }
         }
     }

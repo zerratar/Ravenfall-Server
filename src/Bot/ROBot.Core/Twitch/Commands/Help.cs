@@ -9,9 +9,7 @@ namespace ROBot.Core.Twitch.Commands
         public override Task HandleAsync(IRavenfallServerConnection game, ITwitchCommandClient twitch, ChatCommand cmd)
         {
             var channel = cmd.ChatMessage.Channel;
-
             twitch.SendChatMessage(channel, "No help available at this time.");
-
             return Task.CompletedTask;
         }
     }

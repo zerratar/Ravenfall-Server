@@ -55,8 +55,6 @@ namespace GameServer
             ioc.RegisterShared<IUserManager, UserManager>();
             ioc.RegisterShared<IStreamBotManager, StreamBotManager>();
 
-            ioc.RegisterShared<IGameSessionController, GameSessionController>();
-
             // db
             ioc.RegisterShared<IRavenfallDbContextProvider, RavenfallDbContextProvider>();
             ioc.RegisterShared<IQueryBuilder, QueryBuilder>();

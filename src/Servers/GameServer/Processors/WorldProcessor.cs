@@ -92,7 +92,7 @@ namespace GameServer.Processors
             }
         }
 
-        public void LinkToGameSession(string sessionKey, PlayerConnection myConnection)
+        public IGameSession LinkToGameSession(string sessionKey, PlayerConnection myConnection)
         {
             try
             {
@@ -159,17 +159,26 @@ namespace GameServer.Processors
                     var transform = gameData.GetTransform(npc.TransformId);
                     myConnection.Send(NpcAdd.Create(gameData, npc, transform), SendOption.Reliable);
                 }
+
+                return session;
             }
             catch (Exception exc)
             {
                 logger.LogInformation(exc.ToString());
             }
+            return null;
         }
 
         public void RemovePlayer(Player player)
         {
             var session = sessions.Get(player);
             if (session == null) return;
+
+            if (session.UserId == player.UserId)
+            {
+                session.RemoveAllPlayers();
+                return;
+            }
 
             session.RemovePlayer(player);
 
@@ -196,6 +205,41 @@ namespace GameServer.Processors
                 connection.Send(NpcAnimationStateUpdate.Create(npc, animation, enabled, trigger, number), SendOption.Reliable);
             }
         }
+        public void SetCombatState(Player player, bool state)
+        {
+            var session = sessions.Get(player);
+            foreach (var connection in connectionProvider.GetConnectedActivePlayerConnections(session))
+            {
+                connection.Send(PlayerCombatStateUpdate.Create(player, state), SendOption.Reliable);
+            }
+        }
+
+        public void SetCombatState(NpcInstance npc, bool state)
+        {
+            var session = sessions.Get(npc);
+            foreach (var connection in connectionProvider.GetConnectedActivePlayerConnections(session))
+            {
+                connection.Send(NpcCombatStateUpdate.Create(npc, state), SendOption.Reliable);
+            }
+        }
+
+        public void AttackTarget(Player player, int attackType)
+        {
+            var session = sessions.Get(player);
+            foreach (var connection in connectionProvider.GetConnectedActivePlayerConnections(session))
+            {
+                connection.Send(PlayerAttack.Create(player, attackType), SendOption.Reliable);
+            }
+        }
+
+        public void AttackTarget(NpcInstance npc, int attackType)
+        {
+            var session = sessions.Get(npc);
+            foreach (var connection in connectionProvider.GetConnectedActivePlayerConnections(session))
+            {
+                connection.Send(NpcAttack.Create(npc, attackType), SendOption.Reliable);
+            }
+        }
 
         public void UpdatePlayerStat(Player player, string skill, int level, decimal exp)
         {
@@ -205,6 +249,7 @@ namespace GameServer.Processors
                 playerConnection.Send(PlayerStatUpdate.Create(player, skill, level, exp), SendOption.Reliable);
             }
         }
+
 
         public void AddPlayerItem(Player player, Item item, int amount = 1)
         {
@@ -234,7 +279,6 @@ namespace GameServer.Processors
                 playerConnection.Send(PlayerItemRemove.Create(player, item, amount), SendOption.Reliable);
             }
         }
-
 
         public void PlayerBuyItem(Player player, NpcInstance npc, int itemId, int amount)
         {
@@ -367,6 +411,33 @@ namespace GameServer.Processors
             }
         }
 
+        public void SetTarget(Player player, GameObjectInstance obj)
+        {
+            var session = sessions.Get(player);
+            foreach (var connection in connectionProvider.GetConnectedActivePlayerConnections(session))
+            {
+                connection.Send(PlayerTargetUpdate.Create(player, obj), SendOption.Reliable);
+            }
+        }
+
+        public void SetTarget(Player player, NpcInstance npc)
+        {
+            var session = sessions.Get(player);
+            foreach (var connection in connectionProvider.GetConnectedActivePlayerConnections(session))
+            {
+                connection.Send(PlayerTargetUpdate.Create(player, npc), SendOption.Reliable);
+            }
+        }
+
+        public void SetTarget(NpcInstance npc, Player player)
+        {
+            var session = sessions.Get(npc);
+            foreach (var connection in connectionProvider.GetConnectedActivePlayerConnections(session))
+            {
+                connection.Send(NpcTargetUpdate.Create(npc, player), SendOption.Reliable);
+            }
+        }
+
         public void SetItemEquipState(Player player, Item item, bool state)
         {
             var session = sessions.Get(player);
@@ -419,7 +490,8 @@ namespace GameServer.Processors
         {
             if (action.Invoke(player, npc, parameterId))
             {
-                foreach (var playerConnection in connectionProvider.GetAll())
+                var session = sessions.Get(player);
+                foreach (var playerConnection in connectionProvider.GetConnectedActivePlayerConnections(session))
                 {
                     playerConnection.Send(new PlayerNpcActionResponse
                     {
@@ -434,12 +506,16 @@ namespace GameServer.Processors
         }
 
         public void PlayerObjectInteraction(
-            Player player, GameObjectInstance obj, EntityActionInvoker action, int parameterId)
+            Player player,
+            GameObjectInstance obj,
+            EntityActionInvoker action,
+            int parameterId)
         {
             // use 
             if (action.Invoke(player, obj, parameterId))
             {
-                foreach (var playerConnection in connectionProvider.GetAll())
+                var session = sessions.Get(player);
+                foreach (var playerConnection in connectionProvider.GetConnectedActivePlayerConnections(session))
                 {
                     playerConnection.Send(new PlayerObjectActionResponse
                     {
@@ -508,5 +584,6 @@ namespace GameServer.Processors
                 }
             }
         }
+
     }
 }

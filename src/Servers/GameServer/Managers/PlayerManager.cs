@@ -1,5 +1,6 @@
 ﻿using Shinobytes.Ravenfall.RavenNet.Models;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace GameServer.Managers
 {
@@ -16,19 +17,31 @@ namespace GameServer.Managers
                 return activePlayers;
             }
         }
-        public void Add(Player player)
+
+        public bool Add(Player player)
         {
             lock (mutex)
             {
+                if (activePlayers.Contains(player))
+                    return false;
                 activePlayers.Add(player);
+                return true;
             }
         }
 
-        public void Remove(Player player)
+        public bool Remove(Player player)
         {
             lock (mutex)
             {
-                activePlayers.Remove(player);
+                return activePlayers.Remove(player);
+            }
+        }
+
+        public Player Get(User user)
+        {
+            lock (mutex)
+            {
+                return activePlayers.FirstOrDefault(x => x.UserId == user.Id);
             }
         }
     }

@@ -32,7 +32,6 @@ namespace RavenNest.BusinessLogic.Data
         Player GetPlayer(int playerId);
         Player GetPlayerByUserId(int userId);
         Player GetPlayerByStreamId(string twitchUserId);
-                
         EntityAction GetAction(int actionId);
         Item GetItem(int id);
         Npc GetNpc(int npcId);
@@ -63,6 +62,11 @@ namespace RavenNest.BusinessLogic.Data
         IReadOnlyList<ItemDrop> GetAllNpcItemDrops();
 
 
+        /// <summary>
+        /// Cascade remove player, this includes all attributes, professions, items, transform, etc,
+        /// </summary>
+        /// <param name="player"></param>
+        bool RemovePlayer(Player player);
         void Remove(Professions entity);
         void Remove(Attributes entity);
         void Remove(GameObjectInstance obj);

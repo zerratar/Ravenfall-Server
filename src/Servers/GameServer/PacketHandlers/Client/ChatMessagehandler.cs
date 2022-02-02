@@ -21,6 +21,7 @@ namespace GameServer.PacketHandlers
         protected override void Handle(ChatMessage data, PlayerConnection connection)
         {
             worldProcessor.SendChatMessage(connection.Player, data.ChannelId, data.Message);
+            
         }
     }
 }

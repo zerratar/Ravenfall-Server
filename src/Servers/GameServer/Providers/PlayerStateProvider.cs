@@ -8,11 +8,12 @@ namespace RavenfallServer.Providers
 {
     public class PlayerStateProvider : EntityStateProvider, IPlayerStateProvider
     {
+        private const string IdentifierDel = "_";
         private const string AttackTypeKey = "AttackType";
         private const string AttackTimeStatePrefix = "AttackTime";
         private const string InCombatState = "InCombat";
-        private const string TagNPC = "_Npc_";
-        private const string TagPlayer = "_Player_";
+        private const string TagNPC = IdentifierDel + "Npc" + IdentifierDel;
+        private const string TagPlayer = IdentifierDel + "Player" + IdentifierDel;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void SetAttackType(Player player, int attackType)
@@ -45,18 +46,21 @@ namespace RavenfallServer.Providers
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void ExitCombat(Player player)
+        public bool EnterCombat(Player player, Player opponent)
         {
-            foreach (var key in State.Keys.Where(x => x.IndexOf(InCombatState + TagNPC[0], 0, StringComparison.OrdinalIgnoreCase) >= 0))
-            {
-                State.TryRemove(key, out _);
-            }
+            return SetState(player, InCombatState + TagPlayer + opponent.Id, true);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void EnterCombat(Player player, NpcInstance opponent)
+        public bool EnterCombat(Player player, NpcInstance opponent)
         {
-            SetState(player, InCombatState + TagNPC + opponent.Id, true);
+            return SetState(player, InCombatState + TagNPC + opponent.Id, true);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool InCombat(Player player, Player opponent)
+        {
+            return GetState<bool>(player, InCombatState + TagPlayer + opponent.Id);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -66,15 +70,13 @@ namespace RavenfallServer.Providers
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void EnterCombat(Player player, Player opponent)
+        public void ExitCombat(Player player)
         {
-            SetState(player, InCombatState + TagPlayer + opponent.Id, true);
+            foreach (var key in State.Keys.Where(x => x.IndexOf(InCombatState + IdentifierDel, 0, StringComparison.OrdinalIgnoreCase) >= 0))
+            {
+                State.TryRemove(key, out _);
+            }
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool InCombat(Player player, Player opponent)
-        {
-            return GetState<bool>(player, InCombatState + TagPlayer + opponent.Id);
-        }
     }
 }

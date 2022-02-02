@@ -46,7 +46,7 @@ namespace GameServer.Managers
 
         public IGameSession Get(Player player)
         {
-            return gameSessions.Values.FirstOrDefault(session => session.Id == player.SessionId);
+            return gameSessions.Values.FirstOrDefault(session => session.ContainsPlayer(player));
         }
 
         public IGameSession Get(string sessionKey)
@@ -62,6 +62,7 @@ namespace GameServer.Managers
             }
             return null;
         }
+
         public IGameSession GetOrCreate(string sessionKey)
         {
             if (string.IsNullOrEmpty(sessionKey))
@@ -125,5 +126,6 @@ namespace GameServer.Managers
             var gameSession = new GameSession(session, npcs, objects, isOpenWorldSession);
             return gameSession;
         }
+
     }
 }

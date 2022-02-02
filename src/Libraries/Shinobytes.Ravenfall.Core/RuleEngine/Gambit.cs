@@ -12,7 +12,7 @@ namespace Shinobytes.Ravenfall.Core.RuleEngine
             var anyRulesApplied = false;
             foreach (var rule in rules)
             {
-                anyRulesApplied = anyRulesApplied || rule.Process(fact);
+                anyRulesApplied = rule.Process(fact) || anyRulesApplied;
             }
             return anyRulesApplied;
         }

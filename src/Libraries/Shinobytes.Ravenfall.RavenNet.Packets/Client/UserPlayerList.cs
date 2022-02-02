@@ -8,7 +8,7 @@ namespace Shinobytes.Ravenfall.RavenNet.Packets.Client
     {
         public const short OpCode = 22;
         public SelectablePlayer[] Players { get; set; }
-        public static UserPlayerList Create(IGameData gameData, Player[] players, Appearance[] appearances)
+        public static UserPlayerList Create(SessionInfo[] session, Player[] players, Appearance[] appearances)
         {
             return new UserPlayerList
             {
@@ -18,22 +18,8 @@ namespace Shinobytes.Ravenfall.RavenNet.Packets.Client
                     Id = player.Id,
                     Level = player.Level,
                     Name = player.Name,
-                    Session = GetSession(gameData, player.SessionId)
+                    Session = session[index]
                 }).ToArray()
-            };
-        }
-
-        private static SessionInfo GetSession(IGameData gameData, int? sessionId)
-        {
-            if (sessionId == null) return new SessionInfo();
-
-            var session = gameData.GetSession(sessionId.Value);
-            if (session == null) return new SessionInfo();
-
-            return new SessionInfo
-            {
-                Id = session.Id,
-                Name = session.Name
             };
         }
 

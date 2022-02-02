@@ -9,7 +9,6 @@ namespace Shinobytes.Ravenfall.RavenNet.Models
         private string _Name;
         private int _AppearanceId;
         private long _Coins;
-        private int? _Session;
         private int _TransformId;
         private DateTime _Created;
         private int skillsId;
@@ -30,7 +29,6 @@ namespace Shinobytes.Ravenfall.RavenNet.Models
         public int Health { get => health; set => Set(ref health, value); }
         public int Endurance { get => endurance; set => Set(ref endurance, value); }
         public long Coins { get => _Coins; set => Set(ref _Coins, value); }
-        public int? SessionId { get => _Session; set => Set(ref _Session, value); }
         public DateTime Created { get => _Created; set => Set(ref _Created, value); }
     }
 }

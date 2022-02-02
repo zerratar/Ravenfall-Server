@@ -7,7 +7,7 @@ namespace RavenfallServer.Providers
     public interface IEntityStateProvider
     {
         T GetState<T>(IEntity entity, string key);
-        void SetState<T>(IEntity entity, string key, T model);
+        bool SetState<T>(IEntity entity, string key, T model);
         void RemoveState(IEntity entity, string key);
     }
 
@@ -21,8 +21,8 @@ namespace RavenfallServer.Providers
 
         void ExitCombat(Player player);
 
-        void EnterCombat(Player player, NpcInstance opponent);
-        void EnterCombat(Player player, Player opponent);
+        bool EnterCombat(Player player, NpcInstance opponent);
+        bool EnterCombat(Player player, Player opponent);
 
         bool InCombat(Player player, NpcInstance opponent);
         bool InCombat(Player player, Player opponent);

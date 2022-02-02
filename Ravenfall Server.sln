@@ -56,7 +56,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shinobytes.Ravenfall.RavenN
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{393689B1-0220-4920-B8BB-1044F9C02C40}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataImporter", "src\Tools\DataImporter\DataImporter.csproj", "{0581F70C-3347-4DB0-936F-92AFC6AA04E0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataImporter", "src\Tools\DataImporter\DataImporter.csproj", "{0581F70C-3347-4DB0-936F-92AFC6AA04E0}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DownloadPlayerData", "DownloadPlayerData\DownloadPlayerData.csproj", "{EC3537EF-05B7-4273-8B9C-835E1B5BD1DC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -132,6 +134,10 @@ Global
 		{0581F70C-3347-4DB0-936F-92AFC6AA04E0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0581F70C-3347-4DB0-936F-92AFC6AA04E0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0581F70C-3347-4DB0-936F-92AFC6AA04E0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EC3537EF-05B7-4273-8B9C-835E1B5BD1DC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EC3537EF-05B7-4273-8B9C-835E1B5BD1DC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EC3537EF-05B7-4273-8B9C-835E1B5BD1DC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EC3537EF-05B7-4273-8B9C-835E1B5BD1DC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -157,6 +163,7 @@ Global
 		{C5D15C83-22A1-49F4-936C-422998917E0C} = {936E7938-A366-4B62-9AA4-75146F31ADF9}
 		{1812668C-297C-4257-A507-18F3FA156A52} = {F57D1AC3-8F31-42FC-94ED-EBCBF4989930}
 		{0581F70C-3347-4DB0-936F-92AFC6AA04E0} = {393689B1-0220-4920-B8BB-1044F9C02C40}
+		{EC3537EF-05B7-4273-8B9C-835E1B5BD1DC} = {393689B1-0220-4920-B8BB-1044F9C02C40}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {485DB8AE-8869-4744-B61D-FC491D76D547}

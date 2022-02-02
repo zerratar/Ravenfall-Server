@@ -5,8 +5,9 @@ namespace GameServer.Managers
 {
     public interface IPlayerManager
     {
-        void Add(Player player);
-        void Remove(Player player);
+        bool Add(Player player);
+        bool Remove(Player player);
         IReadOnlyList<Player> GetAll();
+        Player Get(User user);
     }
 }

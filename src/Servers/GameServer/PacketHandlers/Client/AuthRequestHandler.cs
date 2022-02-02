@@ -8,6 +8,7 @@ using Shinobytes.Ravenfall.RavenNet.Packets.Client;
 using Shinobytes.Ravenfall.RavenNet.Server;
 using System.Linq;
 using RavenNest.BusinessLogic.Data;
+using static Shinobytes.Ravenfall.RavenNet.Packets.Client.UserPlayerList;
 
 namespace GameServer.PacketHandlers
 {
@@ -19,6 +20,7 @@ namespace GameServer.PacketHandlers
         private readonly IUserManager userManager;
         private readonly IAuthService authService;
         private readonly IPlayerConnectionProvider connectionProvider;
+        private readonly IGameSessionManager sessionManager;
 
         public AuthRequestHandler(
             ILogger logger,
@@ -26,7 +28,8 @@ namespace GameServer.PacketHandlers
             IPlayerProvider playerProvider,
             IUserManager userManager,
             IAuthService authService,
-            IPlayerConnectionProvider connectionProvider)
+            IPlayerConnectionProvider connectionProvider,
+            IGameSessionManager sessionManager)
         {
             this.logger = logger;
             this.gameData = gameData;
@@ -34,6 +37,7 @@ namespace GameServer.PacketHandlers
             this.userManager = userManager;
             this.authService = authService;
             this.connectionProvider = connectionProvider;
+            this.sessionManager = sessionManager;
         }
 
         protected override void Handle(AuthRequest data, PlayerConnection connection)
@@ -52,7 +56,7 @@ namespace GameServer.PacketHandlers
             var result = authService.Authenticate(user, data.Password);
 
 #if DEBUG
-            logger.LogDebug("Sending Auth Response: " + (int)result);
+            logger.LogDebug("Sending Auth Response: @cya@" + (int)result);
 #endif
 
             if (result != AuthResult.Success)
@@ -73,7 +77,11 @@ namespace GameServer.PacketHandlers
 
             // authenticated
             // send auth response
-            SendSuccessLoginResult(connection);
+            connection.Send(new AuthResponse()
+            {
+                Status = 0,
+                SessionKeys = user.Username.ToCharArray().Select(x => (byte)x).ToArray()
+            }, SendOption.Reliable);
 
             // then send player list
             SendPlayerList(connection);
@@ -84,21 +92,21 @@ namespace GameServer.PacketHandlers
             // SEE: UserPlayerSelectHandler, logic moved there.
         }
 
-        private void SendSuccessLoginResult(PlayerConnection connection)
-        {
-            connection.Send(new AuthResponse()
-            {
-                Status = 0,
-                SessionKeys = new byte[4] { 1, 2, 3, 4 }
-            }, SendOption.Reliable);
-        }
-
         private void SendPlayerList(PlayerConnection connection)
         {
             var players = playerProvider.GetPlayers(connection.User).ToArray();
             var appearances = players.Select(x => gameData.GetAppearance(x.AppearanceId)).ToArray();
+            var sessions = players.Select(x => sessionManager.Get(x)).ToArray();
 
-            connection.Send(UserPlayerList.Create(gameData, players, appearances), SendOption.Reliable);
+            connection.Send(UserPlayerList.Create(
+                sessions.Select(x => new SessionInfo
+                {
+                    Id = x?.Id ?? -1,
+                    Name = x?.Name
+                }).ToArray(),
+                players,
+                appearances),
+                SendOption.Reliable);
         }
     }
 }

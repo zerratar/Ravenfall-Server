@@ -10,18 +10,8 @@ namespace ROBot.Core.Twitch.Commands
         {
             var channel = cmd.ChatMessage.Channel;
             var session = game.GetSession(channel);
-            var userId = cmd.ChatMessage.UserId;
-
-            if (session.Contains(userId))
-            {
-                session.Leave(userId);
-                twitch.SendChatMessage(channel, $"@{cmd.ChatMessage.Username}, leaving game...");
-            }
-            else
-            {
-                twitch.SendChatMessage(channel, $"@{cmd.ChatMessage.Username}, you're not currently playing. Use !join to start playing.");
-            }
-
+            if (session != null)
+                session.Leave(cmd.ChatMessage.UserId);
             return Task.CompletedTask;
         }
     }

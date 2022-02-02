@@ -5,10 +5,8 @@ using TwitchLib.Client.Models;
 
 namespace ROBot.Core.Twitch
 {
-    public interface ITwitchCommandController
+    public interface ITwitchChatMessageHandler : IDisposable
     {
-        Task HandleAsync(IRavenfallServerConnection game, ITwitchCommandClient twitch, ChatCommand cmd);
         Task HandleAsync(IRavenfallServerConnection game, ITwitchCommandClient twitch, ChatMessage msg);
-
     }
 }

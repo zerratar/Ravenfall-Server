@@ -7,6 +7,7 @@ namespace RavenfallServer.Providers
         NpcAlignment GetAlignment(Player player, NpcInstance npc);
         bool IsEnemy(Player player, NpcInstance npc);
         void ExitCombat(NpcInstance npc);
-        void EnterCombat(NpcInstance npc, Player player);
+        bool EnterCombat(NpcInstance npc, Player player);
+        bool InCombat(NpcInstance npc, Player opponent);
     }
 }

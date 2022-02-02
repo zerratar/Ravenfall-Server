@@ -28,27 +28,44 @@ namespace ROBot.Core.GameServer
 
         public void Join(string username, string twitchId, string youtubeId)
         {
-            if (AddUser(username, twitchId, youtubeId))
+            AddUser(username, twitchId, youtubeId);
+            connection.Send(new BotPlayerJoin
             {
-                connection.Send(new BotPlayerJoin
-                {
-                    Session = Name,
-                    Username = username,
-                    TwitchId = twitchId,
-                    YouTubeId = youtubeId
-                }, Shinobytes.Ravenfall.RavenNet.SendOption.Reliable);
-            }
+                Session = Name,
+                Username = username,
+                TwitchId = twitchId,
+                YouTubeId = youtubeId
+            }, Shinobytes.Ravenfall.RavenNet.SendOption.Reliable);
         }
 
         public void Leave(string twitchOrYoutubeId)
         {
-            if (RemoveUser(twitchOrYoutubeId, out var user))
+            var user = Get(twitchOrYoutubeId);
+            if (user == null) return;
+            connection.Send(new BotPlayerLeave
             {
-                connection.Send(new BotPlayerLeave
-                {
-                    Session = Name,
-                    Username = user.Username
-                }, Shinobytes.Ravenfall.RavenNet.SendOption.Reliable);
+                Session = Name,
+                Username = user.Username
+            }, Shinobytes.Ravenfall.RavenNet.SendOption.Reliable);
+        }
+
+        public void SendChatMessage(string username, string message)
+        {
+            var user = GetUserByName(username);
+            if (user == null) return;
+            connection.Send(new BotPlayerMessage
+            {
+                Session = Name,
+                Username = user.Username,
+                Message = message
+            }, Shinobytes.Ravenfall.RavenNet.SendOption.Reliable);
+        }
+
+        public User GetUserByName(string username)
+        {
+            lock (mutex)
+            {
+                return users.FirstOrDefault(x => x.Username.Equals(username, System.StringComparison.OrdinalIgnoreCase));
             }
         }
 
@@ -57,6 +74,29 @@ namespace ROBot.Core.GameServer
             lock (mutex)
             {
                 return users.FirstOrDefault(x => x.TwitchId == userId || x.YouTubeId == userId);
+            }
+        }
+        public User Get(int playerId)
+        {
+            lock (mutex)
+            {
+                return users.FirstOrDefault(x => x.Id == playerId);
+            }
+        }
+
+        public bool ContainsUsername(string username)
+        {
+            lock (mutex)
+            {
+                return users.Any(x => x.Username.Equals(username, System.StringComparison.OrdinalIgnoreCase));
+            }
+        }
+
+        public bool Contains(int playerId)
+        {
+            lock (mutex)
+            {
+                return users.Any(x => x.Id == playerId);
             }
         }
 
@@ -73,9 +113,10 @@ namespace ROBot.Core.GameServer
             }
         }
 
-        private bool AddUser(string username, string twitchId, string youtubeId)
+        public bool AddUser(string username, string twitchId, string youtubeId)
         {
             var user = userProvider.Get(username, twitchId, youtubeId);
+            if (user == null) return false;
             lock (mutex)
             {
                 if (!Contains(user))
@@ -87,10 +128,18 @@ namespace ROBot.Core.GameServer
             return false;
         }
 
-        private bool RemoveUser(string twitchOrYoutubeId, out User removedUser)
+        public bool RemoveUser(int playerId, out User removedUser)
+        {
+            return RemoveUser(Get(playerId), out removedUser);
+        }
+
+        public bool RemoveUser(string twitchOrYoutubeId, out User removedUser)
+        {
+            return RemoveUser(Get(twitchOrYoutubeId), out removedUser);
+        }
+        private bool RemoveUser(User user, out User removedUser)
         {
             removedUser = null;
-            var user = Get(twitchOrYoutubeId);
             if (user != null)
             {
                 lock (mutex)

@@ -9,17 +9,14 @@ namespace GameServer.Processors
 {
     public class PlayerProcessor : IPlayerProcessor
     {
-        private readonly IGameSessionController sessionController;
         private readonly IPlayerGambitRuleProvider ruleProvider;
         private readonly IGambitGenerator engineGenerator;
         private readonly IGambitRuleGenerator ruleGenerator;
         public PlayerProcessor(
-            IGameSessionController sessionController,
             IPlayerGambitRuleProvider ruleProvider,
             IGambitGenerator engineGenerator,
             IGambitRuleGenerator ruleGenerator)
         {
-            this.sessionController = sessionController;
             this.ruleProvider = ruleProvider;
             this.engineGenerator = engineGenerator;
             this.ruleGenerator = ruleGenerator;

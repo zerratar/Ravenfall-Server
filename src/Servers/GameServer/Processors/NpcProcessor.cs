@@ -23,6 +23,15 @@ namespace GameServer.Processors
 
         public void Update(NpcInstance npc, IGameSession session, TimeSpan deltaTime)
         {
+            //if (session.Npcs.States.InCombat(npc))
+            //{
+            //    var attackers = session.Npcs.States.GetAttackers(npc);
+            //    if (attackers.Count == 0)
+            //    {
+            //        worldProcessor.SetCombatState(npc, false);
+            //        session.Npcs.States.ExitCombat(npc);
+            //    }
+            //}
         }
     }
 }

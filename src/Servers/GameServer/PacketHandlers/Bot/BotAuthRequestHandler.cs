@@ -46,7 +46,7 @@ namespace GameServer.PacketHandlers
 
             var result = authService.Authenticate(user, data.Password);
 
-            logger.LogDebug("Sending Auth Response: " + (int)result);
+            logger.LogDebug("Sending Auth Response: @cya@" + (int)result);
 
             if (result != AuthResult.Success)
             {

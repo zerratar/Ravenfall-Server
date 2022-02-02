@@ -1,4 +1,5 @@
 using System;
+using GameServer.Managers;
 using Shinobytes.Ravenfall.Data.Entities;
 using Shinobytes.Ravenfall.RavenNet.Core;
 using Shinobytes.Ravenfall.RavenNet.Models;
@@ -12,7 +13,13 @@ namespace GameServer.Processors
     {
         void RemovePlayer(Player player);
         void AddPlayer(Player player);
-        void LinkToGameSession(string sessionKey, PlayerConnection connection);
+        IGameSession LinkToGameSession(string sessionKey, PlayerConnection connection);
+        void SetTarget(Player player, GameObjectInstance obj);
+        void SetTarget(Player player, NpcInstance npc);
+        void SetTarget(NpcInstance npc, Player player);
+        void SetCombatState(Player player, bool state);
+        void SetCombatState(NpcInstance npc, bool state);
+        void AttackTarget(Player player, int attackType);
         void PlayerObjectInteraction(Player player, GameObjectInstance serverObject, EntityActionInvoker action, int parameterId);
         void PlayAnimation(Player player, string animation, bool enabled = true, bool trigger = false, int number = 0);
         void PlayAnimation(NpcInstance npc, string animation, bool enabled = true, bool trigger = false, int number = 0);
@@ -42,6 +49,7 @@ namespace GameServer.Processors
             TObject obj,
             EntityTickHandler<TObject> handleObjectTick)
             where TObject : IEntity;
+
         void ClearEntityTimeout(ITimeoutHandle handle);
     }
 }

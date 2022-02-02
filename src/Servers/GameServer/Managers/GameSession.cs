@@ -29,6 +29,8 @@ namespace GameServer.Managers
         public PlayerConnection Host { get; private set; }
         public bool IsOpenWorldSession { get; }
         public int Id => session.Id;
+        public int UserId => session.UserId;
+        public string Name => session.Name;
 
         public bool ContainsPlayer(Player player)
         {
@@ -49,8 +51,10 @@ namespace GameServer.Managers
 
         public void AddPlayer(Player player)
         {
-            player.SessionId = session.Id;
-            Players.Add(player);
+            if (!Players.Add(player))
+            {
+                return;
+            }
 
             if (Bot != null)
             {
@@ -58,9 +62,17 @@ namespace GameServer.Managers
             }
         }
 
+        public void RemoveAllPlayers()
+        {
+            var players = Players.GetAll();
+            foreach (var player in players)
+            {
+                RemovePlayer(player);
+            }
+        }
+
         public void RemovePlayer(Player player)
         {
-            player.SessionId = null;
             Players.Remove(player);
             Objects.ReleaseLocks(player);
 
@@ -100,5 +112,6 @@ namespace GameServer.Managers
 
             this.Bot = null;
         }
+
     }
 }

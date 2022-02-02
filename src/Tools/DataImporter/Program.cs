@@ -40,6 +40,7 @@ namespace DataImporter
                 }
             }
         }
+
         static void ImportGameObjects(ILogger logger, IGameData gameData)
         {
             var repo = new JsonBasedWorldObjectRepository();
@@ -58,7 +59,7 @@ namespace DataImporter
                     }
 
                     gameData.Remove(obj);
-                }                
+                }
 
                 logger.LogDebug("Importing objects from json file..");
                 foreach (var obj in objs)

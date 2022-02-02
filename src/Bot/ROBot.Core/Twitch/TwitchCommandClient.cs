@@ -1,6 +1,6 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Linq;
-using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using ROBot.Core.GameServer;
@@ -21,6 +21,12 @@ namespace ROBot.Core.Twitch
         private readonly IRavenfallServerConnection game;
         private readonly ITwitchCommandController commandHandler;
         private readonly ITwitchCredentialsProvider credentialsProvider;
+
+        private readonly ConcurrentQueue<Tuple<string, string>> chatMessageQueue
+            = new ConcurrentQueue<Tuple<string, string>>();
+
+        private readonly ConcurrentQueue<string> channelJoinQueue
+            = new ConcurrentQueue<string>();
 
         private TwitchClient client;
         private bool isInitialized;
@@ -63,6 +69,12 @@ namespace ROBot.Core.Twitch
 
         public void SendChatMessage(string channel, string message)
         {
+            if (!client.IsConnected)
+            {
+                chatMessageQueue.Enqueue(new Tuple<string, string>(channel, message));
+                return;
+            }
+
             if (!InChannel(channel))
             {
                 JoinChannel(channel);
@@ -84,7 +96,38 @@ namespace ROBot.Core.Twitch
                 return;
             }
 
-            client.JoinChannel(channel);
+            try
+            {
+                if (WaitForConnection(5))
+                {
+                    client.JoinChannel(channel);
+                }
+                else
+                {
+                    EnqueueJoin(channel);
+                }
+            }
+            catch
+            {
+                EnqueueJoin(channel);
+            }
+        }
+
+        private void EnqueueJoin(string channel)
+        {
+            channelJoinQueue.Enqueue(channel);
+        }
+
+        private bool WaitForConnection(int seconds)
+        {
+            var retries = seconds * 10;
+            for (var i = 0; i < retries; ++i)
+            {
+                if (client.IsConnected)
+                    return true;
+                System.Threading.Thread.Sleep(100);
+            }
+            return client.IsConnected;
         }
 
         public void LeaveChannel(string channel)
@@ -116,8 +159,9 @@ namespace ROBot.Core.Twitch
         {
         }
 
-        private void OnMessageReceived(object sender, OnMessageReceivedArgs e)
+        private async void OnMessageReceived(object sender, OnMessageReceivedArgs e)
         {
+            await commandHandler.HandleAsync(game, this, e.ChatMessage);
         }
 
         private async void OnCommandReceived(object sender, OnChatCommandReceivedArgs e)
@@ -163,6 +207,9 @@ namespace ROBot.Core.Twitch
         {
             try
             {
+                if (client != null && client.IsConnected)
+                    return;
+
                 Unsubscribe();
                 isInitialized = false;
                 CreateTwitchClient();
@@ -186,6 +233,16 @@ namespace ROBot.Core.Twitch
         private void OnConnected(object sender, OnConnectedArgs e)
         {
             logger.LogDebug("Connected to Twitch IRC Server");
+
+            while (channelJoinQueue.TryDequeue(out var channel))
+            {
+                JoinChannel(channel);
+            }
+
+            while (chatMessageQueue.TryDequeue(out var msg))
+            {
+                SendChatMessage(msg.Item1, msg.Item2);
+            }
         }
 
         private void OnReconnected(object sender, OnReconnectedEventArgs e)

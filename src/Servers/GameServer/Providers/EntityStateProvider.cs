@@ -1,6 +1,5 @@
 ﻿using RavenfallServer.Providers;
 using Shinobytes.Ravenfall.Data.Entities;
-using Shinobytes.Ravenfall.RavenNet.Models;
 using System.Collections.Concurrent;
 
 namespace GameServer.Providers
@@ -24,10 +23,20 @@ namespace GameServer.Providers
             return default;
         }
 
-        public void SetState<T>(IEntity entity, string key, T value)
+        public bool SetState<T>(IEntity entity, string key, T value)
         {
             var rowKey = entity.Id + key;
+            State.TryGetValue(rowKey, out var val);
             State[rowKey] = value;
+
+            try
+            {
+                return !object.Equals(val, value);
+            }
+            catch
+            {
+                return true;
+            }
         }
     }
 }

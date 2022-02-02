@@ -17,7 +17,6 @@ namespace Shinobytes.Ravenfall.RavenNet.Models
             this.gameData = gameData;
         }
 
-
         public IReadOnlyList<InventoryItem> Items => gameData.GetAllPlayerItems(playerId);
 
         public InventoryItem GetItem(int id)
@@ -32,7 +31,6 @@ namespace Shinobytes.Ravenfall.RavenNet.Models
 
         public void EquipItem(Item item)
         {
-
         }
 
         public void UnEquipItem(Item item)
@@ -47,13 +45,15 @@ namespace Shinobytes.Ravenfall.RavenNet.Models
         public bool HasItem(int itemId, int amount)
         {
             var item = GetItem(itemId);
+            // check if its stackable, then use item.amount
+            // otherwise use stack count.
             return item != null && item.Amount >= amount;
         }
 
         public void AddItem(Item item, int amount)
         {
             var existing = GetItem(item.Id);
-            if (existing != null)
+            if (existing != null && item.Stackable)
             {
                 existing.Amount += amount;
             }

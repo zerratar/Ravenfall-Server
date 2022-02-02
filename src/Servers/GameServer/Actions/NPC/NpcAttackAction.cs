@@ -10,6 +10,7 @@ using System.Runtime.CompilerServices;
 
 public class NpcAttackAction : EntityActionInvoker
 {
+    private static readonly Random random = new Random();
     private const float MeleeRange = 3f;
 
     private const int PlayerMeleeAttackIntervalMs = 1500;
@@ -17,7 +18,8 @@ public class NpcAttackAction : EntityActionInvoker
     private const int RetryTimeMs = 250;
     private const int TotalRetryTimeMs = 1500;
 
-    private const string AttackAnimationName = "Attacking";
+    private const string CombatAnimationName = "Attacking";
+    //private const string AttackAnimationName = "Attack";
 
     private const string SkillHealth = "Health";
     private const string SkillAttack = "Attack";
@@ -89,8 +91,8 @@ public class NpcAttackAction : EntityActionInvoker
             return false;
         }
 
-        PlayerAttack(player, npc, attackType);
 
+        PlayerAttack(player, npc, attackType);
         NpcAttack(player, npc);
 
         return false;
@@ -100,11 +102,21 @@ public class NpcAttackAction : EntityActionInvoker
     {
         var session = sessionManager.Get(player);
 
-        playerState.EnterCombat(player, npc);
-        session.Npcs.States.EnterCombat(npc, player);
+        if (playerState.EnterCombat(player, npc))
+        {
+            worldProcessor.SetCombatState(player, true);
+            worldProcessor.SetTarget(player, npc);
+            PlayEnterCombatAnimation(player, attackType);
+        }
+
+        if (session.Npcs.States.EnterCombat(npc, player))
+        {
+            worldProcessor.SetCombatState(npc, true);
+            worldProcessor.SetTarget(npc, player);
+            PlayEnterCombatAnimation(npc);
+        }
 
         playerState.UpdateAttackTime(player, npc);
-        PlayAttackAnimation(player, attackType);
         worldProcessor.SetEntityTimeout(PlayerMeleeAttackIntervalMs, player, npc, OnPlayerAfflictDamage);
     }
 
@@ -112,10 +124,22 @@ public class NpcAttackAction : EntityActionInvoker
     {
         var session = sessionManager.Get(player);
 
-        playerState.EnterCombat(player, npc);
-        session.Npcs.States.EnterCombat(npc, player);
+        var attackType = random.Next(0, 3);
 
-        PlayAttackAnimation(npc);
+        if (playerState.EnterCombat(player, npc))
+        {
+            worldProcessor.SetCombatState(player, true);
+            PlayEnterCombatAnimation(player, attackType);
+        }
+
+        if (session.Npcs.States.EnterCombat(npc, player))
+        {
+            worldProcessor.SetCombatState(npc, true);
+            PlayEnterCombatAnimation(npc);
+        }
+
+        PlayAttackAnimation(npc, attackType);
+
         worldProcessor.SetEntityTimeout(NpcMeleeAttackIntervalMs, player, npc, OnNpcAfflictDamage);
     }
 
@@ -125,6 +149,12 @@ public class NpcAttackAction : EntityActionInvoker
         TimeSpan totalTime,
         TimeSpan deltaTime)
     {
+        //var session = sessionManager.Get(npc);
+        //var attackType = session.Npcs.GetAttackType(npc);
+        //if (!session.Npcs.States.InCombat(npc, player))
+        //{
+        //    ExitCombat(player, npc, attackType);
+        //}
 
         return false;
     }
@@ -144,6 +174,9 @@ public class NpcAttackAction : EntityActionInvoker
             return false;
         }
 
+        worldProcessor.AttackTarget(player, attackType);
+        PlayAttackAnimation(player, attackType);
+
         var npcRecord = gameData.GetNpc(npc.NpcId);
         var npcAttributes = gameData.GetAttributes(npcRecord.AttributesId);
         var playerAttributes = gameData.GetAttributes(player.AttributesId);
@@ -159,6 +192,7 @@ public class NpcAttackAction : EntityActionInvoker
 
         if (npc.Health <= 0)
         {
+            worldProcessor.SetCombatState(npc, false);
             session.Npcs.States.ExitCombat(npc);
 
             // he ded
@@ -225,34 +259,60 @@ public class NpcAttackAction : EntityActionInvoker
     }
     private void ExitCombat(Player player, NpcInstance npc, int attackType)
     {
+        worldProcessor.SetCombatState(player, false);
+
         playerState.ExitCombat(player);
         playerState.ClearAttackTime(player, npc);
 
-        StopAttackAnimation(player, attackType);
+        ExitCombatAnimation(player);
+    }
+
+    private void ExitCombat(NpcInstance npc, Player player, int attackType)
+    {
+        worldProcessor.SetCombatState(npc, false);
+
+        playerState.ExitCombat(player);
+        playerState.ClearAttackTime(player, npc);
+
+        ExitCombatAnimation(player);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private void StopAttackAnimation(NpcInstance npc)
+    private void ExitCombatAnimation(NpcInstance npc)
     {
-        worldProcessor.PlayAnimation(npc, AttackAnimationName, true, true);
+        worldProcessor.PlayAnimation(npc, CombatAnimationName, true);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private void StopAttackAnimation(Player player, int attackType)
+    private void ExitCombatAnimation(Player player)
     {
-        worldProcessor.PlayAnimation(player, AttackAnimationName, false, false, GetAttackAnimationNumber(attackType));
+        worldProcessor.PlayAnimation(player, CombatAnimationName, false);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private void PlayAttackAnimation(NpcInstance npc)
+    private void PlayEnterCombatAnimation(NpcInstance npc)
     {
-        worldProcessor.PlayAnimation(npc, AttackAnimationName, true, true);
+        worldProcessor.PlayAnimation(npc, CombatAnimationName, true);
     }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private void PlayEnterCombatAnimation(Player player, int attackType)
+    {
+        worldProcessor.PlayAnimation(player, CombatAnimationName, true, false, GetAttackAnimationNumber(attackType));
+    }
+
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private void PlayAttackAnimation(NpcInstance player, int attackType)
+    {
+        worldProcessor.PlayAnimation(player, CombatAnimationName, true, true, GetAttackAnimationNumber(attackType));
+    }
+
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void PlayAttackAnimation(Player player, int attackType)
     {
-        worldProcessor.PlayAnimation(player, AttackAnimationName, true, true, GetAttackAnimationNumber(attackType));
+        worldProcessor.PlayAnimation(player, CombatAnimationName, true, true, GetAttackAnimationNumber(attackType));
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

@@ -62,6 +62,8 @@ public abstract class SkillObjectAction : EntityActionInvoker
             return false;
         }
 
+        World.SetTarget(player, obj);
+
         var gobj = GameData.GetGameObject(obj.ObjectId);
         if (gobj.InteractItemType > 0)
         {
@@ -94,6 +96,7 @@ public abstract class SkillObjectAction : EntityActionInvoker
 
         var skillLevel = statsProvider.GetLevel(player.Id, skillName);
         var chance = 0.05f + skillLevel * 0.05f;
+        // make it easier for each level to succeed.
         if (random.NextDouble() <= chance)
         {
             StartAnimation(player, obj);
@@ -105,10 +108,10 @@ public abstract class SkillObjectAction : EntityActionInvoker
 
         foreach (var itemDrop in itemDrops)
         {
-            if (random.NextDouble() > itemDrop.DropChance)
-                continue;
-
-            World.AddPlayerItem(player, GameData.GetItem(itemDrop.ItemId));
+            if (random.NextDouble() <= itemDrop.DropChance)
+            { 
+                World.AddPlayerItem(player, GameData.GetItem(itemDrop.ItemId));
+            }
         }
 
         var exp = statsProvider.GetExperience(player.Id, skillName);

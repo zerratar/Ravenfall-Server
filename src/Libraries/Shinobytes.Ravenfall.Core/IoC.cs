@@ -47,9 +47,16 @@ namespace Shinobytes.Ravenfall.RavenNet.Core
 
         public object Resolve(Type t)
         {
+            return ResolveType(t, 0);
+        }
+
+        private object ResolveType(Type t, int depth)
+        {
             var interfaceType = t;
             if (!typeLookup.TryGetValue(t, out var targetType))
                 throw new Exception($"Unable to resolve the type {t.Name}");
+
+            ++depth;
 
             if (targetType.Shared)
             {
@@ -69,6 +76,16 @@ namespace Shinobytes.Ravenfall.RavenNet.Core
             var publicConstructors = targetType.Type
                 .GetConstructors(BindingFlags.Public | BindingFlags.CreateInstance | BindingFlags.Instance);
 
+            if (depth > 100)
+            {
+                Console.WriteLine(t.FullName);
+            }
+
+            if (depth > 150)
+            {
+
+            }
+
             foreach (var ctor in publicConstructors)
             {
                 var param = ctor.GetParameters();
@@ -85,7 +102,7 @@ namespace Shinobytes.Ravenfall.RavenNet.Core
                     continue;
                 }
 
-                var item = ctor.Invoke(param.Select(x => Resolve(x.ParameterType)).ToArray());
+                var item = ctor.Invoke(param.Select(x => ResolveType(x.ParameterType, depth)).ToArray());
                 if (targetType.Shared) instances[interfaceType] = item;
                 return item;
             }

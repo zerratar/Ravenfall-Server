@@ -12,10 +12,13 @@ namespace ROBot.Core.Twitch
 {
     public class TwitchCommandController : ITwitchCommandController
     {
+        private const string ChatMessageHandlerName = "MessageHandler";
         private readonly ILogger logger;
         private readonly IoC ioc;
 
         private readonly ConcurrentDictionary<string, Type> handlerLookup = new ConcurrentDictionary<string, Type>();
+
+        private ITwitchChatMessageHandler messageHandler;
 
         public TwitchCommandController(
             ILogger logger,
@@ -25,6 +28,20 @@ namespace ROBot.Core.Twitch
             this.ioc = ioc;
 
             RegisterCommandHandlers();
+        }
+
+        public async Task HandleAsync(IRavenfallServerConnection game, ITwitchCommandClient twitch, ChatMessage message)
+        {
+            if (messageHandler == null)
+                messageHandler = ioc.Resolve<ITwitchChatMessageHandler>();
+
+            if (messageHandler == null)
+            {
+                logger.LogInformation("HandleMessage: No message handler available.");
+                return;
+            }
+
+            await messageHandler.HandleAsync(game, twitch, message);
         }
 
         public async Task HandleAsync(IRavenfallServerConnection game, ITwitchCommandClient twitch, ChatCommand command)
@@ -46,6 +63,8 @@ namespace ROBot.Core.Twitch
 
         private void RegisterCommandHandlers()
         {
+            ioc.RegisterShared<ITwitchChatMessageHandler, TwitchChatMessageHandler>();
+
             var baseType = typeof(ITwitchCommandHandler);
             var handlerTypes = Assembly
                 .GetCallingAssembly()

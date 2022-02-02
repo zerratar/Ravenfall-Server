@@ -9,6 +9,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Threading;
+
 namespace Shinobytes.Ravenfall.Data.EntityFramework.Legacy
 {
     public class GameData : IGameData
@@ -43,6 +45,8 @@ namespace Shinobytes.Ravenfall.Data.EntityFramework.Legacy
 
         private ITimeoutHandle scheduleHandler;
         public object SyncLock { get; } = new object();
+
+        private int sessionIndex = 1;
 
         public GameData(IRavenfallDbContextProvider db, ILogger logger, IKernel kernel, IQueryBuilder queryBuilder)
         {
@@ -283,9 +287,36 @@ namespace Shinobytes.Ravenfall.Data.EntityFramework.Legacy
         public User GetUser(string twitchUserId) => users.Entities
                 .FirstOrDefault(x =>
                     x.Username.Equals(twitchUserId, StringComparison.OrdinalIgnoreCase) ||
-                    x.TwitchId.Equals(twitchUserId, StringComparison.OrdinalIgnoreCase) ||
-                    x.YouTubeId.Equals(twitchUserId, StringComparison.OrdinalIgnoreCase));
+                    (x.TwitchId ?? "").Equals(twitchUserId, StringComparison.OrdinalIgnoreCase) ||
+                    (x.YouTubeId ?? "").Equals(twitchUserId, StringComparison.OrdinalIgnoreCase));
 
+        public bool RemovePlayer(Player player)
+        {
+            if (player == null) return false;
+
+            // get player a second time, if it doesnt exist. break freeee
+            player = GetPlayer(player.Id);
+            if (player == null) return false;
+
+            var appearance = GetAppearance(player.AppearanceId);
+            var transform = GetTransform(player.TransformId);
+            var attributes = GetAttributes(player.AttributesId);
+            var professions = GetProfessions(player.ProfessionsId);
+
+            if (appearance != null) Remove(appearance);
+            if (transform != null) Remove(transform);
+            if (attributes != null) Remove(attributes);
+            if (professions != null) Remove(professions);
+
+            var items = GetAllPlayerItems(player.Id);
+            foreach (var item in items)
+            {
+                Remove(item);
+            }
+
+            Remove(player);
+            return true;
+        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Remove(Appearance appearance) => appearances.Remove(appearance);
@@ -399,12 +430,19 @@ namespace Shinobytes.Ravenfall.Data.EntityFramework.Legacy
         public Session CreateSession()
         {
             var id = GetNextId(sessions.Entities);
+            var index = Volatile.Read(ref sessionIndex);
+            if (id < index)
+            {
+                id = index;
+            }
+
             var session = new Session()
             {
                 Id = id,
                 Created = DateTime.UtcNow
             };
             Add(session);
+            Interlocked.Increment(ref sessionIndex);
             return session;
         }
 
@@ -606,7 +644,11 @@ namespace Shinobytes.Ravenfall.Data.EntityFramework.Legacy
                         while (queue.TryPeek(out var saveData))
                         {
                             var query = queryBuilder.Build(saveData);
-                            if (query == null) return;
+                            if (query == null || string.IsNullOrEmpty(query.Command))
+                            {
+                                queue.Dequeue();
+                                continue;
+                            }
 
                             var command = con.CreateCommand();
                             command.CommandText = query.Command;
@@ -687,5 +729,6 @@ namespace Shinobytes.Ravenfall.Data.EntityFramework.Legacy
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private ICollection<EntityChangeSet> JoinChangeSets(params ICollection<EntityChangeSet>[] changesets) =>
             changesets.SelectMany(x => x).OrderBy(x => x.LastModified).ToList();
+
     }
 }

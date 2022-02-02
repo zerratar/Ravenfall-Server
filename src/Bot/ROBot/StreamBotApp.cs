@@ -30,11 +30,11 @@ namespace ROBot
         {
             logger.LogInformation("Application Started");
 
-            logger.LogInformation("Establishing Ravenfall Communication..");
-            ravenfall.Start();
-
             logger.LogInformation("Initializing Twitch Integration..");
             twitch.Start();
+
+            logger.LogInformation("Establishing Ravenfall Communication..");
+            ravenfall.Start();
         }
 
         public void Shutdown()
@@ -53,6 +53,20 @@ namespace ROBot
 
         public void OnPlayerAdd(BotPlayerAdd data)
         {
+            var session = ravenfall.GetSession(data.Session);
+            if (session != null)
+            {
+                var user = session.GetUserByName(data.Username);
+                if (user != null)
+                {
+                    user.Id = data.PlayerId;
+                }
+                else
+                {
+                    session.AddUser(data.Username, null, null);
+                }
+            }
+
             twitch.SendChatMessage(data.Session, data.Username + " joined the game.");
         }
 
@@ -61,7 +75,9 @@ namespace ROBot
             var session = ravenfall.GetSession(data.Session);
             if (session != null)
             {
-                twitch.SendChatMessage(session.Name, data.Username + " left the game.");
+                session.RemoveUser(data.PlayerId, out var user);
+                if (user != null)
+                    twitch.SendChatMessage(session.Name, data.Username + " left the game.");
             }
         }
 

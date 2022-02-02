@@ -30,7 +30,7 @@ namespace GameServer.PacketHandlers
 
         protected override void Handle(BotPlayerLeave data, PlayerConnection connection)
         {
-            logger.LogDebug($"Player leave Request from {connection.Player.Id}. User: {data.Username}, Character: {data.CharacterIndex}");
+            logger.LogDebug($"Player leave Request session: {connection.User.Username}. User: {data.Username}");
 
             var user = userManager.Get(data.Username);
             if (user == null)
@@ -39,18 +39,18 @@ namespace GameServer.PacketHandlers
                 return;
             }
 
-            var player = playerProvider.Get(user, data.CharacterIndex);
-            if (player == null)
-            {
-                // this user doesnt have any players yet.
-                // create one for them.
-                logger.LogDebug($"Cannot leave game, character specified does not exist.");
-                return;
-            }
-
             var session = sessionManager.Get(data.Session);
             if (session != null)
             {
+                var player = session.Players.Get(user);
+                if (player == null)
+                {
+                    // this user doesnt have any players yet.
+                    // create one for them.
+                    logger.LogDebug($"Cannot leave game, character specified does not exist.");
+                    return;
+                }
+
                 if (!sessionManager.InSession(user, session))
                 {
                     // we cannot join with another player as we are already in
