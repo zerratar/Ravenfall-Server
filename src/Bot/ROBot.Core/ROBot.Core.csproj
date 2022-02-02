@@ -4,7 +4,7 @@
 
   <PropertyGroup>
 
-    <TargetFramework>net5</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
 
   </PropertyGroup>
 
@@ -30,17 +30,17 @@
 
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
 
-    <PackageReference Include="System.Drawing.Common" Version="5.0.2" />
+    <PackageReference Include="System.Drawing.Common" Version="6.0.0" />
 
-    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.15.0" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.15.1" />
 
-    <PackageReference Include="TwitchLib.Api" Version="3.3.0" />
+    <PackageReference Include="TwitchLib.Api" Version="3.4.2-preview-46d23962d3c0ed2b3181f25815ba1af0727cb353" />
 
-    <PackageReference Include="TwitchLib.Api.Core" Version="3.3.0" />
+    <PackageReference Include="TwitchLib.Api.Core" Version="3.4.2-preview-46d23962d3c0ed2b3181f25815ba1af0727cb353" />
 
-    <PackageReference Include="TwitchLib.Api.Helix" Version="3.3.0" />
+    <PackageReference Include="TwitchLib.Api.Helix" Version="3.4.2-preview-46d23962d3c0ed2b3181f25815ba1af0727cb353" />
 
-    <PackageReference Include="TwitchLib.Client" Version="3.2.4" />
+    <PackageReference Include="TwitchLib.Client" Version="3.2.5-preview-eb210b24b724f0df6e3ce9566fe25ba3ce6ab13f" />
 
   </ItemGroup>
 

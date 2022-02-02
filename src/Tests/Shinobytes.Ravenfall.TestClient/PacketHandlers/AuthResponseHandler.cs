@@ -1,9 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using Shinobytes.Ravenfall.RavenNet.Packets;
 using Shinobytes.Ravenfall.RavenNet;
-using Shinobytes.Ravenfall.RavenNet.Core;
 using Shinobytes.Ravenfall.RavenNet.Modules;
-using Shinobytes.Ravenfall.RavenNet.Packets;
 using Shinobytes.Ravenfall.RavenNet.Packets.Client;
 
 namespace Shinobytes.Ravenfall.HeaderlessClient.PacketHandlers

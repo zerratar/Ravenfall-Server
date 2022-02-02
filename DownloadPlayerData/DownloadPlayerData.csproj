@@ -1,0 +1,29 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net6.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\src\Libraries\Shinobytes.Ravenfall.Core\Shinobytes.Ravenfall.Core.csproj" />
+    <ProjectReference Include="..\src\Libraries\Shinobytes.Ravenfall.Data.EntityFramework\Shinobytes.Ravenfall.Data.EntityFramework.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="RavenNest.BusinessLogic">
+      <HintPath>..\..\RavenNest\src\RavenNest.BusinessLogic\bin\Debug\netcoreapp3.1\RavenNest.BusinessLogic.dll</HintPath>
+    </Reference>
+    <Reference Include="RavenNest.DataModels">
+      <HintPath>..\..\RavenNest\src\RavenNest.DataModels\bin\Debug\netcoreapp3.1\RavenNest.DataModels.dll</HintPath>
+    </Reference>
+    <Reference Include="RavenNest.Models">
+      <HintPath>..\..\Ravenfall-Legacy\Assets\Libraries\RavenNest.Models.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>

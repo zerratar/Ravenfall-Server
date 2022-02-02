@@ -1,10 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Shinobytes.Ravenfall.DataModels\Shinobytes.Ravenfall.DataModels.csproj" />
     <ProjectReference Include="..\Shinobytes.Ravenfall.RavenNet\Shinobytes.Ravenfall.RavenNet.csproj" />
   </ItemGroup>
 
