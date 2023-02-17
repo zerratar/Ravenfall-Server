@@ -32,7 +32,7 @@
 
     <PackageReference Include="System.Drawing.Common" Version="6.0.0" />
 
-    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.15.1" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.27.0" />
 
     <PackageReference Include="TwitchLib.Api" Version="3.4.2-preview-46d23962d3c0ed2b3181f25815ba1af0727cb353" />
 
